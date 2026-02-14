@@ -278,7 +278,6 @@
             window.location.reload();
         }
 
-
         // --- ADAPTER FUNCTIONS (Embedded for Compat) ---
         async function fetchCollection(colName) {
             const snap = await db.collection(colName).get();
@@ -395,7 +394,7 @@
                             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Current'],
                             datasets: [{
                                 label: 'Students Onboarded',
-                                data: [0, 5, 12, 20, stuCount - 5, stuCount],
+                                data: [0, 5, 12, 20, Math.max(0, stuCount - 5), stuCount],
                                 borderColor: '#3b82f6', backgroundColor: 'rgba(99, 102, 241, 0.1)',
                                 fill: true, tension: 0.4
                             }]
@@ -474,7 +473,7 @@
                                     <div><label class="text-xs font-bold text-slate-500 uppercase">Subtitle</label><textarea id="g-sub" class="input-dark mt-1" rows="3">${c.heroSub||''}</textarea></div>
                                     <div class="flex gap-2">
                                         <div class="flex-1"><label class="text-xs font-bold text-slate-500 uppercase">Button Text</label><input id="g-btn" class="input-dark mt-1" value="${c.heroBtn||'Get Started'}"></div>
-                                        <div class="flex-1"><label class="text-xs font-bold text-slate-500 uppercase">WhatsApp</label><input id="g-wa" class="input-dark mt-1" value="${c.whatsapp||''}"></div>
+                                        <div class="flex-1"><label class="text-xs font-bold text-slate-500 uppercase">WhatsApp (Admin)</label><input id="g-wa" class="input-dark mt-1" value="${c.whatsapp||''}"></div>
                                     </div>
                                 </div>
 
@@ -487,6 +486,27 @@
                                         <div><label class="text-xs font-bold text-slate-500 uppercase">Label 2 (Auto)</label><input id="g-st2" class="input-dark mt-1 text-xs" value="${c.stat2Label||'Students'}"></div>
                                     </div>
                                     <div><label class="text-xs font-bold text-slate-500 uppercase">Footer Copyright</label><input id="g-foot" class="input-dark mt-1" value="${c.footerText||''}"></div>
+                                </div>
+
+                                <div class="glass-card p-8 rounded-2xl space-y-6 md:col-span-2">
+                                    <h4 class="text-lg font-bold text-emerald-400 flex items-center gap-2"><i class="fas fa-list"></i> Features Section</h4>
+                                    <div class="grid md:grid-cols-3 gap-6">
+                                        <div class="space-y-2">
+                                            <label class="text-xs font-bold text-slate-500 uppercase">Feature 1</label>
+                                            <input id="g-f1-t" class="input-dark text-sm font-bold" value="${c.f1Title||'Dedicated Portal'}">
+                                            <textarea id="g-f1-d" class="input-dark mt-1" rows="3">${c.f1Desc||'Get a unique homepage fully branded with your logo and colors.'}</textarea>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="text-xs font-bold text-slate-500 uppercase">Feature 2</label>
+                                            <input id="g-f2-t" class="input-dark text-sm font-bold" value="${c.f2Title||'Instant Marksheets'}">
+                                            <textarea id="g-f2-d" class="input-dark mt-1" rows="3">${c.f2Desc||'Upload marks once and generate professional, downloadable PDF results instantly.'}</textarea>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="text-xs font-bold text-slate-500 uppercase">Feature 3</label>
+                                            <input id="g-f3-t" class="input-dark text-sm font-bold" value="${c.f3Title||'Bank-Grade Security'}">
+                                            <textarea id="g-f3-d" class="input-dark mt-1" rows="3">${c.f3Desc||'Secure admin panels and student logins ensure data privacy and integrity.'}</textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>`;
@@ -661,13 +681,14 @@
         }
 
         function loginAs(id) {
-    // Find the full institution data and log in using the correct Admin session key
-    const inst = window.currentInstList.find(x => x.id === id);
-    if (inst) {
-        localStorage.setItem('GradeWise_admin_session', JSON.stringify(inst)); 
-        window.open('admin.html', '_blank');
-    }
-}
+            const inst = window.currentInstList.find(x => x.id === id);
+            if (inst) {
+                localStorage.setItem('GradeWise_admin_session', JSON.stringify(inst)); 
+                window.open('admin.html', '_blank');
+            } else {
+                showToast("Error locating institution data", "error");
+            }
+        }
 
         function copyLink(id){
             navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname.replace('owner.html','')}home.html?id=${id}`).then(()=>showToast("Link Copied to Clipboard"));
@@ -709,25 +730,36 @@
         async function saveGlobalCMS() {
             const btn = $('btn-save-global');
             btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Saving...`;
+            
+            // Failsafe helper for missing fields
+            const val = (id) => $(id) ? $(id).value : '';
+
             const config = {
-                brandName: $('g-brand').value, heroTitle: $('g-title').value, heroSub: $('g-sub').value, heroBtn: $('g-btn').value,
-                stat1Label: $('g-st1').value, stat2Label: $('g-st2').value, whatsapp: $('g-wa').value, footerText: $('g-foot').value,
-                f1Title: $('g-f1-t').value, f1Desc: $('g-f1-d').value, f2Title: $('g-f2-t').value, f2Desc: $('g-f2-d').value,
-                f3Title: $('g-f3-t').value, f3Desc: $('g-f3-d').value, aboutHead: $('g-ab-h').value, aboutText: $('g-ab-t').value,
+                brandName: val('g-brand'), heroTitle: val('g-title'), heroSub: val('g-sub'), heroBtn: val('g-btn'),
+                stat1Label: val('g-st1'), stat2Label: val('g-st2'), whatsapp: val('g-wa'), footerText: val('g-foot'),
+                f1Title: val('g-f1-t'), f1Desc: val('g-f1-d'), f2Title: val('g-f2-t'), f2Desc: val('g-f2-d'),
+                f3Title: val('g-f3-t'), f3Desc: val('g-f3-d'), aboutHead: val('g-ab-h'), aboutText: val('g-ab-t'),
             };
-            const logoInput = $('g-logo');
-            if(logoInput && logoInput.files.length > 0) {
-                const r = new FileReader();
-                r.onload = async (e) => {
-                    config.brandLogo = await uploadImage('site/global_logo.png', e.target.result);
+
+            try {
+                const logoInput = $('g-logo');
+                if(logoInput && logoInput.files.length > 0) {
+                    const r = new FileReader();
+                    r.onload = async (e) => {
+                        config.brandLogo = await uploadImage('site/global_logo.png', e.target.result);
+                        await saveSiteConfig(config);
+                        showToast("Global Site & Logo Published");
+                        btn.innerHTML = `<i class="fas fa-save"></i> Publish Changes`;
+                    };
+                    r.readAsDataURL(logoInput.files[0]);
+                } else {
                     await saveSiteConfig(config);
-                    showToast("Global Site & Logo Published");
+                    showToast("Global Site Content Published");
                     btn.innerHTML = `<i class="fas fa-save"></i> Publish Changes`;
-                };
-                r.readAsDataURL(logoInput.files[0]);
-            } else {
-                await saveSiteConfig(config);
-                showToast("Global Site Content Published");
+                }
+            } catch (err) {
+                console.error("CMS Save Error", err);
+                showToast("Failed to save changes", "error");
                 btn.innerHTML = `<i class="fas fa-save"></i> Publish Changes`;
             }
         }
@@ -752,7 +784,7 @@
             showLoader(false);
         }
 
-        function restoreBackup(inp) { alert("Cloud Restore via file upload is disabled."); }
+        function restoreBackup(inp) { alert("Cloud Restore via file upload is disabled for safety."); }
         async function wipeData() { 
             if(confirm("CRITICAL WARNING: This will delete ALL data in the CLOUD. Are you sure?")) { 
                 if(confirm("Really sure? This cannot be undone.")) {

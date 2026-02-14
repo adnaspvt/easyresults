@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GraseWise | Digital School Solutions</title>
+<link rel="stylesheet" href="style.css">
+    <title>GradeWise | Digital School Solutions</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <style>
         /* --- DESIGN SYSTEM --- */
@@ -59,13 +61,13 @@
                     <i id="nav-icon" class="fas fa-layer-group"></i>
                     <img id="nav-img" class="w-full h-full object-cover hidden">
                 </div>
-                <span id="cms-brand-name" class="text-white">GraseWise</span>
+                <span id="cms-brand-name" class="text-white">GradeWise</span>
             </div>
             
             <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
                 <a href="#features" class="hover:text-white transition">Features</a>
                 <a href="#about" class="hover:text-white transition">About</a>
-                <a href="#contact" class="hover:text-white transition">Contact</a>
+                <a href="#register" class="hover:text-white transition">Register</a>
             </div>
 
             <a href="owner.html" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-bold text-white transition flex items-center gap-2">
@@ -78,7 +80,7 @@
         <div class="fade-in" style="animation-delay: 0.1s">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/10 text-blue-400 text-xs font-bold uppercase tracking-widest mb-8">
                 <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-                v3.0 System Live
+                Cloud System Live
             </div>
         </div>
         
@@ -88,12 +90,12 @@
         </h1>
         
         <p id="hero-sub" class="text-lg text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed fade-in" style="animation-delay: 0.3s">
-            GraseWise provides a fully customized, secure, and automated result management portal for modern educational institutions.
+            GradeWise provides a fully customized, secure, and automated result management portal for modern educational institutions.
         </p>
         
         <div class="flex flex-col sm:flex-row gap-4 fade-in" style="animation-delay: 0.4s">
-            <a href="#contact" id="hero-btn" class="px-8 py-4 btn-glow text-white font-bold rounded-xl flex items-center justify-center gap-2">
-                Get Started Now <i class="fas fa-arrow-right"></i>
+            <a href="#register" id="hero-btn" class="px-8 py-4 btn-glow text-white font-bold rounded-xl flex items-center justify-center gap-2">
+                Register Institution <i class="fas fa-arrow-right"></i>
             </a>
             <a id="wa-link" href="#" target="_blank" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
                 <i class="fab fa-whatsapp text-green-400 text-lg"></i> Contact Sales
@@ -108,7 +110,7 @@
     <section id="features" class="py-24 relative z-10">
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-white mb-4">Why Choose GraseWise?</h2>
+                <h2 class="text-3xl font-bold text-white mb-4">Why Choose GradeWise?</h2>
                 <p class="text-slate-400">Everything you need to digitize your institution.</p>
             </div>
             
@@ -118,7 +120,7 @@
                         <i class="fas fa-globe"></i>
                     </div>
                     <h3 id="f1-t" class="text-xl font-bold text-white mb-3">Dedicated Portal</h3>
-                    <p id="f1-d" class="text-slate-400 text-sm leading-relaxed">Get a unique homepage (e.g., grasewise.com/school) fully branded with your logo.</p>
+                    <p id="f1-d" class="text-slate-400 text-sm leading-relaxed">Get a unique homepage fully branded with your logo and colors.</p>
                 </div>
                 <div class="feature-card p-8 rounded-2xl">
                     <div class="w-14 h-14 bg-purple-500/10 text-purple-400 rounded-xl flex items-center justify-center text-2xl mb-6">
@@ -143,7 +145,7 @@
             <div>
                 <h2 id="ab-head" class="text-3xl font-bold text-white mb-6">Built for Education</h2>
                 <p id="ab-text" class="text-slate-400 mb-8 leading-loose">
-                    GraseWise simplifies the complex task of academic administration. From managing student data to publishing exam results, we provide the tools you need to succeed in the digital age.
+                    GradeWise simplifies the complex task of academic administration. From managing student data to publishing exam results, we provide the tools you need to succeed in the digital age.
                 </p>
                 
                 <div class="grid grid-cols-2 gap-6">
@@ -158,7 +160,7 @@
                 </div>
             </div>
             
-            <div class="relative">
+            <div class="relative hidden md:block">
                 <div class="absolute -inset-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-3xl opacity-20"></div>
                 <div class="relative bg-slate-800 p-8 rounded-3xl border border-slate-700 shadow-2xl">
                     <div class="flex items-center gap-4 mb-6">
@@ -179,88 +181,165 @@
         </div>
     </section>
 
-    <section id="contact" class="py-24 text-center">
-        <div class="max-w-2xl mx-auto px-6">
-            <h2 class="text-3xl font-bold text-white mb-6">Ready to Transform Your School?</h2>
-            <p class="text-slate-400 mb-10">Join the GraseWise network today. Contact us for a demo.</p>
-            <a id="wa-link-2" href="#" class="inline-flex items-center gap-3 px-8 py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition shadow-lg shadow-green-900/20">
-                <i class="fab fa-whatsapp text-2xl"></i> 
-                <span>Chat on WhatsApp</span>
-            </a>
+    <section id="register" class="py-24 relative z-10 border-t border-slate-800 bg-[#020617]">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Request Institution Access</h2>
+                <p class="text-slate-400">Submit your details below. Our team will verify and prepare your secure cloud portal.</p>
+            </div>
+            
+            <div class="glass-nav p-8 md:p-10 rounded-3xl border border-slate-700 shadow-2xl max-w-3xl mx-auto relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+                
+                <form id="reg-form" class="space-y-6 relative z-10" onsubmit="submitRegistration(event)">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Institution Name</label>
+                            <input id="req-school" class="w-full bg-slate-800/50 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-white mt-2 outline-none transition" required placeholder="e.g. Springfield Academy">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Contact Person</label>
+                            <input id="req-name" class="w-full bg-slate-800/50 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-white mt-2 outline-none transition" required placeholder="Your Full Name">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
+                            <input type="email" id="req-email" class="w-full bg-slate-800/50 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-white mt-2 outline-none transition" required placeholder="admin@school.com">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Phone Number</label>
+                            <input type="tel" id="req-phone" class="w-full bg-slate-800/50 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-white mt-2 outline-none transition" required placeholder="+1 234 567 8900">
+                        </div>
+                    </div>
+                    <div class="pt-4">
+                        <button type="submit" class="w-full py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition shadow-lg shadow-green-900/20 flex items-center justify-center gap-3 text-lg">
+                            <i class="fab fa-whatsapp text-2xl"></i> Send Request via WhatsApp
+                        </button>
+                        <p class="text-center text-xs text-slate-500 mt-4">
+                            <i class="fas fa-lock mr-1"></i> Your details are sent securely directly to the system owner for account creation.
+                        </p>
+                    </div>
+                </form>
+            </div>
         </div>
     </section>
 
     <footer class="py-8 text-center text-slate-600 text-sm border-t border-slate-800 bg-slate-950">
-        <p>&copy; 2025 <span id="footer-text" class="text-slate-500 font-bold">GraseWise Systems</span>. All Rights Reserved.</p>
+        <p>&copy; 2025 <span id="footer-text" class="text-slate-500 font-bold">GradeWise Systems</span>. All Rights Reserved.</p>
     </footer>
 
     <script>
-    // 1. Initialize Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyBDluJn6c-9vr3jJUEIl3FJ2l4HD4W1M2k",
-        authDomain: "gradewise-app.firebaseapp.com",
-        projectId: "gradewise-app",
-        storageBucket: "gradewise-app.firebasestorage.app",
-        messagingSenderId: "938150156100",
-        appId: "1:938150156100:web:219cfacbf0452ddfe2e911"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+        // 1. Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDluJn6c-9vr3jJUEIl3FJ2l4HD4W1M2k",
+            authDomain: "gradewise-app.firebaseapp.com",
+            projectId: "gradewise-app",
+            storageBucket: "gradewise-app.firebasestorage.app",
+            messagingSenderId: "938150156100",
+            appId: "1:938150156100:web:219cfacbf0452ddfe2e911"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    window.onload = async function() {
-        try {
-            // 2. Fetch CMS Data & Live Stats from Cloud
-            const docSnap = await db.collection('site_config').doc('main').get();
-            const c = docSnap.exists ? docSnap.data() : {};
-            
-            const instSnap = await db.collection('institutions').get();
-            const stuSnap = await db.collection('students').get();
+        // Keep track of the configured WhatsApp Number globally
+        let globalWhatsappNumber = "";
 
-            // --- APPLY BRANDING ---
-            if(c.brandName) {
-                document.title = c.brandName + " | Digital School Solutions";
-                document.getElementById('cms-brand-name').innerText = c.brandName;
+        window.onload = async function() {
+            try {
+                // 2. Fetch CMS Data & Live Stats from Cloud
+                const docSnap = await db.collection('site_config').doc('main').get();
+                const c = docSnap.exists ? docSnap.data() : {};
+                
+                const instSnap = await db.collection('institutions').get();
+                const stuSnap = await db.collection('students').get();
+
+                // --- APPLY BRANDING ---
+                if(c.brandName) {
+                    document.title = c.brandName + " | Digital School Solutions";
+                    document.getElementById('cms-brand-name').innerText = c.brandName;
+                }
+                if(c.brandLogo) {
+                    const img = document.getElementById('nav-img');
+                    img.src = c.brandLogo;
+                    img.classList.remove('hidden');
+                    document.getElementById('nav-icon').classList.add('hidden');
+                }
+
+                // --- APPLY CMS CONTENT ---
+                if(c.heroTitle) document.getElementById('hero-title').innerHTML = c.heroTitle.replace(/\n/g, "<br>");
+                if(c.heroSub) document.getElementById('hero-sub').innerText = c.heroSub;
+                if(c.heroBtn) document.getElementById('hero-btn').innerHTML = `${c.heroBtn} <i class="fas fa-arrow-right ml-2"></i>`;
+                
+                // Store WhatsApp Number & Update existing link
+                if(c.whatsapp) {
+                    globalWhatsappNumber = c.whatsapp;
+                    const url = `https://wa.me/${c.whatsapp}`;
+                    document.getElementById('wa-link').href = url;
+                }
+
+                if(c.f1Title) document.getElementById('f1-t').innerText = c.f1Title;
+                if(c.f1Desc) document.getElementById('f1-d').innerText = c.f1Desc;
+                if(c.f2Title) document.getElementById('f2-t').innerText = c.f2Title;
+                if(c.f2Desc) document.getElementById('f2-d').innerText = c.f2Desc;
+                if(c.f3Title) document.getElementById('f3-t').innerText = c.f3Title;
+                if(c.f3Desc) document.getElementById('f3-d').innerText = c.f3Desc;
+
+                if(c.aboutHead) document.getElementById('ab-head').innerText = c.aboutHead;
+                if(c.aboutText) document.getElementById('ab-text').innerText = c.aboutText;
+                if(c.stat1Label) document.getElementById('stat-1-lbl').innerText = c.stat1Label;
+                if(c.stat2Label) document.getElementById('stat-2-lbl').innerText = c.stat2Label;
+                
+                // Inject Live Analytics
+                document.getElementById('stat-1-val').innerText = instSnap.size + '+'; 
+                document.getElementById('stat-2-val').innerText = stuSnap.size + '+';
+
+                if(c.footerText) document.getElementById('footer-text').innerText = c.footerText;
+                
+            } catch(e) {
+                console.error("Error connecting to Firebase:", e);
             }
-            if(c.brandLogo) {
-                const img = document.getElementById('nav-img');
-                img.src = c.brandLogo;
-                img.classList.remove('hidden');
-                document.getElementById('nav-icon').classList.add('hidden');
+        };
+
+        // Handle Registration Form Submission
+        async function submitRegistration(e) {
+            e.preventDefault();
+            
+            // Check if Owner has configured a WhatsApp number
+            if (!globalWhatsappNumber) {
+                alert("The System Owner has not configured a WhatsApp support number yet.");
+                return;
+            }
+            
+            // Get Form Data
+            const school = document.getElementById('req-school').value;
+            const name = document.getElementById('req-name').value;
+            const email = document.getElementById('req-email').value;
+            const phone = document.getElementById('req-phone').value;
+
+            // 1. Save request secretly to Firebase Database for records
+            try {
+                await db.collection('registration_requests').add({
+                    schoolName: school,
+                    contactName: name,
+                    email: email,
+                    phone: phone,
+                    status: 'pending',
+                    timestamp: new Date().toISOString()
+                });
+            } catch(err) {
+                console.warn("Could not save to DB directly, but proceeding to WhatsApp.", err);
             }
 
-            // --- APPLY CMS CONTENT ---
-            if(c.heroTitle) document.getElementById('hero-title').innerHTML = c.heroTitle.replace(/\n/g, "<br>");
-            if(c.heroSub) document.getElementById('hero-sub').innerText = c.heroSub;
-            if(c.heroBtn) document.getElementById('hero-btn').innerHTML = `${c.heroBtn} <i class="fas fa-arrow-right ml-2"></i>`;
+            // 2. Format beautiful message for WhatsApp
+            const text = `*New Institution Registration Request*%0A%0A*School Name:* ${school}%0A*Contact Person:* ${name}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A%0AHello, I would like to request access to the GradeWise Cloud platform for my institution so we can manage our academic results digitally.`;
             
-            if(c.whatsapp) {
-                const url = `https://wa.me/${c.whatsapp}`;
-                document.getElementById('wa-link').href = url;
-                document.getElementById('wa-link-2').href = url;
-            }
-
-            if(c.f1Title) document.getElementById('f1-t').innerText = c.f1Title;
-            if(c.f1Desc) document.getElementById('f1-d').innerText = c.f1Desc;
-            if(c.f2Title) document.getElementById('f2-t').innerText = c.f2Title;
-            if(c.f2Desc) document.getElementById('f2-d').innerText = c.f2Desc;
-            if(c.f3Title) document.getElementById('f3-t').innerText = c.f3Title;
-            if(c.f3Desc) document.getElementById('f3-d').innerText = c.f3Desc;
-
-            if(c.aboutHead) document.getElementById('ab-head').innerText = c.aboutHead;
-            if(c.aboutText) document.getElementById('ab-text').innerText = c.aboutText;
-            if(c.stat1Label) document.getElementById('stat-1-lbl').innerText = c.stat1Label;
-            if(c.stat2Label) document.getElementById('stat-2-lbl').innerText = c.stat2Label;
+            // 3. Open WhatsApp link to send message directly to Owner
+            const url = `https://wa.me/${globalWhatsappNumber}?text=${text}`;
+            window.open(url, '_blank');
             
-            // Inject Live Analytics
-            document.getElementById('stat-1-val').innerText = (instSnap.size + 5) + '+'; 
-            document.getElementById('stat-2-val').innerText = (stuSnap.size + 100) + '+';
-
-            if(c.footerText) document.getElementById('footer-text').innerText = c.footerText;
-            
-        } catch(e) {
-            console.error("Error connecting to Firebase:", e);
+            // 4. Clear the form
+            document.getElementById('reg-form').reset();
+            alert("Your request has been prepared! Please hit send in WhatsApp to complete your registration.");
         }
-    };
-</script>
+    </script>
 </body>
 </html>

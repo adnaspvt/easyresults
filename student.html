@@ -18,7 +18,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        /* --- ORIGINAL DESIGN SYSTEM --- */
+        /* --- DYNAMIC THEME SYSTEM --- */
         :root {
             --bg-dark: #020617;
             --bg-panel: rgba(15, 23, 42, 0.85);
@@ -76,19 +76,23 @@
         .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
         .nav-item.active { background: var(--primary-glow); color: white; border-left-color: var(--primary); }
 
-        /* --- PROFESSIONAL A4 TRANSCRIPT DESIGN --- */
+        /* --- PROFESSIONAL TRANSCRIPT DESIGN --- */
         .a4-container {
-            width: 210mm; min-height: 297mm; padding: 0;
+            width: 210mm; height: 297mm; padding: 0;
             background: #fff; color: #1e293b;
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            position: relative; overflow: hidden; margin: 2rem auto;
+            position: relative; overflow: hidden; margin: 0 auto;
             box-sizing: border-box; display: flex; flex-direction: column;
+            transform: scale(0.65); transform-origin: top center; /* CRITICAL FIX: Ensures it fits screens properly */
+        }
+        @media (max-width: 768px) {
+            .a4-container { transform: scale(0.40); margin-top: -15%; margin-bottom: -30%; }
         }
         
         .transcript-frame { 
             border: 8px solid #1e293b; 
             outline: 2px solid #94a3b8; outline-offset: -12px;
-            height: 100%; min-height: 290mm; margin: 8mm; 
+            height: 100%; margin: 8mm; 
             position: relative; display: flex; flex-direction: column;
             background: #fff;
         }
@@ -167,17 +171,20 @@
         <p class="text-sm font-bold tracking-widest animate-pulse font-mono">PROCESSING...</p>
     </div>
 
+    <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
     <div class="fixed inset-0 pointer-events-none">
         <div class="bg-orb top-0 left-0 w-[600px] h-[600px]" style="background: var(--primary); opacity: 0.15;"></div>
         <div class="bg-orb bottom-0 right-0 w-[500px] h-[500px]" style="background: var(--primary); animation-delay: -5s; opacity: 0.1;"></div>
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.04]"></div>
     </div>
 
-    <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
-
-    <section id="view-login" class="fixed inset-0 z-50 flex items-center justify-center">
+    <section id="view-login" class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div class="glass-panel p-10 rounded-2xl shadow-2xl w-full max-w-sm relative z-10 border-t border-white/10">
             <div class="text-center mb-10">
+                <div class="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6 border border-white/10 shadow-lg text-white">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
                 <h1 class="text-2xl font-bold tracking-tight text-white">Student Portal</h1>
                 <p class="text-slate-400 text-xs uppercase tracking-widest mt-2">Academic Access</p>
             </div>
@@ -185,13 +192,13 @@
                 <input type="hidden" id="login-inst">
                 <div><label class="text-xs font-bold text-slate-500 uppercase ml-1">Admission No</label><input id="login-username" class="input-dark" required></div>
                 <div><label class="text-xs font-bold text-slate-500 uppercase ml-1">Password</label><input type="password" id="login-password" class="input-dark" required></div>
-                <button id="btn-login" class="w-full btn-primary py-3">Login</button>
+                <button id="btn-login" class="w-full btn-primary py-3">Access Results</button>
             </form>
-            <div class="mt-6 text-center text-xs text-slate-500"><a href="index.html" class="hover:text-white">Change Institution</a></div>
+            <div class="mt-6 text-center text-xs text-slate-500"><a id="link-home" href="index.html" class="hover:text-white transition"><i class="fas fa-home mr-1"></i> Home</a></div>
         </div>
     </section>
 
-    <div id="view-dashboard" class="hidden w-full h-full flex">
+    <div id="view-dashboard" class="hidden w-full h-full flex relative z-10">
         <aside class="w-72 bg-[#0b1121]/90 border-r border-slate-800 flex flex-col flex-shrink-0 z-40 backdrop-blur-md">
             <div class="p-8 border-b border-slate-800/50 flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold border border-slate-700 overflow-hidden shadow-lg relative" style="background-color: var(--primary);">
@@ -291,16 +298,18 @@
                                 </div>
                                 
                                 <div class="stats-box">
-                                    <div class="stat-row"><span class="stat-label">Percentage</span><span id="mk-pct" class="stat-val">0%</span></div>
+                                    <div class="stat-row"><span class="stat-label">Percentage</span><span id="mk-pct" class="stat-val text-sm">0%</span></div>
                                     <div class="stat-row"><span class="stat-label">Division</span><span id="mk-div" class="stat-val text-sm">N/A</span></div>
-                                    <div class="stat-row"><span class="stat-label">Attendance</span><span id="mk-att" class="stat-val">N/A</span></div>
-                                    <div class="stat-row mt-2"><span class="stat-label">Result</span><div id="mk-stamp-container"></div></div>
+                                    <div class="stat-row"><span class="stat-label">Class Rank</span><span id="mk-rank" class="stat-val text-sm">#1</span></div>
+                                    <div class="stat-row"><span class="stat-label">Attendance</span><span id="mk-att" class="stat-val text-sm">N/A</span></div>
+                                    <div class="stat-row mt-2"><span class="stat-label">Result Status</span><div id="mk-stamp-container"></div></div>
                                 </div>
                             </div>
 
                             <div class="doc-footer">
                                 <div class="text-[8px] text-slate-500 font-mono w-2/3 leading-tight">
-                                    This document is digitally generated by GradeWise. No physical signature required.
+                                    This document is securely processed and digitally generated by GradeWise Cloud Systems.<br>
+                                    Valid academic record. No physical signature required for web verification.
                                 </div>
                                 <div class="principal-box">
                                     <div class="h-16 flex items-end justify-center mb-1"><img id="mk-sig" class="max-h-full max-w-full object-contain filter grayscale contrast-125"></div>
@@ -317,7 +326,7 @@
     </div>
 
     <script>
-        // --- CONFIGURATION ---
+        // 1. Firebase Initialization
         const firebaseConfig = {
             apiKey: "AIzaSyBDluJn6c-9vr3jJUEIl3FJ2l4HD4W1M2k",
             authDomain: "gradewise-app.firebaseapp.com",
@@ -329,12 +338,13 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // 2. Global State Variables
         const SESSION_KEY = 'grasewise_student_session';
         let currentStudent = null;
         let currentInst = null;
         let cache = { subjects: [], exams: [], classes: [] };
 
-        // --- THEME LIBRARY ---
+        // 3. Theme Presets (Matches Admin/Owner configurations)
         const THEMES = {
             'deep_space': { bg: '#020617', glass: 'rgba(15, 23, 42, 0.75)', text: '#f8fafc', muted: '#94a3b8' },
             'midnight_blue': { bg: '#0b1121', glass: 'rgba(30, 41, 59, 0.75)', text: '#f0f9ff', muted: '#94a3b8' },
@@ -348,8 +358,10 @@
             'slate_minimal': { bg: '#0f172a', glass: 'rgba(51, 65, 85, 0.75)', text: '#f8fafc', muted: '#cbd5e1' }
         };
 
+        // 4. Utilities
         const $ = id => document.getElementById(id);
         const showLoader = (show) => $('global-loader').classList.toggle('hidden', !show);
+        
         function showToast(msg, type='success') {
             const el = document.createElement('div');
             el.className = `px-5 py-4 rounded-xl shadow-2xl border backdrop-blur-md text-sm font-bold flex items-center gap-3 fade-in ${type==='success'?'bg-emerald-500/10 border-emerald-500/30 text-emerald-400':'bg-red-500/10 border-red-500/30 text-red-400'}`;
@@ -358,29 +370,50 @@
             setTimeout(() => el.remove(), 4000);
         }
 
-        // --- INIT ---
+        function numToWords(n) {
+            const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+            const b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
+            if ((n = n.toString()).length > 9) return 'Overflow';
+            let n_ = ('000000000' + n).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+            if (!n_) return; 
+            let str = '';
+            str += (n_[1] != 0) ? (a[Number(n_[1])] || b[n_[1][0]] + ' ' + a[n_[1][1]]) + 'Crore ' : '';
+            str += (n_[2] != 0) ? (a[Number(n_[2])] || b[n_[2][0]] + ' ' + a[n_[2][1]]) + 'Lakh ' : '';
+            str += (n_[3] != 0) ? (a[Number(n_[3])] || b[n_[3][0]] + ' ' + a[n_[3][1]]) + 'Thousand ' : '';
+            str += (n_[4] != 0) ? (a[Number(n_[4])] || b[n_[4][0]] + ' ' + a[n_[4][1]]) + 'Hundred ' : '';
+            str += (n_[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n_[5])] || b[n_[5][0]] + ' ' + a[n_[5][1]]) : '';
+            return str.trim() ? str.trim() + " Only" : "Zero Only";
+        }
+
+        // 5. App Initialization & Cloud Security Check
         window.onload = () => { checkSession(); };
 
         async function checkSession() {
             const s = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+            const urlParams = new URLSearchParams(window.location.search);
+            const instId = urlParams.get('id') || localStorage.getItem('grasewise_last_school');
+
             if(s && s.id) {
                 try {
                     const doc = await db.collection('students').doc(s.id).get();
                     if(doc.exists) {
                         currentStudent = { id: doc.id, ...doc.data() };
                         await loadInstitution(currentStudent.institutionId);
+                        await loadCacheData();
                         initDashboard();
                         return;
                     }
-                } catch(e) { console.error("Session Error", e); }
+                } catch(e) { console.error("Session Verification Error", e); }
             }
-            const urlParams = new URLSearchParams(window.location.search);
-            const instId = urlParams.get('id') || localStorage.getItem('grasewise_last_school');
+
             if(instId) {
-                await loadInstitution(instId);
                 $('login-inst').value = instId;
+                if($('link-home')) $('link-home').href = `home.html?id=${instId}`;
+                await loadInstitution(instId);
                 $('view-login').classList.remove('hidden');
-            } else window.location.href = 'index.html';
+            } else {
+                window.location.href = 'index.html'; 
+            }
         }
 
         async function loadInstitution(id) {
@@ -391,15 +424,19 @@
                     applyTheme(currentInst);
                     localStorage.setItem('grasewise_last_school', id);
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Institution Loading Error", e); }
         }
 
         function applyTheme(inst) {
             const color = inst.themeColor || '#6366f1';
             const themeKey = inst.theme || 'deep_space';
             const t = THEMES[themeKey] || THEMES['deep_space'];
+
             const root = document.documentElement;
+            const adjustColor = (hex, amt) => '#' + hex.replace(/^#/, '').replace(/../g, c => ('0'+Math.min(255, Math.max(0, parseInt(c, 16) + amt)).toString(16)).substr(-2));
+            
             root.style.setProperty('--primary', color);
+            root.style.setProperty('--primary-dark', adjustColor(color, -20));
             root.style.setProperty('--primary-glow', color + '40');
             root.style.setProperty('--bg-dark', t.bg);
             root.style.setProperty('--bg-panel', t.glass);
@@ -407,42 +444,59 @@
             root.style.setProperty('--text-muted', t.muted);
         }
 
-        // --- AUTH ---
+        // 6. Login Handler (Queries Cloud DB)
         async function handleLogin(e) {
             e.preventDefault();
             const instId = $('login-inst').value;
             const uname = $('login-username').value;
             const pass = $('login-password').value;
             const btn = $('btn-login');
+
             if(!uname || !pass) return showToast("Enter credentials", "error");
-            btn.innerHTML = 'Verifying...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
             try {
-                const snap = await db.collection('students').where('institutionId', '==', instId).where('admissionNo', '==', uname).where('password', '==', pass).get();
+                const snap = await db.collection('students')
+                    .where('institutionId', '==', instId)
+                    .where('admissionNo', '==', uname)
+                    .where('password', '==', pass)
+                    .get();
+
                 if(!snap.empty) {
                     const doc = snap.docs[0];
                     currentStudent = { id: doc.id, ...doc.data() };
                     sessionStorage.setItem(SESSION_KEY, JSON.stringify({ id: doc.id }));
+                    
                     await loadCacheData();
                     initDashboard();
-                } else { showToast("Student Not Found", "error"); btn.innerHTML = 'Login'; }
-            } catch(e) { console.error(e); showToast("Connection Error", "error"); btn.innerHTML = 'Login'; }
+                } else {
+                    showToast("Invalid Admission No or Password", "error");
+                    btn.innerHTML = 'Access Results';
+                }
+            } catch(e) {
+                console.error(e);
+                showToast("Connection Error", "error");
+                btn.innerHTML = 'Access Results';
+            }
         }
 
         async function loadCacheData() {
-            const [c, e, s] = await Promise.all([
-                db.collection('classes').where('institutionId', '==', currentInst.id).get(),
-                db.collection('exams').where('institutionId', '==', currentInst.id).get(),
-                db.collection('subjects').where('institutionId', '==', currentInst.id).get()
-            ]);
-            cache.classes = c.docs.map(d => ({id: d.id, ...d.data()}));
-            cache.exams = e.docs.map(d => ({id: d.id, ...d.data()}));
-            cache.subjects = s.docs.map(d => ({id: d.id, ...d.data()}));
+            try {
+                const [c, e, s] = await Promise.all([
+                    db.collection('classes').where('institutionId', '==', currentInst.id).get(),
+                    db.collection('exams').where('institutionId', '==', currentInst.id).get(),
+                    db.collection('subjects').where('institutionId', '==', currentInst.id).get()
+                ]);
+                cache.classes = c.docs.map(d => ({id: d.id, ...d.data()}));
+                cache.exams = e.docs.map(d => ({id: d.id, ...d.data()}));
+                cache.subjects = s.docs.map(d => ({id: d.id, ...d.data()}));
+            } catch(err) { console.error("Cache Loading Error", err); }
         }
 
         function logout() { sessionStorage.removeItem(SESSION_KEY); location.reload(); }
-        function viewPublicPage() { if(currentInst) window.open(`home.html?id=${currentInst.id}`, '_blank'); }
+        function viewPublicPage() { if(currentInst) window.location.href = `home.html?id=${currentInst.id}`; }
 
-        // --- DASHBOARD ---
+        // 7. Dashboard Engine
         function initDashboard() {
             $('view-login').classList.add('hidden');
             $('view-dashboard').classList.remove('hidden');
@@ -455,7 +509,11 @@
             $('sb-school').innerText = currentInst.name;
             if($('sb-name')) $('sb-name').innerText = currentStudent.name;
             if($('sb-adm')) $('sb-adm').innerText = currentStudent.admissionNo;
-            if(currentInst.profileImage) { $('sb-logo').src = currentInst.profileImage; $('sb-logo').classList.remove('hidden'); $('sb-icon').classList.add('hidden'); }
+            if(currentInst.profileImage) { 
+                $('sb-logo').src = currentInst.profileImage; 
+                $('sb-logo').classList.remove('hidden'); 
+                $('sb-icon').classList.add('hidden'); 
+            }
         }
 
         async function renderTab(tab) {
@@ -478,24 +536,36 @@
 
             if(tab === 'results') {
                 title.innerText = 'Academic Records';
-                showLoader(true);
-                const snap = await db.collection('results').where('studentId', '==', currentStudent.id).get();
-                showLoader(false);
                 
-                if(snap.empty) content.innerHTML = `<div class="glass-panel p-12 text-center text-slate-500">No results published yet.</div>`;
-                else {
-                    content.innerHTML = `<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">${snap.docs.map(doc => {
-                        const r = {id: doc.id, ...doc.data()};
-                        const exam = cache.exams.find(e => e.id === r.examId) || {name: 'Unknown Exam'};
+                showLoader(true);
+                const rSnap = await db.collection('results').where('studentId', '==', currentStudent.id).get();
+                showLoader(false);
+                const results = rSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                
+                if(results.length === 0) {
+                    content.innerHTML = `<div class="glass-panel p-12 text-center text-slate-500">No results published yet.</div>`;
+                } else {
+                    let html = `<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">`;
+                    
+                    results.forEach(r => {
+                        const exam = cache.exams.find(e => e.id === r.examId);
+                        if(!exam) return; 
+                        
                         const pubDate = exam.publishDate ? new Date(exam.publishDate) : new Date(0);
-                        if(pubDate > new Date()) return ''; 
+                        if(pubDate > new Date()) return; 
 
-                        return `<div class="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-slate-500 transition">
-                            <div class="flex justify-between items-start mb-6"><div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-lg" style="color:var(--primary)"><i class="fas fa-file-contract"></i></div><span class="px-2 py-1 rounded text-[10px] font-bold uppercase border" style="color:var(--primary); border-color:var(--primary-glow)">Published</span></div>
+                        html += `<div class="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-slate-500 transition">
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-lg" style="color:var(--primary)"><i class="fas fa-file-contract"></i></div>
+                                <span class="px-2 py-1 rounded text-[10px] font-bold uppercase border" style="color:var(--primary); border-color:var(--primary-glow)">Published</span>
+                            </div>
                             <h3 class="text-xl font-bold mb-2" style="color:var(--text-main)">${exam.name}</h3>
                             <button onclick="openMarksheet('${r.id}')" class="w-full mt-4 py-2 bg-white/5 hover:bg-white/10 text-slate-300 rounded-lg text-xs font-bold transition border border-white/10">View Marksheet</button>
                         </div>`;
-                    }).join('')}</div>`;
+                    });
+                    
+                    html += `</div>`;
+                    content.innerHTML = html;
                 }
             }
 
@@ -510,7 +580,7 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div><label class="text-[10px] uppercase font-bold text-slate-500">Name</label><input id="pf-name" class="input-dark mt-1" value="${currentStudent.name}"></div>
                                 <div><label class="text-[10px] uppercase font-bold text-slate-500">Admission No</label><input class="input-dark mt-1 opacity-50 cursor-not-allowed" value="${currentStudent.admissionNo}" disabled></div>
-                                <div><label class="text-[10px] uppercase font-bold text-slate-500">DOB</label><input type="date" id="pf-dob" class="input-dark mt-1 text-slate-300" value="${currentStudent.dob}"></div>
+                                <div><label class="text-[10px] uppercase font-bold text-slate-500">DOB</label><input type="date" id="pf-dob" class="input-dark mt-1 text-slate-300" value="${currentStudent.dob || ''}"></div>
                                 <div><label class="text-[10px] uppercase font-bold text-slate-500">Class</label><input class="input-dark mt-1 opacity-50 cursor-not-allowed" value="${cls}" disabled></div>
                             </div>
                             <button onclick="updateProfile()" class="w-full btn-primary py-3 rounded-xl mt-4">Save Changes</button>
@@ -524,63 +594,62 @@
                 showLoader(true);
                 const name = $('pf-name').value;
                 const dob = $('pf-dob').value;
+                
                 await db.collection('students').doc(currentStudent.id).update({ name, dob });
+                
                 currentStudent.name = name; 
                 currentStudent.dob = dob;
+                
                 showLoader(false);
                 updateSidebar();
                 showToast("Profile Updated Successfully");
-            } catch (e) { showLoader(false); showToast("Update failed: " + e.message, "error"); }
+            } catch (e) { showLoader(false); showToast("Update failed", "error"); }
         }
 
-        // --- HELPER FUNCTIONS ---
-        function numToWords(n) {
-            const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
-            const b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
-            if ((n = n.toString()).length > 9) return 'Overflow';
-            let n_ = ('000000000' + n).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-            if (!n_) return; 
-            let str = '';
-            str += (n_[1] != 0) ? (a[Number(n_[1])] || b[n_[1][0]] + ' ' + a[n_[1][1]]) + 'Crore ' : '';
-            str += (n_[2] != 0) ? (a[Number(n_[2])] || b[n_[2][0]] + ' ' + a[n_[2][1]]) + 'Lakh ' : '';
-            str += (n_[3] != 0) ? (a[Number(n_[3])] || b[n_[3][0]] + ' ' + a[n_[3][1]]) + 'Thousand ' : '';
-            str += (n_[4] != 0) ? (a[Number(n_[4])] || b[n_[4][0]] + ' ' + a[n_[4][1]]) + 'Hundred ' : '';
-            str += (n_[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n_[5])] || b[n_[5][0]] + ' ' + a[n_[5][1]]) : '';
-            return str.trim() ? str.trim() + " Only" : "Zero Only";
-        }
-
-        // --- MARKSHEET LOGIC ---
+        // 8. Result Formatter (Marksheet Viewer)
         async function openMarksheet(rid) {
             try {
                 showLoader(true);
                 const doc = await db.collection('results').doc(rid).get();
                 showLoader(false);
                 
-                if(!doc.exists) return showToast("Result not found", "error");
+                if(!doc.exists) return showToast("Result Not Found", "error");
                 const r = doc.data();
 
-                const inst = currentInst;
+                const inst = currentInst || {name: 'Unknown School'};
                 const exam = cache.exams.find(e => e.id === r.examId) || {name: 'Unknown Exam'};
                 const cls = cache.classes.find(c => c.id === currentStudent.classId) || {name: 'N/A'};
 
+                // Inject Basic Meta
                 $('mk-school').innerText = inst.name;
                 $('mk-addr').innerText = inst.address || '';
                 $('mk-exam').innerText = exam.name;
                 
+                // Inject Logos
                 const logo = $('mk-logo');
-                if(inst.profileImage) { logo.src = inst.profileImage; logo.style.display = 'block'; } else logo.style.display = 'none';
-                if($('mk-watermark')) $('mk-watermark').src = inst.profileImage || '';
+                if(inst.profileImage) { 
+                    logo.src = inst.profileImage; 
+                    logo.style.display = 'block'; 
+                    if($('mk-watermark')) {
+                        $('mk-watermark').src = inst.profileImage;
+                        $('mk-watermark').style.display = 'block';
+                    }
+                } else { 
+                    logo.style.display = 'none'; 
+                    if($('mk-watermark')) $('mk-watermark').style.display = 'none';
+                }
 
                 const sig = $('mk-sig');
                 if(inst.signatureImage) { sig.src = inst.signatureImage; sig.style.display = 'block'; } else sig.style.display = 'none';
 
+                // Inject Student Info
                 $('mk-name').innerText = currentStudent.name;
                 $('mk-adm').innerText = currentStudent.admissionNo;
                 $('mk-class').innerText = cls.name;
                 if($('mk-dob')) $('mk-dob').innerText = currentStudent.dob || 'N/A';
-                
                 $('mk-date').innerText = new Date().toLocaleDateString();
 
+                // Compute Rows
                 let rows = ''; let maxTotal = 0; let grandTotal = 0; let failFlag = false;
                 const sMarks = r.subjectMarks || {};
                 
@@ -592,6 +661,7 @@
                         maxTotal += full;
                         grandTotal += Number(marks);
                         if(Number(marks) < pass) failFlag = true;
+                        
                         rows += `<tr>
                             <td class="text-left font-bold pl-6 text-slate-800">${sub.name}</td>
                             <td>${full}</td><td>${pass}</td>
@@ -601,18 +671,25 @@
                 });
                 
                 $('mk-body').innerHTML = rows || `<tr><td colspan="4" class="text-center py-4">No subjects found.</td></tr>`;
+                
+                // Analytics 
                 $('mk-total').innerText = `${grandTotal} / ${maxTotal}`;
                 $('mk-total-words').innerText = numToWords(grandTotal);
                 
                 const finalPct = maxTotal > 0 ? ((grandTotal / maxTotal) * 100).toFixed(1) : 0;
                 $('mk-pct').innerText = finalPct + '%';
-                $('mk-att').innerText = r.attendance ? r.attendance + (r.totalAttendance ? '/' + r.totalAttendance : '') : 'N/A';
+                
+                const attVal = r.attendance || '0';
+                const attTotal = r.totalAttendance || '0';
+                $('mk-att').innerText = `${attVal} / ${attTotal}`;
+                
+                $('mk-rank').innerText = r.rank ? `#${r.rank}` : '-';
 
                 const status = failFlag ? 'FAIL' : 'PASS';
                 const clsName = failFlag ? 'fail' : 'pass';
                 $('mk-stamp-container').innerHTML = `<div class="stamp-status ${clsName}">${status}</div>`;
 
-                // Classification Logic
+                // Classification 
                 let div = "Fail";
                 if(!failFlag) {
                     if(finalPct >= 75) div = "Distinction";
@@ -622,21 +699,34 @@
                 }
                 $('mk-div').innerText = div;
 
-                // Motivational Text Logic
+                // Dynamic Insights
                 let appreciation = "Good effort."; let motivation = "Keep working hard!";
-                if(finalPct >= 90) { appreciation = "Exceptional performance!"; motivation = "Keep setting the bar high!"; }
-                else if(finalPct >= 80) { appreciation = "Excellent work!"; motivation = "Consistency is key."; }
-                else if(finalPct < 33) { appreciation = "Needs improvement."; motivation = "Don't give up, work harder!"; }
+                if(failFlag) {
+                    appreciation = "You faced some challenges this term."; 
+                    motivation = "Every setback is a setup for a comeback. We believe in you!";
+                } else if(finalPct >= 90) { 
+                    appreciation = "Exceptional performance! You have demonstrated outstanding mastery."; 
+                    motivation = "Your dedication is truly inspiring. Keep setting the bar high!"; 
+                } else if(finalPct >= 80) { 
+                    appreciation = "Excellent work! You have a strong grasp of the core concepts."; 
+                    motivation = "Consistency is key. Continue this great momentum."; 
+                } else if(finalPct >= 60) { 
+                    appreciation = "Very Good. You are making steady progress in your academic journey."; 
+                    motivation = "Believe in your potential, you are capable of even more."; 
+                }
 
                 if($('mk-appreciation')) $('mk-appreciation').innerText = `"${appreciation}"`;
                 if($('mk-motivation')) $('mk-motivation').innerText = motivation;
 
+                // Show Document
                 $('marksheet-modal').classList.remove('hidden');
-            } catch (err) { console.error(err); showLoader(false); showToast("Error loading marksheet", "error"); }
+
+            } catch (err) { console.error(err); showLoader(false); showToast("Error rendering marksheet", "error"); }
         }
 
         function closeModal() { $('marksheet-modal').classList.add('hidden'); }
 
+        // 9. Printing & Sharing Actions
         async function shareResult() {
             try {
                 showLoader(true);
