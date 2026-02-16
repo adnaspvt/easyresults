@@ -15,7 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    <script src="security.js"></script>
+
     <style>
         /* --- ORIGINAL DESIGN SYSTEM --- */
         :root {
@@ -72,6 +72,14 @@
         
         .loader { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.1); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            aside { position: fixed; transform: translateX(-100%); height: 100%; z-index: 50; transition: transform 0.3s; }
+            aside.open { transform: translateX(0); }
+            .overlay { display: none; }
+            .overlay.open { display: block; }
+        }
     </style>
 </head>
 <body class="overflow-hidden h-screen flex text-sm selection:bg-blue-500/30">
@@ -116,12 +124,14 @@
         </div>
     </section>
 
-    <div id="view-dashboard" class="hidden w-full h-full flex">
+    <div id="view-dashboard" class="hidden w-full h-full flex relative z-10">
+        
+        <div id="mobile-overlay" onclick="toggleSidebar()" class="overlay fixed inset-0 bg-black/50 z-30 hidden backdrop-blur-sm"></div>
         
         <aside class="w-72 bg-[#020617] border-r border-slate-800 flex flex-col flex-shrink-0 z-40">
             <div class="p-8 border-b border-slate-800/50">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">ER</div>
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">GW</div>
                     <div>
                         <h2 class="font-bold text-white text-lg leading-tight">easyresults</h2>
                         <span class="text-[10px] text-blue-400 font-mono font-bold tracking-widest uppercase">God Mode</span>
@@ -155,12 +165,15 @@
 
         <main class="flex-1 flex flex-col min-w-0 bg-[#020617] relative bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
             
-            <header class="h-20 border-b border-slate-800 bg-[#020617]/90 backdrop-blur-md flex items-center justify-between px-10 sticky top-0 z-30">
-                <div>
-                    <h2 id="page-title" class="text-xl font-bold text-white tracking-tight">System Overview</h2>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <p class="text-[10px] text-slate-400 font-mono uppercase">System Operational</p>
+            <header class="h-20 border-b border-slate-800 bg-[#020617]/90 backdrop-blur-md flex items-center justify-between px-6 md:px-10 sticky top-0 z-30">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white"><i class="fas fa-bars text-xl"></i></button>
+                    <div>
+                        <h2 id="page-title" class="text-xl font-bold text-white tracking-tight">System Overview</h2>
+                        <div class="flex items-center gap-2 mt-1 hidden md:flex">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <p class="text-[10px] text-slate-400 font-mono uppercase">System Operational</p>
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
@@ -174,8 +187,7 @@
                 </div>
             </header>
 
-            <div id="content-area" class="flex-1 overflow-y-auto p-10 pb-32 scroll-smooth">
-                </div>
+            <div id="content-area" class="flex-1 overflow-y-auto p-6 md:p-10 pb-32 scroll-smooth"></div>
         </main>
     </div>
 
@@ -243,14 +255,18 @@
             setTimeout(() => el.remove(), 4000);
         }
 
+        function toggleSidebar() { 
+            document.querySelector('aside').classList.toggle('open'); 
+            document.getElementById('mobile-overlay').classList.toggle('hidden'); 
+            document.getElementById('mobile-overlay').classList.toggle('open');
+        }
+
         // --- AUTH & EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Attach Login Listener manually to ensure it works
             const form = document.getElementById('login-form');
             if(form) {
                 form.addEventListener('submit', handleLogin);
             }
-            // Auto Login Check
             if(localStorage.getItem(SESSION_KEY) === 'true') initDashboard();
         });
 
@@ -324,6 +340,12 @@
                 el.classList.toggle('active', el.getAttribute('onclick').includes(tab));
             });
 
+            if(window.innerWidth < 768) { 
+                document.querySelector('aside').classList.remove('open'); 
+                document.getElementById('mobile-overlay').classList.add('hidden'); 
+                document.getElementById('mobile-overlay').classList.remove('open'); 
+            }
+
             const content = $('content-area');
             const title = $('page-title');
             
@@ -377,14 +399,14 @@
                         </div>
 
                         <div class="grid lg:grid-cols-3 gap-8 fade-in-up" style="animation-delay: 0.1s">
-                            <div class="lg:col-span-2 glass-card p-8 rounded-2xl">
+                            <div class="lg:col-span-2 glass-card p-6 md:p-8 rounded-2xl">
                                 <div class="flex justify-between items-center mb-6">
                                     <h4 class="font-bold text-white text-lg">Growth Trajectory</h4>
                                     <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700">Real-time</span>
                                 </div>
                                 <div class="h-64"><canvas id="mainChart"></canvas></div>
                             </div>
-                            <div class="glass-card p-8 rounded-2xl flex flex-col justify-center">
+                            <div class="glass-card p-6 md:p-8 rounded-2xl flex flex-col justify-center">
                                 <h4 class="font-bold text-white text-lg mb-6 text-center">Entity Distribution</h4>
                                 <div class="h-48 relative w-full">
                                     <canvas id="pieChart"></canvas>
@@ -434,7 +456,7 @@
                     content.innerHTML = `
                         <div class="flex flex-col lg:flex-row gap-8 h-full fade-in-up">
                             <div class="lg:w-1/3">
-                                <div class="glass-card p-8 rounded-2xl sticky top-0 border-t-4 border-t-blue-500">
+                                <div class="glass-card p-6 md:p-8 rounded-2xl sticky top-0 border-t-4 border-t-blue-500">
                                     <h3 class="text-xl font-bold text-white mb-6">Register Institution</h3>
                                     <div class="space-y-5">
                                         <div><label class="text-xs font-bold text-slate-500 uppercase">Name</label><input id="n-name" class="input-dark mt-1" placeholder="e.g. Springfield Academy"></div>
@@ -444,12 +466,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="lg:w-2/3 flex flex-col gap-6">
-                                <div class="relative">
+                            <div class="lg:w-2/3 flex flex-col gap-6 w-full overflow-hidden">
+                                <div class="relative w-full">
                                     <i class="fas fa-search absolute left-4 top-3.5 text-slate-500"></i>
-                                    <input id="search-inst" onkeyup="filterInst()" class="input-dark pl-10 py-3.5 rounded-xl border-slate-700 bg-slate-800/50 backdrop-blur-md" placeholder="Search institutions by name, email or ID...">
+                                    <input id="search-inst" onkeyup="filterInst()" class="input-dark pl-10 py-3.5 rounded-xl border-slate-700 bg-slate-800/50 backdrop-blur-md w-full" placeholder="Search institutions...">
                                 </div>
-                                <div class="glass-card rounded-2xl overflow-hidden" id="inst-list-container"></div>
+                                <div class="glass-card rounded-2xl overflow-x-auto w-full" id="inst-list-container"></div>
                             </div>
                         </div>`;
                     
@@ -463,15 +485,15 @@
                     
                     content.innerHTML = `
                         <div class="max-w-5xl mx-auto space-y-8 fade-in-up pb-20">
-                            <div class="flex justify-between items-center border-b border-slate-800 pb-6">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-6 gap-4">
                                 <div><h3 class="text-2xl font-bold text-white">Landing Page Editor</h3><p class="text-slate-400 text-sm">Update content for index.html</p></div>
-                                <button onclick="saveGlobalCMS()" id="btn-save-global" class="btn-gradient px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2"><i class="fas fa-save"></i> Publish Changes</button>
+                                <button onclick="saveGlobalCMS()" id="btn-save-global" class="w-full sm:w-auto btn-gradient px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center justify-center gap-2"><i class="fas fa-save"></i> Publish Changes</button>
                             </div>
 
                             <div class="grid lg:grid-cols-2 gap-8">
-                                <div class="glass-card p-8 rounded-2xl space-y-6">
+                                <div class="glass-card p-6 md:p-8 rounded-2xl space-y-6">
                                     <h4 class="text-lg font-bold text-indigo-400 flex items-center gap-2"><i class="fas fa-heading"></i> Hero & Brand</h4>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div><label class="text-xs font-bold text-slate-500 uppercase">Website Name</label><input id="g-brand" class="input-dark mt-1" value="${c.brandName||'easyresults'}"></div>
                                         <div>
                                             <label class="text-xs font-bold text-slate-500 uppercase">Logo Upload</label>
@@ -480,24 +502,24 @@
                                     </div>
                                     <div><label class="text-xs font-bold text-slate-500 uppercase">Headline</label><textarea id="g-title" class="input-dark mt-1 font-bold text-lg" rows="2">${c.heroTitle||''}</textarea></div>
                                     <div><label class="text-xs font-bold text-slate-500 uppercase">Subtitle</label><textarea id="g-sub" class="input-dark mt-1" rows="3">${c.heroSub||''}</textarea></div>
-                                    <div class="flex gap-2">
+                                    <div class="flex flex-col sm:flex-row gap-4">
                                         <div class="flex-1"><label class="text-xs font-bold text-slate-500 uppercase">Button Text</label><input id="g-btn" class="input-dark mt-1" value="${c.heroBtn||'Get Started'}"></div>
                                         <div class="flex-1"><label class="text-xs font-bold text-slate-500 uppercase">WhatsApp (Admin)</label><input id="g-wa" class="input-dark mt-1" value="${c.whatsapp||''}"></div>
                                     </div>
                                 </div>
 
-                                <div class="glass-card p-8 rounded-2xl space-y-6">
+                                <div class="glass-card p-6 md:p-8 rounded-2xl space-y-6">
                                     <h4 class="text-lg font-bold text-purple-400 flex items-center gap-2"><i class="fas fa-info-circle"></i> Footer & Stats</h4>
                                     <div><label class="text-xs font-bold text-slate-500 uppercase">About Header</label><input id="g-ab-h" class="input-dark mt-1" value="${c.aboutHead||''}"></div>
                                     <div><label class="text-xs font-bold text-slate-500 uppercase">About Text</label><textarea id="g-ab-t" class="input-dark mt-1" rows="3">${c.aboutText||''}</textarea></div>
-                                    <div class="grid grid-cols-2 gap-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
                                         <div><label class="text-xs font-bold text-slate-500 uppercase">Label 1 (Auto)</label><input id="g-st1" class="input-dark mt-1 text-xs" value="${c.stat1Label||'Institutions'}"></div>
                                         <div><label class="text-xs font-bold text-slate-500 uppercase">Label 2 (Auto)</label><input id="g-st2" class="input-dark mt-1 text-xs" value="${c.stat2Label||'Students'}"></div>
                                     </div>
                                     <div><label class="text-xs font-bold text-slate-500 uppercase">Footer Copyright</label><input id="g-foot" class="input-dark mt-1" value="${c.footerText||''}"></div>
                                 </div>
 
-                                <div class="glass-card p-8 rounded-2xl space-y-6 md:col-span-2">
+                                <div class="glass-card p-6 md:p-8 rounded-2xl space-y-6 md:col-span-2">
                                     <h4 class="text-lg font-bold text-emerald-400 flex items-center gap-2"><i class="fas fa-list"></i> Features Section</h4>
                                     <div class="grid md:grid-cols-3 gap-6">
                                         <div class="space-y-2">
@@ -530,9 +552,9 @@
                     const opts = insts.map(i=>`<option value="${i.id}">${i.name}</option>`).join('');
                     content.innerHTML = `
                         <div class="max-w-4xl mx-auto fade-in-up pb-20">
-                            <div class="glass-card p-10 mb-8 text-center bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl border-b-4 border-indigo-500 shadow-2xl">
+                            <div class="glass-card p-6 md:p-10 mb-8 text-center bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl border-b-4 border-indigo-500 shadow-2xl">
                                 <label class="text-xs font-bold text-indigo-400 uppercase mb-3 block tracking-widest">Select Target Institution</label>
-                                <select id="cms-selector" onchange="loadInstData(this.value)" class="input-dark text-xl font-bold text-center max-w-md mx-auto py-4 border-2 border-slate-700 focus:border-blue-500 cursor-pointer hover:bg-slate-800"><option value="">-- Select School --</option>${opts}</select>
+                                <select id="cms-selector" onchange="loadInstData(this.value)" class="input-dark text-lg md:text-xl font-bold text-center w-full max-w-md mx-auto py-4 border-2 border-slate-700 focus:border-blue-500 cursor-pointer hover:bg-slate-800"><option value="">-- Select School --</option>${opts}</select>
                             </div>
                             <div id="cms-editor" class="hidden space-y-6">
                                 <div class="grid md:grid-cols-2 gap-6">
@@ -580,15 +602,15 @@
                     title.innerText = 'Data Management';
                     content.innerHTML = `
                         <div class="max-w-3xl mx-auto space-y-6 fade-in-up pt-8">
-                            <div class="glass-card p-8 flex items-center gap-6 rounded-2xl hover:border-indigo-500/50 transition cursor-default">
-                                <div class="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-3xl"><i class="fas fa-download"></i></div>
+                            <div class="glass-card p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 rounded-2xl hover:border-indigo-500/50 transition cursor-default text-center md:text-left">
+                                <div class="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-3xl shrink-0"><i class="fas fa-download"></i></div>
                                 <div class="flex-1"><h3 class="text-xl font-bold text-white">Backup Database</h3><p class="text-slate-400 text-sm mt-1">Export full JSON snapshot from Cloud.</p></div>
-                                <button onclick="downloadBackup()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition shadow-lg">Export</button>
+                                <button onclick="downloadBackup()" class="w-full md:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition shadow-lg shrink-0">Export JSON</button>
                             </div>
-                            <div class="glass-card p-8 flex items-center gap-6 rounded-2xl border-red-900/30 bg-red-900/5 hover:bg-red-900/10 transition cursor-default">
-                                <div class="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 text-3xl"><i class="fas fa-trash-alt"></i></div>
+                            <div class="glass-card p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 rounded-2xl border-red-900/30 bg-red-900/5 hover:bg-red-900/10 transition cursor-default text-center md:text-left">
+                                <div class="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 text-3xl shrink-0"><i class="fas fa-trash-alt"></i></div>
                                 <div class="flex-1"><h3 class="text-xl font-bold text-red-400">Factory Reset</h3><p class="text-red-300/60 text-sm mt-1">Permanently delete all data.</p></div>
-                                <button onclick="wipeData()" class="px-6 py-3 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-xl font-bold transition">Reset</button>
+                                <button onclick="wipeData()" class="w-full md:w-auto px-6 py-3 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-xl font-bold transition shrink-0">Reset</button>
                             </div>
                         </div>`;
                 }
@@ -606,7 +628,7 @@
             const container = $('inst-list-container');
             if(list.length === 0) { container.innerHTML = `<div class="p-12 text-center text-slate-500">No institutions found. Use the form to create one.</div>`; return; }
             
-            container.innerHTML = `<table class="w-full text-left text-sm text-slate-400">
+            container.innerHTML = `<table class="w-full text-left text-sm text-slate-400 min-w-[600px]">
                 <thead class="bg-slate-900/80 text-xs uppercase font-bold text-slate-500 border-b border-slate-800">
                     <tr><th class="p-5">Institution</th><th class="p-5">Admin User</th><th class="p-5">Status</th><th class="p-5 text-right">Quick Actions</th></tr>
                 </thead>
@@ -620,7 +642,7 @@
                         <td class="p-5 font-mono text-xs text-indigo-300">${i.email}</td>
                         <td class="p-5"><span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border flex items-center gap-2 w-fit ${i.isActive!==false ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}"><span class="w-1.5 h-1.5 rounded-full ${i.isActive!==false?'bg-emerald-400':'bg-red-400'} animate-pulse"></span>${i.isActive!==false?'Online':'Suspended'}</span></td>
                         <td class="p-5 text-right">
-                            <div class="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition">
+                            <div class="flex items-center justify-end gap-2 opacity-100 lg:opacity-80 group-hover:opacity-100 transition">
                                 <button onclick="loginAs('${i.id}')" class="p-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-600 hover:text-white transition" title="Login As Admin"><i class="fas fa-sign-in-alt"></i></button>
                                 <button onclick="openEditModal('${i.id}')" class="p-2 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 transition" title="Edit"><i class="fas fa-edit"></i></button>
                                 <button onclick="copyLink('${i.id}')" class="p-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 hover:text-white transition" title="Copy Homepage Link"><i class="fas fa-link"></i></button>
