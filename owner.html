@@ -131,7 +131,7 @@
         <aside class="w-72 bg-[#020617] border-r border-slate-800 flex flex-col flex-shrink-0 z-40">
             <div class="p-8 border-b border-slate-800/50">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">GW</div>
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">ER</div>
                     <div>
                         <h2 class="font-bold text-white text-lg leading-tight">easyresults</h2>
                         <span class="text-[10px] text-blue-400 font-mono font-bold tracking-widest uppercase">God Mode</span>
@@ -333,7 +333,6 @@
             await db.collection('site_config').doc('main').set(data, { merge: true });
         }
 
-
         // --- DASHBOARD LOGIC ---
         async function renderTab(tab) {
             document.querySelectorAll('.nav-item').forEach(el => {
@@ -415,7 +414,6 @@
                         </div>
                     `;
                     
-                    // Destroy old charts to prevent memory leaks and flickering
                     if (oMainChart) oMainChart.destroy();
                     if (oPieChart) oPieChart.destroy();
 
@@ -426,7 +424,7 @@
                             datasets: [{
                                 label: 'Students Onboarded',
                                 data: [0, 5, 12, 20, Math.max(0, stuCount - 5), stuCount],
-                                borderColor: '#3b82f6', backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)',
                                 fill: true, tension: 0.4
                             }]
                         },
@@ -582,10 +580,6 @@
                                                     <option value="solar_flare">Solar Flare</option>
                                                     <option value="oceanic_depth">Oceanic Depth</option>
                                                     <option value="slate_minimal">Slate Minimal</option>
-                                                    <option value="sunset_bliss">Sunset Bliss</option>
-                                                    <option value="cyber_neon">Cyber Neon</option>
-                                                    <option value="forest_whisper">Forest Whisper</option>
-                                                    <option value="golden_luxury">Golden Luxury</option>
                                                 </select>
                                             </div>
                                             <div><label class="text-xs text-slate-500 uppercase font-bold">Logo</label><input type="file" id="c-logo" class="input-dark mt-1 text-xs"></div>

@@ -42,12 +42,11 @@
             background-image: radial-gradient(at 0% 0%, var(--primary-glow) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
             background-attachment: fixed;
             transition: background-color 0.5s ease, color 0.5s ease;
-            -webkit-tap-highlight-color: transparent;
         }
         
         .glass-panel { background: var(--bg-panel); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); transition: background 0.5s ease, border-color 0.5s ease; }
         
-        .input-field { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 12px 16px; border-radius: 10px; width: 100%; outline: none; transition: all 0.2s ease; font-size: 16px; }
+        .input-field { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 12px 16px; border-radius: 10px; width: 100%; outline: none; transition: all 0.2s ease; font-size: 0.95rem; }
         .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
         
         input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
@@ -60,26 +59,23 @@
         .btn-secondary { background: rgba(125,125,125,0.1); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-secondary:hover { background: rgba(125,125,125,0.2); border-color: var(--primary); }
 
+        /* Desktop Nav */
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin-bottom: 6px; border-radius: 10px; color: var(--text-muted); transition: all 0.2s; cursor: pointer; font-weight: 500; border: 1px solid transparent; }
         .nav-item:hover { background: rgba(125,125,125,0.1); color: var(--text-main); }
         .nav-item.active { background: var(--primary-glow); color: var(--text-main); border-color: var(--primary); }
 
-        /* Enhanced Mobile Result Table */
         .me-container { border: 1px solid var(--border); border-radius: 16px; background: var(--bg-panel); backdrop-filter: blur(20px); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .overflow-x-auto { -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
-        .me-table th { text-transform: uppercase; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; color: var(--text-muted); padding: 1.25rem 1rem; border-bottom: 2px solid var(--border); background: rgba(0,0,0,0.3); cursor: pointer; user-select: none; white-space: nowrap; }
+        .me-table th { text-transform: uppercase; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; color: var(--text-muted); padding: 1.25rem 1rem; border-bottom: 2px solid var(--border); background: rgba(0,0,0,0.3); cursor: pointer; user-select: none; }
         .me-table th:hover { color: var(--text-main); background: rgba(125,125,125,0.1); }
-        .me-table td { border-bottom: 1px solid var(--border); padding: 0.75rem 1rem; position: relative; vertical-align: middle; white-space: nowrap; }
+        .me-table td { border-bottom: 1px solid var(--border); padding: 0.75rem 1rem; position: relative; vertical-align: middle; }
         
-        .sticky-col { position: sticky; left: 0; background: var(--bg-panel); z-index: 20; box-shadow: 4px 0 15px -5px rgba(0,0,0,0.5); }
-        
-        .row-status { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; transition: 0.3s; z-index: 21; }
+        .row-status { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; transition: 0.3s; }
         .rs-pass { background: #10b981; box-shadow: 4px 0 15px -2px rgba(16, 185, 129, 0.4); }
         .rs-fail { background: #ef4444; box-shadow: 4px 0 15px -2px rgba(239, 68, 68, 0.4); }
         .rs-neutral { background: transparent; }
 
         .mark-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
-        .mark-input { background: rgba(0, 0, 0, 0.1); border: 1px solid var(--border); color: var(--text-main); text-align: center; width: 64px; padding: 10px 4px; border-radius: 8px; outline: none; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.2s; font-size: 16px; min-height: 44px; }
+        .mark-input { background: rgba(0, 0, 0, 0.1); border: 1px solid var(--border); color: var(--text-main); text-align: center; width: 64px; padding: 10px 4px; border-radius: 8px; outline: none; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.2s; }
         .mark-input:focus { background: var(--primary-glow); border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); transform: translateY(-1px); }
         .mark-input.fail-mark { color: #ef4444; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); }
         .att-input { border-color: rgba(251, 191, 36, 0.4); color: #fbbf24 !important; }
@@ -113,16 +109,32 @@
         .stamp-status { padding: 0.25rem 1rem; border: 2px solid; border-radius: 6px; font-weight: 800; text-transform: uppercase; display: inline-block; font-size: 0.85rem; }
         .pass { color: #059669; border-color: #059669; background: #ecfdf5; } .fail { color: #dc2626; border-color: #dc2626; background: #fef2f2; }
 
-        /* Mobile Adjustments */
+        /* --- MOBILE APP UI OPTIMIZATIONS --- */
         @media (max-width: 768px) {
-            .sidebar { position: fixed; transform: translateX(-100%); height: 100%; z-index: 60; width: 280px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+            .sidebar { position: fixed; transform: translateX(-100%); height: 100%; z-index: 50; width: 280px; transition: transform 0.3s; }
             .sidebar.open { transform: translateX(0); }
             .overlay { display: none; }
             .overlay.open { display: block; }
-            .command-bar { min-width: 90%; width: 90%; flex-wrap: wrap; justify-content: center; gap: 1rem; bottom: 1rem; border-radius: 16px; padding: 0.8rem; flex-direction: column; text-align: center; }
-            .stat-group { display: none; } /* Hide extra stats on phone to save space for save button */
-            .a4-container { transform: scale(0.35); margin-top: -35%; margin-bottom: -40%; }
-            .mobile-action-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-panel); backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 1rem; display: flex; justify-content: center; gap: 1rem; z-index: 110; }
+            
+            #content-area { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); } /* Space for bottom nav */
+            
+            /* Bottom App Nav Styles */
+            .mobile-nav-item.active { color: var(--primary); }
+            .mobile-nav-item.active i { transform: translateY(-3px) scale(1.15); filter: drop-shadow(0 4px 6px var(--primary-glow)); color: var(--primary); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+            /* Transforms Command Bar */
+            .command-bar { min-width: 90%; flex-wrap: wrap; justify-content: center; gap: 1rem; bottom: 5rem; border-radius: 16px; padding: 0.8rem; z-index: 40; }
+            .stat-group { align-items: center; }
+            .a4-container { transform: scale(0.42); margin-top: -20%; margin-bottom: -35%; }
+            
+            /* Transforms Result Entry Table into Mobile Cards */
+            .me-table, .me-table tbody, .me-table tr, .me-table td { display: block; width: 100%; }
+            .me-table thead { display: none; }
+            .me-table tr { margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-panel); position: relative; padding: 1rem; padding-left: 1.5rem; }
+            .me-table td { border: none !important; display: flex !important; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px dashed var(--border) !important; position: static !important; background: transparent !important; }
+            .me-table td:last-child { border-bottom: none !important; }
+            .me-table td::before { content: attr(data-label); font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; }
+            .row-status { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-radius: 12px 0 0 12px; }
         }
     </style>
 </head>
@@ -130,13 +142,13 @@
 
     <div id="global-loader" class="fixed inset-0 flex flex-col items-center justify-center text-white">
         <div class="spinner mb-4"></div>
-        <p class="text-sm font-bold tracking-widest animate-pulse">SYNCING CLOUD...</p>
+        <p class="text-sm font-bold tracking-widest animate-pulse font-mono">SYNCING CLOUD...</p>
     </div>
 
     <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <section id="view-login" class="fixed inset-0 z-50 flex items-center justify-center bg-dark hidden">
-        <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl w-[90%] max-w-sm relative z-10 border-theme mx-4">
+    <section id="view-login" class="fixed inset-0 z-50 flex items-center justify-center bg-dark hidden p-4">
+        <div class="glass-panel p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-sm relative z-10 border-theme">
             <div class="text-center mb-8">
                 <div class="w-16 h-16 bg-panel rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6 border-theme shadow-lg text-main">
                     <i class="fas fa-shield-alt"></i>
@@ -154,11 +166,11 @@
     </section>
 
     <div id="view-dashboard" class="hidden w-full h-full flex bg-dark">
-        <div id="mobile-overlay" onclick="toggleSidebar()" class="overlay fixed inset-0 bg-black/60 z-50 hidden backdrop-blur-sm transition-opacity duration-300"></div>
+        <div id="mobile-overlay" onclick="toggleSidebar()" class="overlay fixed inset-0 bg-black/50 z-30 hidden backdrop-blur-sm"></div>
 
-        <aside id="main-sidebar" class="sidebar w-72 bg-panel border-r border-theme flex flex-col flex-shrink-0 z-[60] relative transition-colors duration-500">
+        <aside id="main-sidebar" class="sidebar w-72 bg-panel border-r border-theme flex flex-col flex-shrink-0 z-40 relative transition-transform duration-300 backdrop-blur-md">
             <div class="p-8 border-b border-theme flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-dark font-bold border-theme overflow-hidden shadow-lg relative" style="background-color: var(--primary);">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-dark font-bold border border-white/10 overflow-hidden shadow-lg relative" style="background-color: var(--primary);">
                     <img id="sidebar-logo" class="w-full h-full object-cover hidden">
                     <i id="sidebar-icon" class="fas fa-university text-lg"></i>
                 </div>
@@ -178,39 +190,67 @@
                 <div class="text-[10px] font-extrabold text-muted uppercase tracking-widest mb-2 px-3 mt-6">System</div>
                 <div onclick="renderTab('settings')" class="nav-item"><i class="fas fa-cog w-5 text-center"></i> School Profile</div>
             </nav>
-            <div class="p-5 border-t border-theme bg-panel">
+            <div class="p-5 border-t border-theme bg-panel md:block">
                 <button onclick="logout()" class="w-full py-2.5 text-red-500 text-xs font-bold hover:bg-red-500/10 rounded-xl transition border border-red-500/20 flex items-center justify-center gap-2"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col min-w-0 relative">
-            <header class="h-20 border-b border-theme bg-panel backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-30 transition-colors duration-500">
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="md:hidden text-muted hover:text-main"><i class="fas fa-bars text-xl"></i></button>
-                    <div><h2 id="page-title" class="text-lg font-bold text-main tracking-tight">Overview</h2></div>
+        <main class="flex-1 flex flex-col min-w-0 relative h-full">
+            
+            <header class="h-16 md:h-20 border-b border-theme bg-panel backdrop-blur-md flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 transition-colors duration-500">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-dark flex items-center justify-center md:hidden overflow-hidden border border-theme shadow-sm">
+                        <img id="mobile-header-logo-admin" class="w-full h-full object-cover hidden">
+                        <i id="mobile-header-icon-admin" class="fas fa-university text-xs" style="color: var(--primary)"></i>
+                    </div>
+                    <div class="md:hidden flex flex-col justify-center">
+                        <h2 id="mobile-header-school-admin" class="text-xs font-extrabold text-main leading-tight truncate max-w-[150px]">Loading...</h2>
+                        <p class="text-[10px] text-muted truncate max-w-[150px] font-mono">Admin Console</p>
+                    </div>
+                    <h2 id="page-title" class="text-xl font-bold tracking-tight text-main hidden md:block">Overview</h2>
                 </div>
-                <div class="flex items-center gap-4">
-                    <button onclick="viewPublicPage()" class="hidden md:flex px-4 py-2 bg-dark hover:bg-panel text-muted rounded-lg border border-theme transition text-xs font-bold items-center gap-2 hover:text-main"><span>Homepage</span> <i class="fas fa-external-link-alt"></i></button>
+                <div class="flex items-center gap-3">
+                    <button onclick="viewPublicPage()" class="px-3 py-1.5 md:px-4 md:py-2 bg-dark hover:bg-panel text-muted rounded-lg border border-theme transition text-xs font-bold flex items-center gap-2 hover:text-main"><span class="hidden md:inline">Homepage</span> <i class="fas fa-external-link-alt"></i></button>
                 </div>
             </header>
-            <div id="content-area" class="flex-1 overflow-y-auto p-4 md:p-10 pb-32 scroll-smooth"></div>
+
+            <div id="content-area" class="flex-1 overflow-y-auto p-3 md:p-8 pb-24 md:pb-32 w-full scroll-smooth"></div>
         </main>
+        
+        <nav class="md:hidden fixed bottom-0 w-full bg-panel backdrop-blur-2xl border-t border-theme flex justify-around items-center z-50 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+            <button onclick="renderTab('overview')" class="mobile-nav-item active flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
+                <i class="fas fa-chart-pie text-[1.1rem] mb-1"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Home</span>
+            </button>
+            <button onclick="renderTab('students')" class="mobile-nav-item flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
+                <i class="fas fa-users text-[1.1rem] mb-1"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Students</span>
+            </button>
+            <button onclick="renderTab('publish')" class="mobile-nav-item flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
+                <i class="fas fa-edit text-[1.1rem] mb-1"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Results</span>
+            </button>
+            <button onclick="toggleSidebar()" class="flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
+                <i class="fas fa-bars text-[1.1rem] mb-1"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Menu</span>
+            </button>
+        </nav>
     </div>
 
     <div id="modal-overlay" class="hidden fixed inset-0 z-[70] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 fade-in overflow-y-auto">
-        <div class="glass-panel w-full max-w-4xl rounded-2xl overflow-hidden relative border-t border-theme my-auto mt-10 mb-10" id="modal-content-wrapper">
-            <div class="p-6 border-b border-theme flex justify-between items-center bg-panel sticky top-0 z-20">
+        <div class="glass-panel w-full max-w-4xl rounded-2xl overflow-hidden relative border-t border-theme my-auto" id="modal-content-wrapper">
+            <div class="p-4 md:p-6 border-b border-theme flex justify-between items-center bg-panel">
                 <h3 class="text-lg font-bold text-main" id="modal-title">Edit</h3>
-                <button onclick="closeModal()" class="text-muted hover:text-main transition p-2"><i class="fas fa-times text-xl"></i></button>
+                <button onclick="closeModal()" class="text-muted hover:text-main transition"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <div id="modal-body" class="p-4 md:p-6 bg-dark max-h-[75vh] overflow-y-auto pb-24 md:pb-6"></div>
+            <div id="modal-body" class="p-4 md:p-6 bg-dark max-h-[80vh] overflow-y-auto"></div>
         </div>
     </div>
 
     <div id="promote-modal" class="hidden fixed inset-0 z-[80] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 fade-in">
         <div class="glass-panel w-full max-w-md rounded-2xl overflow-hidden border-t border-theme">
-            <div class="p-6 border-b border-theme"><h3 class="text-lg font-bold text-main">Bulk Promote Students</h3></div>
-            <div class="p-6 space-y-4">
+            <div class="p-4 md:p-6 border-b border-theme"><h3 class="text-lg font-bold text-main">Bulk Promote Students</h3></div>
+            <div class="p-4 md:p-6 space-y-4">
                 <p class="text-muted text-sm">Select the new class for the selected students:</p>
                 <select id="promote-target-class" class="input-field"></select>
                 <div class="flex justify-end gap-3 mt-4">
@@ -317,7 +357,7 @@
         function toggleSidebar() { 
             $('main-sidebar').classList.toggle('open'); 
             $('mobile-overlay').classList.toggle('hidden'); 
-            setTimeout(() => $('mobile-overlay').classList.toggle('open'), 10);
+            $('mobile-overlay').classList.toggle('open');
         }
 
         function applyTheme(inst) {
@@ -380,7 +420,20 @@
             $('global-loader').classList.remove('hidden');
             $('view-dashboard').classList.remove('hidden');
             $('sidebar-inst-name').innerText = currentUser.name;
-            if(currentUser.profileImage) { $('sidebar-logo').src = currentUser.profileImage; $('sidebar-logo').classList.remove('hidden'); $('sidebar-icon').classList.add('hidden'); }
+            if($('mobile-header-school-admin')) $('mobile-header-school-admin').innerText = currentUser.name;
+            
+            if(currentUser.profileImage) { 
+                $('sidebar-logo').src = currentUser.profileImage; 
+                $('sidebar-logo').classList.remove('hidden'); 
+                $('sidebar-icon').classList.add('hidden'); 
+                
+                const mLogo = $('mobile-header-logo-admin');
+                if(mLogo) { 
+                    mLogo.src = currentUser.profileImage; 
+                    mLogo.classList.remove('hidden'); 
+                    $('mobile-header-icon-admin').classList.add('hidden'); 
+                }
+            }
             
             applyTheme(currentUser);
             await refreshData();
@@ -419,8 +472,14 @@
         }
 
         async function renderTab(tab) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.getAttribute('onclick').includes(tab)));
-            if(window.innerWidth < 768) { $('main-sidebar').classList.remove('open'); $('mobile-overlay').classList.add('hidden'); $('mobile-overlay').classList.remove('open'); }
+            document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(el => {
+                if(el.getAttribute('onclick')) el.classList.toggle('active', el.getAttribute('onclick').includes(tab));
+            });
+            if(window.innerWidth < 768) { 
+                $('main-sidebar').classList.remove('open'); 
+                $('mobile-overlay').classList.add('hidden'); 
+                $('mobile-overlay').classList.remove('open'); 
+            }
             
             const content = $('content-area');
             const title = $('page-title');
@@ -433,12 +492,12 @@
                 const eCount = localState.exams.length;
 
                 content.innerHTML = `
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 fade-in">
-                        <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-blue-500"><p class="text-xs font-bold uppercase text-muted">Total Students</p><h3 class="text-3xl font-bold mt-2 text-main">${sCount}</h3></div>
-                        <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-purple-500"><p class="text-xs font-bold uppercase text-muted">Active Classes</p><h3 class="text-3xl font-bold mt-2 text-main">${cCount}</h3></div>
-                        <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-emerald-500"><p class="text-xs font-bold uppercase text-muted">Exams Conducted</p><h3 class="text-3xl font-bold mt-2 text-main">${eCount}</h3></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8 fade-in">
+                        <div class="glass-panel p-4 md:p-6 rounded-2xl border-l-4 border-l-blue-500"><p class="text-[10px] md:text-xs font-bold uppercase text-muted">Total Students</p><h3 class="text-2xl md:text-3xl font-bold mt-2 text-main">${sCount}</h3></div>
+                        <div class="glass-panel p-4 md:p-6 rounded-2xl border-l-4 border-l-purple-500"><p class="text-[10px] md:text-xs font-bold uppercase text-muted">Active Classes</p><h3 class="text-2xl md:text-3xl font-bold mt-2 text-main">${cCount}</h3></div>
+                        <div class="glass-panel p-4 md:p-6 rounded-2xl border-l-4 border-l-emerald-500"><p class="text-[10px] md:text-xs font-bold uppercase text-muted">Exams Conducted</p><h3 class="text-2xl md:text-3xl font-bold mt-2 text-main">${eCount}</h3></div>
                     </div>
-                    <div class="glass-panel p-6 md:p-8 rounded-2xl fade-in"><h4 class="text-lg font-bold mb-6 text-main">Student Distribution</h4><div class="h-64"><canvas id="mainChart"></canvas></div></div>`;
+                    <div class="glass-panel p-4 md:p-8 rounded-2xl fade-in"><h4 class="text-sm md:text-lg font-bold mb-4 md:mb-6 text-main">Student Distribution</h4><div class="h-48 md:h-64"><canvas id="mainChart"></canvas></div></div>`;
                 
                 if(activeChart) activeChart.destroy();
                 const ctx = $('mainChart').getContext('2d');
@@ -456,20 +515,20 @@
                 title.innerText = 'Classes & Subjects';
                 await refreshData();
                 content.innerHTML = `
-                    <div class="glass-panel p-4 md:p-6 rounded-2xl mb-6 fade-in flex flex-col md:flex-row gap-4">
+                    <div class="glass-panel p-4 md:p-6 rounded-2xl mb-4 md:mb-6 fade-in flex flex-col sm:flex-row gap-3 md:gap-4">
                         <input id="new-class" class="input-field" placeholder="Class Name (e.g. Grade 10-A)">
-                        <button onclick="addClass()" class="btn-primary flex-shrink-0 py-3 md:py-auto">Add Class</button>
+                        <button onclick="addClass()" class="btn-primary flex-shrink-0">Add Class</button>
                     </div>
                     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 fade-in">${localState.classes.map(c => `
-                        <div class="glass-panel p-5 md:p-6 rounded-2xl group relative transition">
+                        <div class="glass-panel p-4 md:p-6 rounded-2xl group relative transition">
                             <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-lg font-bold text-main">${c.name}</h3>
+                                <h3 class="text-base md:text-lg font-bold text-main">${c.name}</h3>
                                 <div class="flex gap-2">
-                                    <button onclick="editItem('classes','${c.id}')" class="text-muted hover:text-blue-400 transition p-2"><i class="fas fa-edit"></i></button>
-                                    <button onclick="deleteItem('classes','${c.id}')" class="text-muted hover:text-red-400 transition p-2"><i class="fas fa-trash"></i></button>
+                                    <button onclick="editItem('classes','${c.id}')" class="text-muted hover:text-blue-400 transition"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteItem('classes','${c.id}')" class="text-muted hover:text-red-400 transition"><i class="fas fa-trash"></i></button>
                                 </div>
                             </div>
-                            <button onclick="manageSubjects('${c.id}')" class="w-full py-2.5 bg-dark hover:bg-panel rounded-lg text-xs font-bold text-main transition border-theme">Manage ${localState.subjects.filter(s=>s.classId===c.id).length} Subjects</button>
+                            <button onclick="manageSubjects('${c.id}')" class="w-full py-2 bg-dark hover:bg-panel rounded-lg text-xs font-bold text-main transition border-theme">Manage ${localState.subjects.filter(s=>s.classId===c.id).length} Subjects</button>
                         </div>`).join('') || '<div class="text-muted p-4 col-span-3 text-center">No classes found. Add one above.</div>'}
                     </div>`;
             }
@@ -480,13 +539,13 @@
                 const opts = localState.classes.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
                 
                 content.innerHTML = `
-                    <div class="grid lg:grid-cols-3 gap-4 md:gap-6 mb-6 fade-in h-auto md:h-[calc(100vh-180px)]">
-                        <div class="glass-panel p-5 md:p-6 rounded-2xl lg:col-span-1 max-h-full overflow-y-auto">
+                    <div class="grid lg:grid-cols-3 gap-4 md:gap-6 mb-6 fade-in min-h-[calc(100vh-180px)]">
+                        <div class="glass-panel p-4 md:p-6 rounded-2xl lg:col-span-1 h-fit">
                             <h4 class="font-bold mb-4 border-b border-theme pb-2 text-main">Register Student</h4>
                             <div class="space-y-3">
                                 <input id="s-name" class="input-field text-sm" placeholder="Full Name">
                                 <input id="s-adm" class="input-field text-sm" placeholder="Admission No (Unique)">
-                                <div class="grid grid-cols-2 gap-2">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     <input id="s-dob" type="date" class="input-field text-muted text-sm">
                                     <select id="s-class" class="input-field text-muted text-sm"><option value="">Class...</option>${opts}</select>
                                 </div>
@@ -496,38 +555,38 @@
                                     <input id="s-phone" class="input-field mb-2 text-sm" placeholder="Mobile Number">
                                     <input id="s-address" class="input-field text-sm" placeholder="Home Address">
                                 </div>
-                                <button onclick="addStudent()" class="w-full btn-primary mt-2 py-3 md:py-auto">Register Student</button>
+                                <button onclick="addStudent()" class="w-full btn-primary mt-2">Register Student</button>
                             </div>
                             <div class="mt-6 pt-6 border-t border-theme">
                                 <h4 class="font-bold mb-2 text-xs uppercase tracking-wider text-main">Bulk Actions</h4>
                                 <div class="space-y-2">
-                                    <div class="flex gap-2">
-                                        <button onclick="downloadStudentTemplate()" class="flex-1 btn-secondary text-xs py-3 md:py-auto"><i class="fas fa-download mr-1"></i> Template</button>
-                                        <button onclick="exportStudents()" class="flex-1 btn-secondary text-xs py-3 md:py-auto"><i class="fas fa-file-export mr-1"></i> Export</button>
+                                    <div class="flex gap-2 flex-col xl:flex-row">
+                                        <button onclick="downloadStudentTemplate()" class="flex-1 btn-secondary text-xs w-full"><i class="fas fa-download mr-1"></i> Template</button>
+                                        <button onclick="exportStudents()" class="flex-1 btn-secondary text-xs w-full"><i class="fas fa-file-export mr-1"></i> Export</button>
                                     </div>
                                     <div class="relative">
                                         <input type="file" id="s-file" class="hidden" accept=".xlsx,.csv" onchange="bulkImport()">
-                                        <button onclick="$('s-file').click()" class="w-full py-3 bg-dark hover:bg-panel text-main rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 border border-theme"><i class="fas fa-file-import"></i> Upload Excel Data</button>
+                                        <button onclick="$('s-file').click()" class="w-full py-2 bg-dark hover:bg-panel text-main rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 border border-theme"><i class="fas fa-file-import"></i> Upload Excel Data</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="glass-panel rounded-2xl lg:col-span-2 overflow-hidden flex flex-col h-[500px] md:h-full">
-                            <div class="p-4 border-b border-theme bg-panel flex flex-col md:flex-row gap-3 md:items-center">
-                                <input id="s-search" onkeyup="renderStudentList()" class="input-field bg-transparent flex-1" placeholder="Search students...">
-                                <div class="flex gap-2">
-                                    <select id="s-filter-class" onchange="renderStudentList()" class="input-field flex-1 md:w-auto text-xs py-2"><option value="">All Classes</option>${opts}</select>
-                                    <select id="s-sort" onchange="renderStudentList()" class="input-field flex-1 md:w-auto text-xs py-2">
+                        <div class="glass-panel rounded-2xl lg:col-span-2 overflow-hidden flex flex-col h-[500px] lg:h-auto">
+                            <div class="p-3 md:p-4 border-b border-theme bg-panel flex flex-col sm:flex-row flex-wrap gap-2 items-center">
+                                <input id="s-search" onkeyup="renderStudentList()" class="input-field bg-transparent flex-1 min-w-[150px] w-full sm:w-auto" placeholder="Search students...">
+                                <div class="flex gap-2 w-full sm:w-auto">
+                                    <select id="s-filter-class" onchange="renderStudentList()" class="input-field w-1/2 sm:w-auto text-xs py-2"><option value="">All Classes</option>${opts}</select>
+                                    <select id="s-sort" onchange="renderStudentList()" class="input-field w-1/2 sm:w-auto text-xs py-2">
                                         <option value="name_asc">Name (A-Z)</option>
                                         <option value="name_desc">Name (Z-A)</option>
                                         <option value="adm_asc">Adm No (Asc)</option>
                                         <option value="adm_desc">Adm No (Desc)</option>
                                     </select>
                                 </div>
-                                <button onclick="openPromoteModal()" id="btn-promote" class="hidden px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition w-full md:w-auto">Promote</button>
+                                <button onclick="openPromoteModal()" id="btn-promote" class="hidden w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition">Promote</button>
                             </div>
-                            <div class="px-6 py-2.5 bg-panel text-[10px] uppercase font-bold text-muted flex items-center gap-3 border-b border-theme">
-                                <input type="checkbox" id="check-all" class="rounded bg-dark border-theme w-4 h-4" onchange="toggleSelectAll(this)"> 
+                            <div class="px-4 md:px-6 py-2 bg-panel text-[10px] uppercase font-bold text-muted flex items-center gap-3 border-b border-theme">
+                                <input type="checkbox" id="check-all" class="rounded bg-dark border-theme" onchange="toggleSelectAll(this)"> 
                                 <span>Select All</span>
                             </div>
                             <div class="flex-1 overflow-y-auto p-0" id="student-list"></div>
@@ -540,33 +599,33 @@
                 title.innerText = 'Exams';
                 await refreshData();
                 content.innerHTML = `
-                    <div class="glass-panel p-5 md:p-6 rounded-2xl mb-6 fade-in flex flex-col md:flex-row gap-4 items-end">
-                        <div class="w-full md:flex-grow">
-                            <label class="text-xs font-bold text-muted uppercase mb-1 block">Exam Title</label>
+                    <div class="glass-panel p-4 md:p-6 rounded-2xl mb-4 md:mb-6 fade-in flex flex-col md:flex-row gap-3 md:gap-4 items-end">
+                        <div class="flex-grow w-full md:w-auto">
+                            <label class="text-[10px] md:text-xs font-bold text-muted uppercase mb-1 block">Exam Title</label>
                             <input id="new-exam" class="input-field" placeholder="e.g. Finals 2024">
                         </div>
                         <div class="w-full md:w-auto">
-                            <label class="text-xs font-bold text-muted uppercase mb-1 block">Result Publish Date</label>
+                            <label class="text-[10px] md:text-xs font-bold text-muted uppercase mb-1 block">Result Publish Date</label>
                             <input id="new-exam-date" type="datetime-local" class="input-field text-muted w-full">
                         </div>
-                        <button onclick="addExam()" class="btn-primary w-full md:w-auto flex-shrink-0 h-[46px]">Create Exam</button>
+                        <button onclick="addExam()" class="btn-primary flex-shrink-0 h-[46px] w-full md:w-auto mt-2 md:mt-0">Create Exam</button>
                     </div>
                     <div class="space-y-3 fade-in">${localState.exams.map(e=> {
                         const d = e.publishDate ? new Date(e.publishDate).toLocaleString() : 'Immediate';
                         const isPub = e.isPublished || false;
                         return `
-                        <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row md:justify-between md:items-center group gap-4">
+                        <div class="glass-panel p-3 md:p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 group">
                             <div>
                                 <span class="font-bold block text-main">${e.name}</span>
                                 <span class="text-[10px] text-muted font-mono"><i class="fas fa-clock mr-1"></i> Scheduled: ${d}</span>
                             </div>
-                            <div class="flex gap-4 items-center justify-between w-full md:w-auto">
-                                <button onclick="toggleExamPublish('${e.id}', ${isPub})" class="flex-1 md:flex-none px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition border ${isPub ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30' : 'bg-dark text-muted border-theme hover:bg-panel hover:text-main'}">
+                            <div class="flex gap-4 items-center w-full sm:w-auto justify-between sm:justify-end">
+                                <button onclick="toggleExamPublish('${e.id}', ${isPub})" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition border ${isPub ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30' : 'bg-dark text-muted border-theme hover:bg-panel hover:text-main'}">
                                     ${isPub ? '<i class="fas fa-eye mr-1"></i> Published' : '<i class="fas fa-eye-slash mr-1"></i> Unpublished'}
                                 </button>
-                                <div class="flex gap-2 opacity-100 md:opacity-50 group-hover:opacity-100 transition">
-                                    <button onclick="editItem('exams','${e.id}')" class="text-muted hover:text-blue-500 p-2 border border-theme md:border-none rounded bg-panel md:bg-transparent"><i class="fas fa-edit"></i></button>
-                                    <button onclick="deleteItem('exams','${e.id}')" class="text-muted hover:text-red-500 p-2 border border-theme md:border-none rounded bg-panel md:bg-transparent"><i class="fas fa-trash"></i></button>
+                                <div class="flex gap-2 opacity-100 sm:opacity-50 group-hover:opacity-100 transition">
+                                    <button onclick="editItem('exams','${e.id}')" class="text-muted hover:text-blue-500 p-2"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteItem('exams','${e.id}')" class="text-muted hover:text-red-500 p-2"><i class="fas fa-trash"></i></button>
                                 </div>
                             </div>
                         </div>`;
@@ -578,16 +637,16 @@
                 title.innerText = 'Result Entry';
                 await refreshData();
                 content.innerHTML = `
-                    <div class="glass-panel p-6 md:p-8 rounded-2xl max-w-3xl mx-auto fade-in text-center border-t-4 border-indigo-500">
-                        <h3 class="text-2xl font-bold mb-2 text-main">Enter Results</h3>
-                        <p class="text-muted mb-6 text-sm">Select exam and class to enter marks. Existing marks will be loaded automatically.</p>
-                        <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div class="glass-panel p-5 md:p-8 rounded-2xl max-w-3xl mx-auto fade-in text-center border-t-4 border-indigo-500">
+                        <h3 class="text-xl md:text-2xl font-bold mb-2 text-main">Enter Results</h3>
+                        <p class="text-xs md:text-sm text-muted mb-6">Select exam and class to enter marks. Existing marks will load automatically.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6">
                             <select id="pub-exam" class="input-field cursor-pointer"><option value="">Select Exam</option>${localState.exams.map(e=>`<option value="${e.id}">${e.name}</option>`)}</select>
                             <select id="pub-class" class="input-field cursor-pointer"><option value="">Select Class</option>${localState.classes.map(c=>`<option value="${c.id}">${c.name}</option>`)}</select>
                         </div>
-                        <button onclick="loadResultGrid()" class="btn-primary w-full md:w-auto px-10 py-3.5 rounded-xl shadow-lg mx-auto">Load Console</button>
+                        <button onclick="loadResultGrid()" class="btn-primary px-10 py-3 rounded-xl shadow-lg mx-auto w-full md:w-auto">Load Console</button>
                     </div>
-                    <div id="result-grid-container" class="mt-8 fade-in pb-32"></div>`;
+                    <div id="result-grid-container" class="mt-6 md:mt-8 fade-in"></div>`;
             }
 
             if(tab === 'settings') {
@@ -595,32 +654,29 @@
                 const i = currentUser;
                 const currentTemplate = i.gradeScale || 'standard';
                 
-                if(i.customGradeScale) {
-                    draftGradeScale = JSON.parse(JSON.stringify(i.customGradeScale));
-                } else {
-                    draftGradeScale = JSON.parse(JSON.stringify(DEFAULT_SCALES[currentTemplate]));
-                }
+                if(i.customGradeScale) { draftGradeScale = JSON.parse(JSON.stringify(i.customGradeScale)); } 
+                else { draftGradeScale = JSON.parse(JSON.stringify(DEFAULT_SCALES[currentTemplate])); }
 
                 content.innerHTML = `
-                    <div class="max-w-4xl mx-auto fade-in space-y-6 pb-20">
-                        <div class="glass-panel p-6 md:p-8 rounded-2xl">
-                            <h4 class="font-bold border-b border-theme pb-4 mb-6 text-main">Identity & Branding</h4>
-                            <div class="grid md:grid-cols-2 gap-6 mb-6">
-                                <div><label class="text-xs font-bold text-muted uppercase">School Name</label><input id="set-name" class="input-field mt-1 text-sm" value="${i.name}"></div>
-                                <div><label class="text-xs font-bold text-muted uppercase">Tagline</label><input id="set-tag" class="input-field mt-1 text-sm" value="${i.tagline||''}"></div>
-                                <div class="md:col-span-2"><label class="text-xs font-bold text-muted uppercase">About</label><textarea id="set-about" class="input-field mt-1 text-sm" rows="3">${i.aboutText||''}</textarea></div>
+                    <div class="max-w-4xl mx-auto fade-in space-y-4 md:space-y-6">
+                        <div class="glass-panel p-4 md:p-8 rounded-2xl">
+                            <h4 class="font-bold border-b border-theme pb-4 mb-4 md:mb-6 text-main">Identity & Branding</h4>
+                            <div class="grid md:grid-cols-2 gap-4 md:gap-6 mb-6">
+                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">School Name</label><input id="set-name" class="input-field mt-1" value="${i.name}"></div>
+                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Tagline</label><input id="set-tag" class="input-field mt-1" value="${i.tagline||''}"></div>
+                                <div class="md:col-span-2"><label class="text-[10px] md:text-xs font-bold text-muted uppercase">About</label><textarea id="set-about" class="input-field mt-1" rows="3">${i.aboutText||''}</textarea></div>
                                 
-                                <div class="md:col-span-2 grid md:grid-cols-2 gap-6 mt-2 pt-6 border-t border-theme">
+                                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-2 pt-6 border-t border-theme">
                                     <div>
-                                        <label class="text-xs font-bold text-muted uppercase">Brand Color</label>
-                                        <div class="flex items-center gap-4 mt-2 bg-dark p-2 rounded-xl border border-theme w-fit">
+                                        <label class="text-[10px] md:text-xs font-bold text-muted uppercase">Brand Color</label>
+                                        <div class="flex items-center gap-4 mt-2">
                                             <input type="color" id="set-color" class="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0" value="${i.themeColor || '#6366f1'}">
-                                            <span class="text-xs text-muted pr-3">Select primary color</span>
+                                            <span class="text-xs text-muted">Select your primary accent color</span>
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="text-xs font-bold text-muted uppercase">Visual Theme Preset</label>
-                                        <select id="set-theme" class="input-field mt-2 cursor-pointer text-sm">
+                                        <label class="text-[10px] md:text-xs font-bold text-muted uppercase">Visual Theme Preset</label>
+                                        <select id="set-theme" class="input-field mt-2 cursor-pointer">
                                             <option value="deep_space" ${i.theme === 'deep_space' ? 'selected' : ''}>Deep Space (Default)</option>
                                             <option value="minimal_light" ${i.theme === 'minimal_light' ? 'selected' : ''}>Minimal Light</option>
                                             <option value="midnight_blue" ${i.theme === 'midnight_blue' ? 'selected' : ''}>Midnight Blue</option>
@@ -637,36 +693,36 @@
                                 </div>
 
                                 <div class="md:col-span-2 mt-2 pt-6 border-t border-theme">
-                                    <div class="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-4">
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                                         <div>
                                             <h4 class="font-bold text-main">Custom Grading Scale</h4>
-                                            <p class="text-xs text-muted">Define the grade letters and minimum percentages required.</p>
+                                            <p class="text-[10px] md:text-xs text-muted">Define the grade letters and minimum percentages required.</p>
                                         </div>
-                                        <div class="flex items-center gap-2 w-full md:w-auto">
-                                            <select id="set-grade-scale" class="input-field py-2 px-3 text-xs w-full md:w-auto cursor-pointer" onchange="changeGradeTemplate(this.value)">
+                                        <div class="flex items-center w-full sm:w-auto">
+                                            <select id="set-grade-scale" class="input-field py-2 sm:py-1.5 px-3 text-xs w-full sm:w-auto cursor-pointer" onchange="changeGradeTemplate(this.value)">
                                                 <option value="standard" ${currentTemplate === 'standard' ? 'selected' : ''}>Load Standard Template</option>
                                                 <option value="gpa" ${currentTemplate === 'gpa' ? 'selected' : ''}>Load GPA Template</option>
                                                 <option value="o_level" ${currentTemplate === 'o_level' ? 'selected' : ''}>Load O-Level Template</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div id="grade-scale-editor" class="mb-4 bg-black/20 p-4 rounded-xl border border-theme"></div>
-                                    <button onclick="addGradeRow()" class="btn-secondary text-xs w-full md:w-auto py-2.5"><i class="fas fa-plus"></i> Add Boundary</button>
+                                    <div id="grade-scale-editor" class="mb-4 bg-black/20 p-3 md:p-4 rounded-xl border border-theme overflow-x-auto"></div>
+                                    <button onclick="addGradeRow()" class="btn-secondary text-xs w-full sm:w-auto"><i class="fas fa-plus"></i> Add Grade Boundary</button>
                                 </div>
 
                             </div>
                         </div>
-                        <div class="glass-panel p-6 md:p-8 rounded-2xl">
-                            <h4 class="font-bold border-b border-theme pb-4 mb-6 text-main">Contact & Assets</h4>
-                            <div class="grid md:grid-cols-2 gap-6 mb-6">
-                                <div><label class="text-xs font-bold text-muted uppercase">Email</label><input id="set-email" class="input-field mt-1 text-sm" value="${i.contactEmail||''}"></div>
-                                <div><label class="text-xs font-bold text-muted uppercase">Phone</label><input id="set-phone" class="input-field mt-1 text-sm" value="${i.contactPhone||''}"></div>
-                                <div class="md:col-span-2"><label class="text-xs font-bold text-muted uppercase">Address</label><input id="set-addr" class="input-field mt-1 text-sm" value="${i.address||''}"></div>
-                                <div><label class="text-xs font-bold text-muted uppercase">School Logo</label><input type="file" id="set-logo" class="input-field mt-1 text-xs file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-500/10 file:text-blue-400 hover:file:bg-blue-500/20 file:transition"></div>
-                                <div><label class="text-xs font-bold text-muted uppercase">Principal Signature</label><input type="file" id="set-sig" class="input-field mt-1 text-xs file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-500/10 file:text-blue-400 hover:file:bg-blue-500/20 file:transition"></div>
+                        <div class="glass-panel p-4 md:p-8 rounded-2xl">
+                            <h4 class="font-bold border-b border-theme pb-4 mb-4 md:mb-6 text-main">Contact & Assets</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-6">
+                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Email</label><input id="set-email" class="input-field mt-1" value="${i.contactEmail||''}"></div>
+                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Phone</label><input id="set-phone" class="input-field mt-1" value="${i.contactPhone||''}"></div>
+                                <div class="sm:col-span-2"><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Address</label><input id="set-addr" class="input-field mt-1" value="${i.address||''}"></div>
+                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">School Logo</label><input type="file" id="set-logo" class="input-field mt-1 text-xs"></div>
+                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Principal Signature</label><input type="file" id="set-sig" class="input-field mt-1 text-xs"></div>
                             </div>
                         </div>
-                        <button onclick="saveSettings()" class="w-full btn-primary py-4 rounded-xl shadow-lg text-lg">Save & Update Profile</button>
+                        <button onclick="saveSettings()" class="w-full btn-primary py-4 rounded-xl shadow-lg">Save & Update Profile</button>
                     </div>`;
 
                 setTimeout(renderGradeScaleEditor, 0);
@@ -677,7 +733,7 @@
         function renderGradeScaleEditor() {
             draftGradeScale.sort((a, b) => b.m - a.m);
             let html = `
-                <div class="flex gap-4 text-[10px] uppercase font-bold text-muted px-2 mb-2">
+                <div class="flex gap-4 text-[10px] uppercase font-bold text-muted px-2 mb-2 min-w-[300px]">
                     <div class="w-1/2">Grade Letter / Name</div>
                     <div class="w-1/2">Minimum % Required</div>
                     <div class="w-8"></div>
@@ -685,10 +741,10 @@
             `;
             draftGradeScale.forEach((row, idx) => {
                 html += `
-                <div class="flex items-center gap-2 md:gap-4 mb-2">
-                    <input type="text" class="input-field w-1/2 py-2 text-sm" value="${row.g}" onchange="updateGradeRow(${idx}, 'g', this.value)" placeholder="e.g. A+">
-                    <input type="number" class="input-field w-1/2 py-2 text-sm" value="${row.m}" onchange="updateGradeRow(${idx}, 'm', this.value)" placeholder="e.g. 90">
-                    <button onclick="removeGradeRow(${idx})" class="text-slate-500 hover:text-red-500 p-2 md:p-3 transition bg-dark md:bg-transparent rounded-lg border border-theme md:border-none"><i class="fas fa-trash"></i></button>
+                <div class="flex items-center gap-4 mb-2 min-w-[300px]">
+                    <input type="text" class="input-field w-1/2 py-2" value="${row.g}" onchange="updateGradeRow(${idx}, 'g', this.value)" placeholder="e.g. A+">
+                    <input type="number" class="input-field w-1/2 py-2" value="${row.m}" onchange="updateGradeRow(${idx}, 'm', this.value)" placeholder="e.g. 90">
+                    <button onclick="removeGradeRow(${idx})" class="text-slate-600 hover:text-red-500 p-2 transition"><i class="fas fa-trash"></i></button>
                 </div>`;
             });
             if(draftGradeScale.length === 0) html += `<div class="text-center text-muted text-xs py-4">No grades configured. Please add boundaries.</div>`;
@@ -719,6 +775,7 @@
             }
         }
 
+        // --- UNIVERSAL EDIT FUNCTION ---
         function editItem(type, id) {
             $('modal-overlay').classList.remove('hidden');
             $('modal-title').innerText = `Edit ${type.slice(0, -1)}`; 
@@ -727,39 +784,39 @@
             let html = '';
             
             if(type === 'classes') {
-                html = `<div class="space-y-4"><div><label class="text-xs font-bold text-muted uppercase">Name</label><input id="edit-val-name" class="input-field" value="${item.name}"></div><button onclick="saveEdit('${type}', '${id}')" class="w-full btn-primary py-3">Save Changes</button></div>`;
+                html = `<div class="space-y-4"><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Name</label><input id="edit-val-name" class="input-field" value="${item.name}"></div><button onclick="saveEdit('${type}', '${id}')" class="w-full btn-primary">Save Changes</button></div>`;
             } 
             else if(type === 'students') {
                 const classOpts = localState.classes.map(c => `<option value="${c.id}" ${c.id === item.classId ? 'selected' : ''}>${c.name}</option>`).join('');
                 html = `<div class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="text-xs font-bold text-muted uppercase">Full Name</label><input id="edit-val-name" class="input-field text-sm" value="${item.name}"></div>
-                        <div><label class="text-xs font-bold text-muted uppercase">Admission No</label><input id="edit-val-adm" class="input-field text-sm" value="${item.admissionNo}"></div>
-                        <div><label class="text-xs font-bold text-muted uppercase">Date of Birth</label><input id="edit-val-dob" type="date" class="input-field text-muted text-sm" value="${item.dob || ''}"></div>
-                        <div><label class="text-xs font-bold text-muted uppercase">Class</label><select id="edit-val-class" class="input-field text-muted text-sm">${classOpts}</select></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Full Name</label><input id="edit-val-name" class="input-field text-sm" value="${item.name}"></div>
+                        <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Admission No</label><input id="edit-val-adm" class="input-field text-sm" value="${item.admissionNo}"></div>
+                        <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Date of Birth</label><input id="edit-val-dob" type="date" class="input-field text-muted text-sm" value="${item.dob || ''}"></div>
+                        <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Class</label><select id="edit-val-class" class="input-field text-muted text-sm">${classOpts}</select></div>
                     </div>
                     <div class="border-t border-theme pt-4 mt-2">
-                        <h4 class="text-xs font-bold text-main mb-3 uppercase tracking-wider text-red-400">Security</h4>
-                        <div><label class="text-xs font-bold text-muted uppercase">Student Password</label><input id="edit-val-pass" class="input-field text-sm" value="${item.password || ''}"></div>
+                        <h4 class="text-[10px] md:text-xs font-bold text-main mb-3 uppercase tracking-wider text-red-400">Security</h4>
+                        <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Student Password</label><input id="edit-val-pass" class="input-field text-sm" value="${item.password || ''}"></div>
                     </div>
                     <div class="border-t border-theme pt-4 mt-2">
-                        <h4 class="text-xs font-bold text-main mb-3 uppercase tracking-wider">Guardian Details</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="text-xs font-bold text-muted uppercase">Parent/Guardian Name</label><input id="edit-val-parent" class="input-field text-sm" value="${item.parentName || ''}"></div>
-                            <div><label class="text-xs font-bold text-muted uppercase">Mobile Number</label><input id="edit-val-phone" class="input-field text-sm" value="${item.contactPhone || ''}"></div>
-                            <div class="md:col-span-2"><label class="text-xs font-bold text-muted uppercase">Home Address</label><input id="edit-val-address" class="input-field text-sm" value="${item.address || ''}"></div>
+                        <h4 class="text-[10px] md:text-xs font-bold text-main mb-3 uppercase tracking-wider">Guardian Details</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Parent/Guardian Name</label><input id="edit-val-parent" class="input-field text-sm" value="${item.parentName || ''}"></div>
+                            <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Mobile Number</label><input id="edit-val-phone" class="input-field text-sm" value="${item.contactPhone || ''}"></div>
+                            <div class="sm:col-span-2"><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Home Address</label><input id="edit-val-address" class="input-field text-sm" value="${item.address || ''}"></div>
                         </div>
                     </div>
-                    <button onclick="saveEdit('${type}', '${id}')" class="w-full btn-primary py-3 mt-4">Save Changes</button>
+                    <button onclick="saveEdit('${type}', '${id}')" class="w-full btn-primary mt-4">Save Changes</button>
                 </div>`;
             }
             else if(type === 'exams') {
                 let dateVal = '';
                 if(item.publishDate) { const d = new Date(item.publishDate); dateVal = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16); }
-                html = `<div class="space-y-4"><div><label class="text-xs font-bold text-muted uppercase">Exam Name</label><input id="edit-val-name" class="input-field" value="${item.name}"></div><div><label class="text-xs font-bold text-muted uppercase">Publish Date</label><input id="edit-val-date" type="datetime-local" class="input-field text-muted" value="${dateVal}"></div><button onclick="saveEdit('${type}', '${id}')" class="w-full btn-primary py-3">Save Changes</button></div>`;
+                html = `<div class="space-y-4"><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Exam Name</label><input id="edit-val-name" class="input-field" value="${item.name}"></div><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Publish Date</label><input id="edit-val-date" type="datetime-local" class="input-field text-muted" value="${dateVal}"></div><button onclick="saveEdit('${type}', '${id}')" class="w-full btn-primary">Save Changes</button></div>`;
             }
             else if(type === 'subjects') {
-                html = `<div class="space-y-4"><div><label class="text-xs font-bold text-muted uppercase">Subject Name</label><input id="edit-sub-name" class="input-field" value="${item.name}"></div><div class="grid grid-cols-2 gap-4"><div><label class="text-xs font-bold text-muted uppercase">Total Marks</label><input id="edit-sub-full" type="number" class="input-field" value="${item.fullMarks}"></div><div><label class="text-xs font-bold text-muted uppercase">Pass Marks</label><input id="edit-sub-pass" type="number" class="input-field" value="${item.passMarks}"></div></div><input type="hidden" id="edit-sub-cid" value="${item.classId}"><button onclick="saveEdit('subjects', '${id}')" class="w-full btn-primary py-3">Update Subject</button></div>`;
+                html = `<div class="space-y-4"><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Subject Name</label><input id="edit-sub-name" class="input-field" value="${item.name}"></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Total Marks</label><input id="edit-sub-full" type="number" class="input-field" value="${item.fullMarks}"></div><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Pass Marks</label><input id="edit-sub-pass" type="number" class="input-field" value="${item.passMarks}"></div></div><input type="hidden" id="edit-sub-cid" value="${item.classId}"><button onclick="saveEdit('subjects', '${id}')" class="w-full btn-primary">Update Subject</button></div>`;
             }
             $('modal-body').innerHTML = html;
         }
@@ -865,17 +922,17 @@
 
             container.innerHTML = `<div class="divide-y divide-theme">${list.map(s => {
                 const cls = localState.classes.find(c=>c.id===s.classId)?.name || 'N/A';
-                return `<div class="p-4 flex justify-between items-center hover:bg-slate-800/10 transition group px-4 md:px-6">
-                    <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto overflow-hidden">
-                        <input type="checkbox" class="stu-check rounded bg-dark border-theme w-4 h-4 flex-shrink-0" value="${s.id}" onchange="updateBulkState()">
-                        <div class="overflow-hidden">
-                            <p class="font-bold text-sm text-main truncate">${s.name}</p>
-                            <p class="text-[10px] text-muted font-mono truncate">${s.admissionNo} • <span class="text-indigo-400">${cls}</span> ${s.parentName ? `• <span class="opacity-70"><i class="fas fa-user-friends mr-1"></i>${s.parentName}</span>` : ''}</p>
+                return `<div class="p-3 md:p-4 flex justify-between items-center hover:bg-slate-800/10 transition group px-4 md:px-6">
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <input type="checkbox" class="stu-check rounded bg-dark border-theme" value="${s.id}" onchange="updateBulkState()">
+                        <div>
+                            <p class="font-bold text-sm text-main">${s.name}</p>
+                            <p class="text-[10px] text-muted font-mono">${s.admissionNo} • <span class="text-indigo-400">${cls}</span> ${s.parentName ? `• <span class="opacity-70"><i class="fas fa-user-friends mr-1"></i>${s.parentName}</span>` : ''}</p>
                         </div>
                     </div>
-                    <div class="flex gap-1 md:gap-2 opacity-100 md:opacity-50 group-hover:opacity-100 transition flex-shrink-0 ml-2">
-                        <button onclick="editItem('students','${s.id}')" class="p-2.5 text-muted hover:text-blue-500 bg-panel rounded transition border border-theme"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteItem('students','${s.id}')" class="p-2.5 text-red-500 bg-panel border border-theme rounded hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button>
+                    <div class="flex gap-2 opacity-100 sm:opacity-50 group-hover:opacity-100 transition">
+                        <button onclick="editItem('students','${s.id}')" class="p-2 text-muted hover:text-blue-500 bg-panel rounded transition border border-theme"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteItem('students','${s.id}')" class="p-2 text-red-500 bg-panel border border-theme rounded hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>`;
             }).join('')}</div>`;
@@ -910,19 +967,19 @@
             const subs = localState.subjects.filter(s => s.classId === cid);
             $('modal-body').innerHTML = `
                 <div class="flex flex-col gap-3 mb-4 p-4 bg-panel rounded-xl border border-theme">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-2">
-                        <div class="md:col-span-3"><label class="text-[10px] uppercase font-bold text-muted">Subject Name</label><input id="sb-n" class="input-field text-sm" placeholder="e.g. Mathematics"></div>
-                        <div><label class="text-[10px] uppercase font-bold text-muted">Total Marks</label><input id="sb-f" type="number" class="input-field text-sm" value="${defFull}"></div>
-                        <div><label class="text-[10px] uppercase font-bold text-muted">Pass Mark</label><input id="sb-p" type="number" class="input-field text-sm" value="${defPass}"></div>
-                        <div class="flex items-end"><button onclick="addSub('${cid}')" class="w-full btn-primary text-sm py-3 rounded-lg"><i class="fas fa-plus"></i> Add Subject</button></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div class="sm:col-span-3"><label class="text-[10px] uppercase font-bold text-muted">Subject Name</label><input id="sb-n" class="input-field text-xs" placeholder="e.g. Mathematics"></div>
+                        <div><label class="text-[10px] uppercase font-bold text-muted">Total Marks</label><input id="sb-f" type="number" class="input-field text-xs" value="${defFull}"></div>
+                        <div><label class="text-[10px] uppercase font-bold text-muted">Pass Mark</label><input id="sb-p" type="number" class="input-field text-xs" value="${defPass}"></div>
+                        <div class="flex items-end"><button onclick="addSub('${cid}')" class="w-full btn-primary text-xs py-2.5 rounded-lg"><i class="fas fa-plus"></i> Add</button></div>
                     </div>
                 </div>
                 <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
-                    ${subs.map(s => `<div class="flex justify-between bg-panel p-3 md:p-4 rounded-lg border border-theme text-sm items-center group">
+                    ${subs.map(s => `<div class="flex justify-between bg-panel p-3 rounded-lg border border-theme text-xs items-center group">
                         <span class="font-bold text-main">${s.name} <span class="text-muted font-normal ml-1">(Max: ${s.fullMarks})</span></span>
                         <div class="flex gap-2">
-                            <button onclick="editItem('subjects', '${s.id}')" class="text-muted hover:text-blue-500 p-2"><i class="fas fa-edit"></i></button>
-                            <button onclick="delSub('${s.id}','${cid}')" class="text-muted hover:text-red-500 p-2"><i class="fas fa-trash"></i></button>
+                            <button onclick="editItem('subjects', '${s.id}')" class="text-muted hover:text-blue-500"><i class="fas fa-edit"></i></button>
+                            <button onclick="delSub('${s.id}','${cid}')" class="text-muted hover:text-red-500"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>`).join('')}
                 </div>`;
@@ -1051,18 +1108,18 @@
             
             let html=`
                 <div class="glass-panel p-4 mb-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <div class="flex flex-wrap items-center justify-center gap-2 md:gap-4 w-full md:w-auto">
-                        <button onclick="downloadMarksTemplate('${cid}', '${eid}')" class="btn-secondary text-xs flex-1 md:flex-none"><i class="fas fa-download mr-2"></i> Template</button>
-                        <button onclick="$('mark-file').click()" class="btn-secondary text-xs flex-1 md:flex-none"><i class="fas fa-file-upload mr-2"></i> Upload Excel</button>
+                    <div class="flex items-center gap-4 w-full md:w-auto">
+                        <button onclick="downloadMarksTemplate('${cid}', '${eid}')" class="btn-secondary text-xs flex-1"><i class="fas fa-download mr-2"></i> Template</button>
+                        <button onclick="$('mark-file').click()" class="btn-secondary text-xs flex-1"><i class="fas fa-file-upload mr-2"></i> Upload Excel</button>
                         <input type="file" id="mark-file" hidden onchange="importMarks(this)" accept=".xlsx,.csv">
                     </div>
-                    <div class="flex items-center gap-2 w-full md:w-auto justify-between">
+                    <div class="flex items-center justify-between w-full md:w-auto gap-2 border-t md:border-t-0 border-theme pt-3 md:pt-0">
                         <h4 class="font-bold text-muted uppercase text-xs">Total Working Days</h4>
-                        <input type="number" id="total-att" class="input-field w-32 text-center text-yellow-500 font-bold" value="${totalAtt}" placeholder="e.g. 200">
+                        <input type="number" id="total-att" class="input-field w-32 text-center text-yellow-500 font-bold py-1.5" value="${totalAtt}" placeholder="e.g. 200">
                     </div>
                 </div>
                 <div class="me-container shadow-2xl relative"><div class="overflow-x-auto"><table class="w-full text-left me-table"><thead><tr>
-                    <th class="sticky-col w-48 border-r border-theme" onclick="sortGrid('name')">Student Identity <i class="fas fa-sort ml-1"></i></th>
+                    <th class="sticky left-0 bg-panel z-20 w-48 border-r border-theme" onclick="sortGrid('name')">Student Identity <i class="fas fa-sort ml-1"></i></th>
                     ${subs.map(s=>`<th class="text-center min-w-[100px] border-l border-theme">${s.name}<br><span class="text-[9px] opacity-50 font-normal">Max: ${s.fullMarks}</span></th>`).join('')}
                     <th class="text-center w-24 border-l border-theme text-yellow-500" onclick="sortGrid('attendance')">Attendance <i class="fas fa-sort ml-1"></i></th>
                     <th class="text-center w-24 border-l border-theme" onclick="sortGrid('rank')">Rank <i class="fas fa-sort ml-1"></i></th>
@@ -1074,18 +1131,18 @@
                 let isFail = false; subs.forEach(sub => { if((marks[sub.id]||0) < sub.passMarks && marks[sub.id] !== '') isFail = true; });
                 const statusClass = r ? (isFail ? 'rs-fail' : 'rs-pass') : 'rs-neutral';
 
-                html += `<tr class="hover:bg-black/10 transition relative group"><td class="p-3 sticky-col border-r border-theme"><div class="row-status ${statusClass}" id="rs-${s.id}"></div><div class="pl-4 font-bold text-sm text-main truncate w-40">${s.name}</div><div class="pl-4 text-[10px] text-muted font-mono truncate w-40">${s.admissionNo}</div></td>
+                html += `<tr class="hover:bg-black/10 transition relative group"><td data-label="Student" class="p-3 sticky left-0 bg-panel z-10 border-r border-theme"><div class="row-status ${statusClass}" id="rs-${s.id}"></div><div class="pl-4 font-bold text-sm text-main">${s.name}</div><div class="pl-4 text-[10px] text-muted font-mono">${s.admissionNo}</div></td>
                 ${subs.map(sub=> {
                     const val = marks[sub.id] !== undefined ? marks[sub.id] : '';
                     const isFailMark = val !== '' && Number(val) < sub.passMarks;
-                    return `<td class="border-l border-theme p-1"><div class="mark-wrapper"><input type="number" class="mark-input ${isFailMark ? 'fail-mark' : ''}" data-sid="${s.id}" data-sub="${sub.id}" data-max="${sub.fullMarks}" data-pass="${sub.passMarks}" value="${val}" oninput="calcRow(this)"></div></td>`;
+                    return `<td data-label="${sub.name}" class="border-l border-theme p-1"><div class="mark-wrapper"><input type="number" class="mark-input ${isFailMark ? 'fail-mark' : ''}" data-sid="${s.id}" data-sub="${sub.id}" data-max="${sub.fullMarks}" data-pass="${sub.passMarks}" value="${val}" oninput="calcRow(this)"></div></td>`;
                 }).join('')}
-                <td class="p-1 border-l border-theme"><div class="mark-wrapper"><input type="number" class="mark-input att-input" data-sid="${s.id}" data-type="att" value="${att}"></div></td>
-                <td class="border-l border-theme text-center font-bold text-main">${r?.rank || '-'}</td>
-                <td class="border-l border-theme text-center p-1"><button onclick="previewTranscript('${s.id}')" class="p-3 md:p-2 text-muted hover:text-main transition bg-dark md:bg-transparent rounded-lg"><i class="fas fa-eye"></i></button></td></tr>`;
+                <td data-label="Attendance" class="p-1 border-l border-theme"><div class="mark-wrapper"><input type="number" class="mark-input att-input" data-sid="${s.id}" data-type="att" value="${att}"></div></td>
+                <td data-label="Rank" class="border-l border-theme text-center font-bold text-main">${r?.rank || '-'}</td>
+                <td data-label="Preview" class="border-l border-theme text-center p-1"><button onclick="previewTranscript('${s.id}')" class="p-2 text-muted hover:text-main transition w-full py-2 bg-dark rounded"><i class="fas fa-eye"></i> View</button></td></tr>`;
             });
             
-            html += `</tbody></table></div></div><div class="command-bar"><div class="flex gap-8 hidden md:flex"><div class="stat-group"><span class="stat-label">Students</span><span class="stat-val">${stus.length}</span></div><div class="stat-group"><span class="stat-label">Class Avg</span><span class="stat-val" id="live-avg">--</span></div><div class="stat-group"><span class="stat-label">Pass Rate</span><span class="stat-val text-emerald-500" id="live-pass">--%</span></div></div><button onclick="saveResults('${eid}','${cid}')" class="btn-primary w-full md:w-auto px-8 py-3.5 md:py-3 rounded-xl shadow-lg flex items-center justify-center gap-2"><i class="fas fa-save"></i> Save Results</button></div>`;
+            html += `</tbody></table></div></div><div class="command-bar"><div class="flex gap-8 hidden md:flex"><div class="stat-group"><span class="stat-label">Students</span><span class="stat-val">${stus.length}</span></div><div class="stat-group"><span class="stat-label">Class Avg</span><span class="stat-val" id="live-avg">--</span></div><div class="stat-group"><span class="stat-label">Pass Rate</span><span class="stat-val text-emerald-500" id="live-pass">--%</span></div></div><button onclick="saveResults('${eid}','${cid}')" class="btn-primary px-8 py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 w-full md:w-auto"><i class="fas fa-save"></i> Save Results</button></div>`;
             $('result-grid-container').innerHTML = html; updateLiveStats();
         }
 
@@ -1099,12 +1156,13 @@
             let hasMarks = false;
             document.querySelectorAll(`.mark-input[data-sid="${sid}"]:not([data-type="att"])`).forEach(i => { 
                 if(i.value !== '') {
-                    hasMarks = true; 
+                    hasMarks = true; // Confirm they have at least 1 mark
                     if(Number(i.value) < Number(i.dataset.pass)) isFail = true; 
                 }
             });
             
             const statusDiv = $(`rs-${sid}`); 
+            // Only turn green if they have marks, otherwise stay neutral
             statusDiv.className = `row-status ${hasMarks ? (isFail ? 'rs-fail' : 'rs-pass') : 'rs-neutral'}`;
             updateLiveStats();
         }
@@ -1204,9 +1262,9 @@
                     <div class="feedback-section"><div class="appreciation-box"><h4><i class="fas fa-quote-left mr-2 opacity-50"></i>Insight</h4><p class="appr-text">"${appreciation}"</p><p class="motiv-text">"${motivation}"</p></div><div class="stats-box"><div class="stat-row mb-1"><span class="stat-label">Percentage</span><span class="stat-val">${finalPct}%</span></div><div class="stat-row mb-1"><span class="stat-label">Overall Grade</span><span class="stat-val text-sm">${finalGrade}</span></div><div class="stat-row mb-1"><span class="stat-label">Attendance</span><span class="stat-val text-sm">${attVal}/${totalAtt}</span></div><div class="stat-row mt-2"><span class="stat-label">Result Status</span><div class="stamp-status ${clsName}">${status}</div></div></div></div>
                     <div class="doc-footer border-t-2 border-slate-900 pt-6 mt-4 flex justify-between items-end"><div class="text-[8px] text-slate-500 font-mono w-2/3 leading-tight">This document is securely processed and digitally generated by <span class="dynamic-brand-name">easyresults</span> Cloud Systems.<br>Valid academic record. No physical signature required for web verification.</div><div class="principal-box text-center"><div class="h-16 flex items-end justify-center mb-1">${currentUser.signatureImage ? `<img src="${currentUser.signatureImage}" class="max-h-full max-w-full object-contain filter grayscale contrast-125">` : '<div class="h-8 border-b border-black w-32"></div>'}</div><div class="border-t-2 border-slate-900 w-32 mx-auto mb-1"></div><p class="text-[9px] font-bold uppercase tracking-widest text-slate-900">Principal Signature</p></div></div>
                 </div></div></div></div>
-                <div class="mobile-action-bar md:mt-4 md:bg-transparent md:static md:border-none md:p-0">
-                    <button onclick="downloadPDF()" class="btn-primary w-full md:w-auto"><i class="fas fa-file-pdf mr-2"></i> Download PDF</button>
-                    <button onclick="closeModal()" class="btn-secondary w-full md:w-auto">Close Preview</button>
+                <div class="text-center mt-4 flex justify-center gap-4">
+                    <button onclick="downloadPDF()" class="btn-primary"><i class="fas fa-file-pdf mr-2"></i> Download PDF</button>
+                    <button onclick="closeModal()" class="btn-secondary">Close Preview</button>
                 </div>`;
         }
         
@@ -1215,11 +1273,12 @@
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('modal-body').querySelector('.a4-container');
             
+            // Temporary scale up for high-res PDF rendering
             const originalTransform = element.style.transform;
             element.style.transform = 'scale(1)';
             
             html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
-                element.style.transform = originalTransform; 
+                element.style.transform = originalTransform; // Restore original scale
                 
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
@@ -1257,6 +1316,7 @@
         async function saveSettings() {
             showLoader(true);
             
+            // Clean up custom grade scale before saving
             draftGradeScale.sort((a, b) => b.m - a.m);
 
             const data = {

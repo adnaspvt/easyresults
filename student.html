@@ -38,7 +38,6 @@
             color: var(--text-main);
             overflow-x: hidden;
             transition: background-color 0.5s ease, color 0.5s ease;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .bg-orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; animation: float 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
@@ -46,18 +45,18 @@
         
         .glass-panel { background: var(--bg-panel); backdrop-filter: blur(20px); border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.4); transition: background 0.5s ease, border-color 0.5s ease; }
         
-        .input-dark { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 12px 16px; border-radius: 10px; width: 100%; outline: none; transition: 0.3s; font-size: 16px; }
+        .input-dark { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 12px 16px; border-radius: 10px; width: 100%; outline: none; transition: 0.3s; }
         .input-dark:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
         
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white !important; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: 0.2s; box-shadow: 0 4px 15px var(--primary-glow); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
         .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
+        /* Desktop Nav */
         .nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; margin-bottom: 4px; border-radius: 12px; color: var(--text-muted); transition: 0.2s; cursor: pointer; font-weight: 500; border-left: 3px solid transparent; }
         .nav-item:hover { background: rgba(125,125,125,0.1); color: var(--text-main); }
         .nav-item.active { background: var(--primary-glow); color: var(--text-main); border-left-color: var(--primary); }
 
         .a4-container { width: 210mm; min-height: 297mm; padding: 0; background: #fff; color: #1e293b; box-shadow: 0 20px 60px rgba(0,0,0,0.5); position: relative; overflow: hidden; margin: 2rem auto; display: flex; flex-direction: column; transform: scale(0.65); transform-origin: top center; transition: all 0.3s ease; }
-        
         .transcript-frame { border: 8px solid #1e293b; outline: 2px solid #94a3b8; outline-offset: -12px; height: 100%; min-height: 290mm; margin: 8mm; position: relative; display: flex; flex-direction: column; background: #fff; }
         .transcript-inner { padding: 8mm 12mm; flex: 1; display: flex; flex-direction: column; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 25px 25px; }
         .watermark-layer { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; opacity: 0.04; pointer-events: none; z-index: 0; }
@@ -89,16 +88,14 @@
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Mobile Sidebar & Scaling */
-        @media (max-width: 768px) { 
-            .a4-container { transform: scale(0.35); margin-top: -30%; margin-bottom: -40%; } 
-            aside { position: fixed; transform: translateX(-100%); height: 100%; z-index: 50; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-            aside.open { transform: translateX(0); }
-            .overlay { display: none; }
-            .overlay.open { display: block; }
+        /* --- MOBILE APP UI OPTIMIZATIONS --- */
+        @media (max-width: 768px) {
+            .a4-container { transform: scale(0.42); margin-top: -20%; margin-bottom: -35%; }
+            #content-area { padding-bottom: calc(6rem + env(safe-area-inset-bottom)); } /* Space for bottom nav */
             
-            /* Sticky Bottom Bar for Modals on Phone */
-            .mobile-action-bar { position: fixed; bottom: 0; left: 0; right: 0; top: auto; background: var(--bg-panel); backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 1rem; display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem; z-index: 120; }
+            /* Bottom App Nav Styles */
+            .mobile-nav-item.active { color: var(--primary); }
+            .mobile-nav-item.active i { transform: translateY(-3px) scale(1.15); filter: drop-shadow(0 4px 6px var(--primary-glow)); color: var(--primary); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         }
     </style>
 </head>
@@ -117,8 +114,8 @@
 
     <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <section id="view-login" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-dark">
-        <div class="glass-panel p-8 md:p-10 rounded-2xl shadow-2xl w-[90%] max-w-sm relative z-10 border-theme mx-4">
+    <section id="view-login" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-dark p-4">
+        <div class="glass-panel p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-sm relative z-10 border-theme">
             <div class="text-center mb-10">
                 <div class="w-16 h-16 bg-panel rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6 text-main border-theme shadow-lg">
                     <i class="fas fa-user-graduate"></i>
@@ -130,15 +127,15 @@
                 <input type="hidden" id="login-inst">
                 <div><label class="text-xs font-bold text-muted uppercase ml-1">Admission No</label><input id="login-username" class="input-dark" required></div>
                 <div><label class="text-xs font-bold text-muted uppercase ml-1">Password</label><input type="password" id="login-password" class="input-dark" required></div>
-                <button id="btn-login" class="w-full btn-primary py-3.5 mt-2">Access Results</button>
+                <button id="btn-login" class="w-full btn-primary py-3">Access Results</button>
             </form>
             <div class="mt-6 text-center text-xs text-muted"><a id="link-home" href="index.html" class="hover:text-main transition"><i class="fas fa-home mr-1"></i> Home</a></div>
         </div>
     </section>
 
     <div id="view-dashboard" class="hidden w-full h-full flex relative z-10">
-        <div id="mobile-overlay" onclick="toggleSidebar()" class="overlay fixed inset-0 bg-black/60 z-[40] hidden backdrop-blur-sm transition-opacity"></div>
-        <aside class="w-72 bg-panel border-r border-theme flex flex-col flex-shrink-0 z-[50] backdrop-blur-md transition-transform duration-300">
+        
+        <aside class="hidden md:flex w-72 bg-panel border-r border-theme flex-col flex-shrink-0 z-40 backdrop-blur-md">
             <div class="p-8 border-b border-theme flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold border border-white/20 overflow-hidden shadow-lg relative" style="background-color: var(--primary);">
                     <img id="sb-logo" class="w-full h-full object-cover hidden">
@@ -167,27 +164,55 @@
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col min-w-0 relative">
-            <header class="h-20 border-b border-theme bg-panel backdrop-blur-md flex items-center justify-between px-6 md:px-10 sticky top-0 z-30">
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="md:hidden text-muted hover:text-main"><i class="fas fa-bars text-xl"></i></button>
-                    <h2 id="page-title" class="text-xl font-bold tracking-tight text-main">Overview</h2>
+        <main class="flex-1 flex flex-col min-w-0 relative h-full">
+            
+            <header class="h-16 md:h-20 border-b border-theme bg-panel backdrop-blur-md flex items-center justify-between px-4 md:px-10 sticky top-0 z-30">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-dark flex items-center justify-center md:hidden overflow-hidden border border-theme shadow-sm">
+                        <img id="mobile-header-logo-student" class="w-full h-full object-cover hidden">
+                        <i id="mobile-header-icon-student" class="fas fa-university text-xs" style="color: var(--primary)"></i>
+                    </div>
+                    <div class="md:hidden flex flex-col justify-center">
+                        <h2 id="mobile-header-school" class="text-xs font-extrabold text-main leading-tight truncate max-w-[180px]">School Name</h2>
+                        <p id="mobile-header-name" class="text-[10px] text-muted truncate max-w-[180px] font-mono">Student Name</p>
+                    </div>
+                    <h2 id="page-title" class="text-xl font-bold tracking-tight text-main hidden md:block">Overview</h2>
                 </div>
-                <div class="flex items-center gap-2 mt-1">
+                <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <p class="text-[10px] text-muted font-mono uppercase tracking-widest hidden md:block">Live Sync Active</p>
+                    <p class="text-[10px] text-muted font-mono uppercase tracking-widest hidden sm:block">Live Sync Active</p>
                 </div>
             </header>
-            <div id="content-area" class="flex-1 overflow-y-auto p-6 md:p-10 pb-32"></div>
+
+            <div id="content-area" class="flex-1 overflow-y-auto p-4 md:p-10 pb-24 md:pb-32 w-full"></div>
         </main>
+        
+        <nav class="md:hidden fixed bottom-0 w-full bg-panel backdrop-blur-2xl border-t border-theme flex justify-around items-center z-50 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+            <button onclick="renderTab('home')" class="mobile-nav-item active flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
+                <i class="fas fa-th-large text-[1.1rem] mb-1"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Home</span>
+            </button>
+            <button onclick="renderTab('results')" class="mobile-nav-item flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
+                <i class="fas fa-file-signature text-[1.1rem] mb-1"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Results</span>
+            </button>
+            <button onclick="renderTab('profile')" class="mobile-nav-item flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
+                <i class="fas fa-user-circle text-[1.1rem] mb-1"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Profile</span>
+            </button>
+            <button onclick="logout()" class="flex flex-col items-center p-3 flex-1 text-red-500/70 hover:text-red-500 transition-all duration-300">
+                <i class="fas fa-sign-out-alt text-[1.1rem] mb-1"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Logout</span>
+            </button>
+        </nav>
     </div>
 
     <div id="marksheet-modal" class="hidden fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex justify-center overflow-y-auto fade-in">
-        <div class="w-full max-w-[210mm] relative my-10 pb-20 md:pb-0">
-            <div class="mobile-action-bar md:fixed md:top-6 md:right-6 md:flex md:gap-3 md:z-[110] md:bg-transparent md:border-none md:p-0">
-                <button onclick="shareResult()" class="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-3 md:py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition border border-indigo-400"><i class="fas fa-share-alt"></i> Share</button>
-                <button onclick="downloadPDF()" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 md:py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition border border-blue-400"><i class="fas fa-file-pdf"></i> Download PDF</button>
-                <button onclick="closeModal()" class="w-full md:w-auto mt-2 md:mt-0 bg-white/10 hover:bg-white/20 text-white px-5 py-3 md:py-2.5 rounded-full text-xs font-bold backdrop-blur-md border border-white/10 transition cursor-pointer flex items-center justify-center"><i class="fas fa-times mr-2 md:mr-0"></i> <span class="md:hidden">Close Preview</span></button>
+        <div class="w-full max-w-[210mm] relative my-10">
+            <div class="fixed top-4 md:top-6 right-4 md:right-6 flex gap-2 md:gap-3 z-[110] flex-wrap justify-end max-w-[250px] md:max-w-none">
+                <button onclick="shareResult()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 transition border border-indigo-400"><i class="fas fa-share-alt"></i> Share</button>
+                <button onclick="downloadPDF()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 transition border border-blue-400"><i class="fas fa-file-pdf"></i> Download</button>
+                <button onclick="closeModal()" class="bg-white/10 hover:bg-white/20 text-white w-8 h-8 md:w-auto md:h-auto md:px-5 md:py-2.5 rounded-full text-xs font-bold backdrop-blur-md border border-white/10 transition flex items-center justify-center md:justify-start gap-2"><i class="fas fa-times"></i> <span class="hidden md:inline">Close</span></button>
             </div>
             
             <div id="mk-printable" class="a4-container">
@@ -222,7 +247,7 @@
                                 </tfoot>
                             </table>
                             <div id="mk-legend" class="mt-4 mb-2 text-[8px] text-slate-500 font-mono text-center border-t border-slate-200 pt-2"></div>
-                            <div class="mt-4 mb-4 display: flex gap-4">
+                            <div class="mt-4 mb-4 flex gap-4">
                                 <div class="stats-box flex-1 border border-slate-200 rounded-lg p-4 bg-slate-50">
                                     <div class="stat-row mb-1"><span class="stat-label">Percentage</span><span id="mk-pct" class="stat-val">0%</span></div>
                                     <div class="stat-row mb-1"><span class="stat-label">Result Status</span><div id="mk-stamp-container"></div></div>
@@ -259,14 +284,13 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // --- GLOBAL BRANDING LISTENER ---
         db.collection('site_config').doc('main').onSnapshot(doc => {
             if(doc.exists) {
                 const brandName = doc.data().brandName || 'easyresults';
                 const currentTitleParts = document.title.split('|');
                 const currentTitle = currentTitleParts[0].trim();
                 document.title = `${currentTitle} | ${brandName}`;
-                document.querySelectorAll('.dynamic-brand-name').forEach(el => el.innerText = brandName);
+                document.querySelectorAll('.dynamic-brand-name').forEach(el => { el.innerText = brandName; });
             }
         });
 
@@ -278,7 +302,6 @@
         let isInitialLoad = true;
         let activeResultId = null; 
 
-        // --- THEMES & GRADES ---
         const THEMES = {
             'deep_space': { bg: '#020617', glass: 'rgba(15, 23, 42, 0.75)', text: '#f8fafc', muted: '#94a3b8' },
             'minimal_light': { bg: '#f8fafc', glass: 'rgba(255, 255, 255, 0.85)', text: '#0f172a', muted: '#64748b' },
@@ -308,12 +331,6 @@
             el.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'} text-lg"></i> ${msg}`;
             $('toast-container').appendChild(el);
             setTimeout(() => el.remove(), 4000);
-        }
-
-        function toggleSidebar() { 
-            document.querySelector('aside').classList.toggle('open'); 
-            document.getElementById('mobile-overlay').classList.toggle('hidden'); 
-            setTimeout(() => document.getElementById('mobile-overlay').classList.toggle('open'), 10);
         }
 
         function getGrade(pct, customScale) {
@@ -469,7 +486,7 @@
         function liveUpdateUI() {
             if($('view-dashboard').classList.contains('hidden')) return;
             
-            const activeItem = document.querySelector('.nav-item.active');
+            const activeItem = document.querySelector('.nav-item.active') || document.querySelector('.mobile-nav-item.active');
             if(activeItem) {
                 if(activeItem.getAttribute('onclick').includes('home')) renderTab('home', false);
                 if(activeItem.getAttribute('onclick').includes('results')) renderTab('results', false);
@@ -492,19 +509,34 @@
         function updateSidebar() {
             if(!currentInst) return;
             $('sb-school').innerText = currentInst.name;
+            if($('mobile-header-school')) $('mobile-header-school').innerText = currentInst.name;
+            
             if($('sb-name')) $('sb-name').innerText = currentStudent.name;
+            if($('mobile-header-name')) $('mobile-header-name').innerText = currentStudent.name;
+            
             if($('sb-adm')) $('sb-adm').innerText = currentStudent.admissionNo;
+            
             if(currentInst.profileImage) { 
                 $('sb-logo').src = currentInst.profileImage; 
                 $('sb-logo').classList.remove('hidden'); 
                 $('sb-icon').classList.add('hidden'); 
+                
+                const ml = $('mobile-header-logo-student');
+                if(ml) { 
+                    ml.src = currentInst.profileImage; 
+                    ml.classList.remove('hidden'); 
+                    $('mobile-header-icon-student').classList.add('hidden'); 
+                }
             }
         }
 
         function renderTab(tab, forceTitle = true) {
             if(forceTitle) {
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.getAttribute('onclick').includes(tab)));
-                if(window.innerWidth < 768) { document.querySelector('aside').classList.remove('open'); document.getElementById('mobile-overlay').classList.add('hidden'); document.getElementById('mobile-overlay').classList.remove('open'); }
+                document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(el => {
+                    if(el.getAttribute('onclick')) {
+                        el.classList.toggle('active', el.getAttribute('onclick').includes(tab));
+                    }
+                });
             }
             const content = $('content-area');
             const title = $('page-title');
@@ -514,12 +546,12 @@
             if(tab === 'home') {
                 if(forceTitle) title.innerText = 'Overview';
                 content.innerHTML = `
-                    <div class="glass-panel p-6 md:p-8 rounded-2xl fade-in relative overflow-hidden group mb-6" style="border-left: 4px solid var(--primary);">
+                    <div class="glass-panel p-5 md:p-8 rounded-2xl fade-in relative overflow-hidden group mb-6" style="border-left: 4px solid var(--primary);">
                         <div class="absolute inset-0 bg-gradient-to-r from-indigo-600/10 to-purple-600/10 opacity-50"></div>
                         <div class="relative z-10">
-                            <h3 class="text-2xl font-bold mb-2 text-main">Welcome Back, ${currentStudent.name} 👋</h3>
-                            <p class="text-sm text-muted">Access your academic records and profile settings.</p>
-                            <button onclick="renderTab('results')" class="mt-4 px-5 py-3 md:py-2 w-full md:w-auto bg-dark text-main rounded-xl md:rounded-lg text-xs font-bold hover:bg-panel transition border-theme shadow-lg">Check Results</button>
+                            <h3 class="text-xl md:text-2xl font-bold mb-2 text-main">Welcome Back, ${currentStudent.name} 👋</h3>
+                            <p class="text-xs md:text-sm text-muted">Access your academic records and profile settings.</p>
+                            <button onclick="renderTab('results')" class="mt-4 px-5 py-2 bg-dark text-main rounded-lg text-xs font-bold hover:bg-panel transition border-theme shadow-lg">Check Results</button>
                         </div>
                     </div>`;
             }
@@ -528,7 +560,7 @@
                 if(forceTitle) title.innerText = 'Academic Records';
                 const results = cache.results;
                 
-                let html = `<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 fade-in">`;
+                let html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 fade-in">`;
                 let hasPublished = false;
 
                 results.forEach(r => {
@@ -539,19 +571,19 @@
                     if(pubDate > new Date() || exam.isPublished === false) return; 
                     
                     hasPublished = true;
-                    html += `<div class="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-slate-500 transition">
+                    html += `<div class="glass-panel p-5 md:p-6 rounded-2xl relative overflow-hidden group hover:border-slate-500 transition">
                         <div class="flex justify-between items-start mb-6">
                             <div class="w-10 h-10 rounded-lg bg-dark flex items-center justify-center text-lg border-theme" style="color:var(--primary)"><i class="fas fa-file-contract"></i></div>
                             <span class="px-2 py-1 rounded text-[10px] font-bold uppercase border" style="color:var(--primary); border-color:var(--primary-glow)">Published</span>
                         </div>
-                        <h3 class="text-xl font-bold mb-2 text-main">${exam.name}</h3>
-                        <button onclick="openMarksheet('${r.id}')" class="w-full mt-4 py-3 md:py-2 bg-dark hover:bg-panel text-main rounded-xl md:rounded-lg text-xs font-bold transition border-theme">View Marksheet</button>
+                        <h3 class="text-lg md:text-xl font-bold mb-2 text-main">${exam.name}</h3>
+                        <button onclick="openMarksheet('${r.id}')" class="w-full mt-4 py-2.5 md:py-2 bg-dark hover:bg-panel text-main rounded-lg text-xs font-bold transition border-theme">View Marksheet</button>
                     </div>`;
                 });
                 html += `</div>`;
 
                 if(!hasPublished) {
-                    html = `<div class="glass-panel p-12 text-center text-muted">No results published yet.</div>`;
+                    html = `<div class="glass-panel p-10 md:p-12 text-center text-muted rounded-2xl border-theme text-sm">No results published yet.</div>`;
                 }
                 content.innerHTML = html;
             }
@@ -562,29 +594,29 @@
                 
                 if(forceTitle) {
                     content.innerHTML = `
-                        <div class="max-w-2xl mx-auto glass-panel p-6 md:p-8 rounded-2xl fade-in flex flex-col md:flex-row items-start gap-8 border-l-4" style="border-left-color: var(--primary);">
-                            <div class="w-20 h-20 rounded-full bg-dark flex items-center justify-center text-3xl border-theme flex-shrink-0 mx-auto md:mx-0" style="color:var(--primary)"><i class="fas fa-user"></i></div>
+                        <div class="max-w-2xl mx-auto glass-panel p-5 md:p-8 rounded-2xl fade-in flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 border-t-4 md:border-t-0 md:border-l-4" style="border-color: var(--primary);">
+                            <div class="w-20 h-20 rounded-full bg-dark flex items-center justify-center text-3xl border-theme flex-shrink-0 shadow-lg" style="color:var(--primary)"><i class="fas fa-user"></i></div>
                             <div class="flex-1 space-y-5 w-full">
-                                <h3 class="text-lg font-bold border-b border-theme pb-2 text-main">Personal Details</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div><label class="text-[10px] uppercase font-bold text-muted">Name</label><input id="pf-name" class="input-dark mt-1" value="${currentStudent.name}"></div>
-                                    <div><label class="text-[10px] uppercase font-bold text-muted">Admission No</label><input class="input-dark mt-1 opacity-50 cursor-not-allowed" value="${currentStudent.admissionNo}" disabled></div>
-                                    <div><label class="text-[10px] uppercase font-bold text-muted">DOB</label><input type="date" id="pf-dob" class="input-dark mt-1" value="${currentStudent.dob || ''}"></div>
-                                    <div><label class="text-[10px] uppercase font-bold text-muted">Class</label><input class="input-dark mt-1 opacity-50 cursor-not-allowed" value="${cls}" disabled></div>
+                                <h3 class="text-sm md:text-lg font-bold border-b border-theme pb-2 text-main uppercase md:capitalize tracking-wider md:tracking-normal">Personal Details</h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div><label class="text-[10px] uppercase font-bold text-muted">Name</label><input id="pf-name" class="input-dark mt-1 text-sm md:text-base" value="${currentStudent.name}"></div>
+                                    <div><label class="text-[10px] uppercase font-bold text-muted">Admission No</label><input class="input-dark mt-1 opacity-50 cursor-not-allowed text-sm md:text-base" value="${currentStudent.admissionNo}" disabled></div>
+                                    <div><label class="text-[10px] uppercase font-bold text-muted">DOB</label><input type="date" id="pf-dob" class="input-dark mt-1 text-sm md:text-base" value="${currentStudent.dob || ''}"></div>
+                                    <div><label class="text-[10px] uppercase font-bold text-muted">Class</label><input class="input-dark mt-1 opacity-50 cursor-not-allowed text-sm md:text-base" value="${cls}" disabled></div>
                                     
-                                    <div class="md:col-span-2 border-t border-theme pt-4 mt-2">
-                                        <h4 class="text-xs font-bold text-main mb-3 uppercase tracking-wider">Guardian Info</h4>
+                                    <div class="sm:col-span-2 border-t border-theme pt-4 mt-2">
+                                        <h4 class="text-[10px] md:text-xs font-bold text-main mb-3 uppercase tracking-wider">Guardian Info</h4>
                                     </div>
-                                    <div><label class="text-[10px] uppercase font-bold text-muted">Parent/Guardian Name</label><input id="pf-parent" class="input-dark mt-1" value="${currentStudent.parentName || ''}"></div>
-                                    <div><label class="text-[10px] uppercase font-bold text-muted">Mobile Number</label><input id="pf-phone" class="input-dark mt-1" value="${currentStudent.contactPhone || ''}"></div>
-                                    <div class="md:col-span-2"><label class="text-[10px] uppercase font-bold text-muted">Home Address</label><input id="pf-address" class="input-dark mt-1" value="${currentStudent.address || ''}"></div>
+                                    <div><label class="text-[10px] uppercase font-bold text-muted">Parent/Guardian Name</label><input id="pf-parent" class="input-dark mt-1 text-sm md:text-base" value="${currentStudent.parentName || ''}"></div>
+                                    <div><label class="text-[10px] uppercase font-bold text-muted">Mobile Number</label><input id="pf-phone" class="input-dark mt-1 text-sm md:text-base" value="${currentStudent.contactPhone || ''}"></div>
+                                    <div class="sm:col-span-2"><label class="text-[10px] uppercase font-bold text-muted">Home Address</label><input id="pf-address" class="input-dark mt-1 text-sm md:text-base" value="${currentStudent.address || ''}"></div>
 
-                                    <div class="md:col-span-2 border-t border-theme pt-4 mt-2">
-                                        <h4 class="text-xs font-bold text-main mb-3 uppercase tracking-wider text-red-400">Security</h4>
-                                        <div><label class="text-[10px] uppercase font-bold text-muted">Portal Password</label><input type="password" id="pf-pass" class="input-dark mt-1" value="${currentStudent.password || ''}" placeholder="Enter new password"></div>
+                                    <div class="sm:col-span-2 border-t border-theme pt-4 mt-2">
+                                        <h4 class="text-[10px] md:text-xs font-bold text-main mb-3 uppercase tracking-wider text-red-400">Security</h4>
+                                        <div><label class="text-[10px] uppercase font-bold text-muted">Portal Password</label><input type="password" id="pf-pass" class="input-dark mt-1 text-sm md:text-base" value="${currentStudent.password || ''}" placeholder="Enter new password"></div>
                                     </div>
                                 </div>
-                                <button onclick="updateProfile()" class="w-full btn-primary py-3 rounded-xl mt-4">Save Changes</button>
+                                <button onclick="updateProfile()" class="w-full btn-primary py-3.5 md:py-3 rounded-xl mt-4 text-sm md:text-base">Save Changes</button>
                             </div>
                         </div>`;
                 }
@@ -725,15 +757,7 @@
         async function shareResult() {
             try {
                 showLoader(true);
-                
-                // Temp override scale for screenshot
-                const element = document.getElementById('mk-printable');
-                const originalTransform = element.style.transform;
-                element.style.transform = 'scale(1)';
-                
-                const canvas = await html2canvas(element, { scale: 2 });
-                element.style.transform = originalTransform;
-
+                const canvas = await html2canvas(document.getElementById('mk-printable'), { scale: 2 });
                 canvas.toBlob(async (blob) => {
                     showLoader(false);
                     const file = new File([blob], 'Result.png', { type: 'image/png' });
@@ -749,12 +773,11 @@
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('mk-printable');
             
-            // Temporary scale up for high-res PDF rendering
             const originalTransform = element.style.transform;
             element.style.transform = 'scale(1)';
             
             html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
-                element.style.transform = originalTransform; // Restore original scale
+                element.style.transform = originalTransform; 
                 
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');

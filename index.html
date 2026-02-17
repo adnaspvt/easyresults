@@ -69,8 +69,6 @@
                 <a href="#about" class="hover:text-white transition">About</a>
                 <a href="#register" class="hover:text-white transition">Register</a>
             </div>
-
-            
         </div>
     </nav>
 
@@ -96,11 +94,22 @@
                 Register Institution <i class="fas fa-arrow-right"></i>
             </a>
             <a id="wa-link" href="#" target="_blank" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
-                <i class="fab fa-whatsapp text-green-400 text-lg"></i> Contact Sales
+                <i class="fab fa-whatsapp text-green-400 text-lg"></i> More Info
             </a>
         </div>
 
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-slate-600">
+        <div class="mt-12 w-full max-w-md mx-auto fade-in" style="animation-delay: 0.5s">
+            <div class="p-1.5 rounded-2xl bg-slate-900/80 border border-slate-700 flex items-center shadow-2xl backdrop-blur-md">
+                <div class="px-4 text-slate-500"><i class="fas fa-search"></i></div>
+                <input type="text" id="quick-portal-id" placeholder="Enter Institution Account ID" class="bg-transparent border-none text-white w-full outline-none placeholder-slate-500 text-sm" onkeypress="if(event.key === 'Enter') goToPortal()">
+                <button onclick="goToPortal()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-bold transition text-sm flex items-center gap-2 shadow-lg shrink-0">
+                    Find Portal
+                </button>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-3 uppercase tracking-widest font-bold">Students & Staff: Enter your School ID above</p>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-slate-600 hidden md:block">
             <i class="fas fa-chevron-down"></i>
         </div>
     </header>
@@ -300,6 +309,16 @@
                 console.error("Error connecting to Firebase:", e);
             }
         };
+
+        // NEW: Navigate to Portal directly via ID
+        function goToPortal() {
+            const id = document.getElementById('quick-portal-id').value.trim();
+            if(id) {
+                window.location.href = `home.html?id=${id}`;
+            } else {
+                alert("Please enter a valid Institution ID.");
+            }
+        }
 
         // Handle LIVE Registration Form Submission
         async function submitRegistration(e) {
