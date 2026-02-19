@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Student Portal | easyresults</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="security.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -45,23 +46,23 @@
         
         .glass-panel { background: var(--bg-panel); backdrop-filter: blur(20px); border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.4); transition: background 0.5s ease, border-color 0.5s ease; }
         
-        .input-dark { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 12px 16px; border-radius: 10px; width: 100%; outline: none; transition: 0.3s; }
+        .input-dark { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 12px 16px; border-radius: 10px; width: 100%; outline: none; transition: 0.3s; min-height: 44px; }
         .input-dark:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
         
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white !important; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: 0.2s; box-shadow: 0 4px 15px var(--primary-glow); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white !important; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: 0.2s; box-shadow: 0 4px 15px var(--primary-glow); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; min-height: 44px; }
         .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-        /* Desktop Nav */
         .nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; margin-bottom: 4px; border-radius: 12px; color: var(--text-muted); transition: 0.2s; cursor: pointer; font-weight: 500; border-left: 3px solid transparent; }
         .nav-item:hover { background: rgba(125,125,125,0.1); color: var(--text-main); }
         .nav-item.active { background: var(--primary-glow); color: var(--text-main); border-left-color: var(--primary); }
 
-        .a4-container { width: 210mm; min-height: 297mm; padding: 0; background: #fff; color: #1e293b; box-shadow: 0 20px 60px rgba(0,0,0,0.5); position: relative; overflow: hidden; margin: 2rem auto; display: flex; flex-direction: column; transform: scale(0.65); transform-origin: top center; transition: all 0.3s ease; }
-        .transcript-frame { border: 8px solid #1e293b; outline: 2px solid #94a3b8; outline-offset: -12px; height: 100%; min-height: 290mm; margin: 8mm; position: relative; display: flex; flex-direction: column; background: #fff; }
+        /* Document Styling */
+        .a4-container { width: 210mm; min-height: 297mm; padding: 0; background: #fff; color: #1e293b; box-shadow: 0 20px 60px rgba(0,0,0,0.5); position: relative; overflow: hidden; margin: 2rem auto; display: flex; flex-direction: column; transform-origin: top center; transition: all 0.3s ease; text-align: left; }
+        .transcript-frame { border: 8px solid #1e293b; outline: 2px solid #94a3b8; outline-offset: -12px; height: 100%; min-height: 290mm; margin: 8mm; position: relative; display: flex; flex-direction: column; background: #fff; z-index: 10; }
         .transcript-inner { padding: 8mm 12mm; flex: 1; display: flex; flex-direction: column; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 25px 25px; }
         .watermark-layer { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; opacity: 0.04; pointer-events: none; z-index: 0; }
         .watermark-logo { width: 50%; filter: grayscale(100%); }
-        .content-layer { position: relative; z-index: 10; flex: 1; display: flex; flex-direction: column; }
+        .content-layer { position: relative; z-index: 20; flex: 1; display: flex; flex-direction: column; }
         .mk-serif { font-family: 'Playfair Display', serif; }
         .mk-header-font { font-family: 'Cinzel', serif; }
         .info-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; margin: 1.5rem 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 1rem; }
@@ -78,7 +79,7 @@
         .stat-val { font-weight: 800; color: #0f172a; font-size: 1.1rem; }
         .doc-footer { display: flex; justify-content: space-between; align-items: end; margin-top: 1rem; border-top: 2px solid #1e293b; padding-top: 1rem; }
         .principal-box { text-align: center; width: 180px; }
-        .stamp-status { padding: 0.25rem 1rem; border: 2px solid; border-radius: 6px; font-weight: 800; text-transform: uppercase; display: inline-block; font-size: 0.85rem; transition: all 0.3s; }
+        .stamp-status { padding: 0.25rem 1rem; border: 2px solid; border-radius: 6px; font-weight: 800; text-transform: uppercase; display: inline-block; font-size: 0.85rem; }
         .pass { color: #059669; border-color: #059669; background: #ecfdf5; }
         .fail { color: #dc2626; border-color: #dc2626; background: #fef2f2; }
 
@@ -90,18 +91,20 @@
 
         /* --- MOBILE APP UI OPTIMIZATIONS --- */
         @media (max-width: 768px) {
-            .a4-container { transform: scale(0.42); margin-top: -20%; margin-bottom: -35%; }
-            #content-area { padding-bottom: calc(6rem + env(safe-area-inset-bottom)); } /* Space for bottom nav */
-            
-            /* Bottom App Nav Styles */
+            #content-area { padding-bottom: calc(6rem + env(safe-area-inset-bottom)); } 
             .mobile-nav-item.active { color: var(--primary); }
             .mobile-nav-item.active i { transform: translateY(-3px) scale(1.15); filter: drop-shadow(0 4px 6px var(--primary-glow)); color: var(--primary); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+            
+            /* Crucial Fix: Stops flexbox from pushing content off screen */
+            .a4-container { margin: 0 !important; transform-origin: top left !important; } 
+            #marksheet-modal-content { height: 100dvh; border-radius: 0; display: flex; flex-direction: column; background: var(--bg-dark); overflow: hidden; }
+            #marksheet-scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; width: 100%; display: block; text-align: left; } 
         }
     </style>
 </head>
-<body class="overflow-hidden h-screen flex text-sm selection:bg-indigo-500/30">
+<body class="overflow-hidden h-[100dvh] w-screen flex text-sm selection:bg-indigo-500/30">
 
-    <div id="global-loader" class="fixed inset-0 hidden flex flex-col items-center justify-center text-white">
+    <div id="global-loader" class="fixed inset-0 hidden flex flex-col items-center justify-center text-white z-[9999]">
         <div class="spinner mb-4"></div>
         <p class="text-sm font-bold tracking-widest animate-pulse font-mono">CONNECTING TO CLOUD...</p>
     </div>
@@ -154,13 +157,13 @@
             </nav>
             <div class="p-5 border-t border-theme">
                 <div class="flex items-center gap-3 mb-4 px-2 py-2 rounded-xl bg-dark border-theme">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs" style="background-color: var(--primary-glow); color: var(--primary);"><i class="fas fa-user"></i></div>
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs shrink-0" style="background-color: var(--primary-glow); color: var(--primary);"><i class="fas fa-user"></i></div>
                     <div class="overflow-hidden">
                         <p class="text-xs font-bold truncate text-main" id="sb-name">Student</p>
                         <p class="text-[9px] text-muted font-mono truncate" id="sb-adm">000</p>
                     </div>
                 </div>
-                <button onclick="logout()" class="w-full py-2.5 text-red-500 text-xs font-bold hover:bg-red-500/10 rounded-xl transition border border-red-500/20"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                <button onclick="logout()" class="w-full py-3 text-red-500 text-xs font-bold hover:bg-red-500/10 rounded-xl transition border border-red-500/20"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
             </div>
         </aside>
 
@@ -168,7 +171,7 @@
             
             <header class="h-16 md:h-20 border-b border-theme bg-panel backdrop-blur-md flex items-center justify-between px-4 md:px-10 sticky top-0 z-30">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-dark flex items-center justify-center md:hidden overflow-hidden border border-theme shadow-sm">
+                    <div class="w-9 h-9 rounded-lg bg-dark flex items-center justify-center md:hidden overflow-hidden border border-theme shadow-sm shrink-0">
                         <img id="mobile-header-logo-student" class="w-full h-full object-cover hidden">
                         <i id="mobile-header-icon-student" class="fas fa-university text-xs" style="color: var(--primary)"></i>
                     </div>
@@ -180,7 +183,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <p class="text-[10px] text-muted font-mono uppercase tracking-widest hidden sm:block">Live Sync Active</p>
+                    <p class="text-[10px] text-muted font-mono uppercase tracking-widest hidden sm:block">Live Sync</p>
                 </div>
             </header>
 
@@ -207,68 +210,19 @@
         </nav>
     </div>
 
-    <div id="marksheet-modal" class="hidden fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex justify-center overflow-y-auto fade-in">
-        <div class="w-full max-w-[210mm] relative my-10">
-            <div class="fixed top-4 md:top-6 right-4 md:right-6 flex gap-2 md:gap-3 z-[110] flex-wrap justify-end max-w-[250px] md:max-w-none">
-                <button onclick="shareResult()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 transition border border-indigo-400"><i class="fas fa-share-alt"></i> Share</button>
-                <button onclick="downloadPDF()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 transition border border-blue-400"><i class="fas fa-file-pdf"></i> Download</button>
-                <button onclick="closeModal()" class="bg-white/10 hover:bg-white/20 text-white w-8 h-8 md:w-auto md:h-auto md:px-5 md:py-2.5 rounded-full text-xs font-bold backdrop-blur-md border border-white/10 transition flex items-center justify-center md:justify-start gap-2"><i class="fas fa-times"></i> <span class="hidden md:inline">Close</span></button>
+    <div id="marksheet-modal" class="hidden fixed inset-0 z-[100] bg-dark sm:bg-black/95 sm:backdrop-blur-sm flex flex-col overflow-hidden fade-in">
+        
+        <div class="shrink-0 w-full flex items-center justify-between sm:justify-end gap-2 p-3 sm:p-4 bg-panel/90 backdrop-blur-md z-[110] border-b border-theme shadow-lg">
+            <button onclick="closeModal()" class="sm:hidden bg-slate-800 text-white w-10 h-10 rounded-full flex items-center justify-center border border-slate-600 shadow-md"><i class="fas fa-arrow-left"></i></button>
+            <div class="flex gap-2">
+                <button onclick="shareResult()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 transition border border-indigo-400"><i class="fas fa-share-alt"></i> Share</button>
+                <button onclick="downloadPDF()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 transition border border-blue-400"><i class="fas fa-file-pdf"></i> Save</button>
+                <button onclick="closeModal()" class="hidden sm:flex bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-full text-xs font-bold backdrop-blur-md border border-white/10 transition items-center gap-2"><i class="fas fa-times"></i> Close</button>
             </div>
-            
-            <div id="mk-printable" class="a4-container">
-                <div class="transcript-frame">
-                    <div class="watermark-layer"><img id="mk-watermark" class="watermark-logo"></div>
-                    <div class="transcript-inner">
-                        <div class="content-layer">
-                            <div class="text-center mb-6">
-                                <div class="inline-block mb-2 p-1 border border-slate-200 rounded-full"><div class="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden" id="mk-logo-container"></div></div>
-                                <h1 id="mk-school" class="text-3xl font-black uppercase mk-header-font text-slate-900 tracking-wide mb-1">School Name</h1>
-                                <p id="mk-addr" class="text-xs text-slate-500 uppercase tracking-widest font-bold">Institution Address</p>
-                                <div class="mt-4 border-b border-slate-900 w-1/3 mx-auto"></div>
-                                <p class="mt-1 text-sm font-serif italic text-slate-700">Official Statement of Marks</p>
-                            </div>
-                            <div class="info-grid">
-                                <div class="flex flex-col gap-2">
-                                    <div class="info-row"><span class="info-label">Candidate Name</span><span id="mk-name" class="info-val">Student Name</span></div>
-                                    <div class="info-row"><span class="info-label">Admission ID</span><span id="mk-adm" class="info-val font-mono">0000</span></div>
-                                    <div class="info-row"><span class="info-label">Date of Birth</span><span id="mk-dob" class="info-val">DOB</span></div>
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    <div class="info-row"><span class="info-label">Class / Grade</span><span id="mk-class" class="info-val">Class</span></div>
-                                    <div class="info-row"><span class="info-label">Examination</span><span id="mk-exam" class="info-val">Exam</span></div>
-                                    <div class="info-row"><span class="info-label">Issue Date</span><span id="mk-date" class="info-val">Date</span></div>
-                                </div>
-                            </div>
-                            <table class="mk-table mb-auto">
-                                <thead><tr><th class="text-left pl-6">Subject</th><th width="15%">Max Marks</th><th width="15%">Pass Marks</th><th width="15%">Obtained</th><th width="15%">Grade</th></tr></thead>
-                                <tbody id="mk-body"></tbody>
-                                <tfoot>
-                                    <tr class="bg-slate-100 text-slate-900"><td class="text-left font-black pl-6 text-sm uppercase tracking-widest">Grand Total</td><td colspan="2" class="text-center font-bold text-slate-500 text-xs uppercase" id="mk-total-words">Zero Only</td><td id="mk-total" class="text-center text-lg font-bold text-slate-900 py-3" colspan="2">0</td></tr>
-                                </tfoot>
-                            </table>
-                            <div id="mk-legend" class="mt-4 mb-2 text-[8px] text-slate-500 font-mono text-center border-t border-slate-200 pt-2"></div>
-                            <div class="mt-4 mb-4 flex gap-4">
-                                <div class="stats-box flex-1 border border-slate-200 rounded-lg p-4 bg-slate-50">
-                                    <div class="stat-row mb-1"><span class="stat-label">Percentage</span><span id="mk-pct" class="stat-val">0%</span></div>
-                                    <div class="stat-row mb-1"><span class="stat-label">Result Status</span><div id="mk-stamp-container"></div></div>
-                                </div>
-                                <div class="stats-box flex-1 border border-slate-200 rounded-lg p-4 bg-slate-50">
-                                    <div class="stat-row mb-1"><span class="stat-label">Overall Grade</span><span id="mk-overall-grade" class="stat-val text-sm">N/A</span></div>
-                                    <div class="stat-row mb-1"><span class="stat-label">Attendance</span><span id="mk-att" class="stat-val text-sm">0/0</span></div>
-                                </div>
-                            </div>
-                            <div class="doc-footer border-t-2 border-slate-900 pt-6 mt-4 flex justify-between items-end">
-                                <div class="text-[8px] text-slate-500 font-mono w-2/3 leading-tight">This document is securely processed and digitally generated by <span class="dynamic-brand-name">easyresults</span> Cloud Systems.<br>Valid academic record. No physical signature required for web verification.</div>
-                                <div class="principal-box text-center">
-                                    <div class="h-16 flex items-end justify-center mb-1" id="mk-sig-container"></div>
-                                    <div class="border-t-2 border-slate-900 w-32 mx-auto mb-1"></div>
-                                    <p class="text-[9px] font-bold uppercase tracking-widest text-slate-900">Principal Signature</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+        
+        <div id="marksheet-scroll-area" class="flex-1 overflow-x-hidden overflow-y-auto w-full pb-24 pt-4 sm:px-0">
+            <div id="mk-printable" class="a4-container"></div>
         </div>
     </div>
 
@@ -573,10 +527,10 @@
                     hasPublished = true;
                     html += `<div class="glass-panel p-5 md:p-6 rounded-2xl relative overflow-hidden group hover:border-slate-500 transition">
                         <div class="flex justify-between items-start mb-6">
-                            <div class="w-10 h-10 rounded-lg bg-dark flex items-center justify-center text-lg border-theme" style="color:var(--primary)"><i class="fas fa-file-contract"></i></div>
+                            <div class="w-10 h-10 rounded-lg bg-dark flex items-center justify-center text-lg border-theme shrink-0" style="color:var(--primary)"><i class="fas fa-file-contract"></i></div>
                             <span class="px-2 py-1 rounded text-[10px] font-bold uppercase border" style="color:var(--primary); border-color:var(--primary-glow)">Published</span>
                         </div>
-                        <h3 class="text-lg md:text-xl font-bold mb-2 text-main">${exam.name}</h3>
+                        <h3 class="text-lg md:text-xl font-bold mb-2 text-main">${exam.name} <span class="text-indigo-400 text-xs ml-1">[${exam.academicYear||''}]</span></h3>
                         <button onclick="openMarksheet('${r.id}')" class="w-full mt-4 py-2.5 md:py-2 bg-dark hover:bg-panel text-main rounded-lg text-xs font-bold transition border-theme">View Marksheet</button>
                     </div>`;
                 });
@@ -658,6 +612,7 @@
             return str.trim() ? str.trim() + " Only" : "Zero Only";
         }
 
+        // FULLY REWRITTEN OPEN MARKSHEET FUNCTION TO INJECT ENTIRE HTML
         function openMarksheet(rid, isLiveUpdate = false) {
             try {
                 activeResultId = rid;
@@ -672,32 +627,6 @@
                 const inst = currentInst || {name: 'Unknown School'};
                 const exam = cache.exams.find(e => e.id === r.examId) || {name: 'Unknown Exam'};
                 const cls = cache.classes.find(c => c.id === currentStudent.classId) || {name: 'N/A'};
-
-                $('mk-school').innerText = inst.name;
-                $('mk-addr').innerText = inst.address || '';
-                $('mk-exam').innerText = exam.name;
-                
-                const logoContainer = $('mk-logo-container');
-                if(inst.profileImage) { 
-                    logoContainer.innerHTML = `<img src="${inst.profileImage}" class="max-w-full max-h-full object-contain">`;
-                    if($('mk-watermark')) { $('mk-watermark').src = inst.profileImage; $('mk-watermark').style.display = 'block'; }
-                } else { 
-                    logoContainer.innerHTML = `<i class="fas fa-university text-3xl text-slate-300"></i>`;
-                    if($('mk-watermark')) $('mk-watermark').style.display = 'none'; 
-                }
-
-                const sigContainer = $('mk-sig-container');
-                if(inst.signatureImage) { 
-                    sigContainer.innerHTML = `<img src="${inst.signatureImage}" class="max-h-full max-w-full object-contain filter grayscale contrast-125">`;
-                } else { 
-                    sigContainer.innerHTML = `<div class="h-8 border-b border-slate-400 w-32"></div>`;
-                }
-
-                $('mk-name').innerText = currentStudent.name;
-                $('mk-adm').innerText = currentStudent.admissionNo;
-                $('mk-class').innerText = cls.name;
-                if($('mk-dob')) $('mk-dob').innerText = currentStudent.dob || 'N/A';
-                $('mk-date').innerText = new Date().toLocaleDateString();
 
                 const gradeScale = inst.customGradeScale || DEFAULT_SCALES[inst.gradeScale || 'standard'];
                 let legendStr = getGradeLegend(gradeScale);
@@ -723,28 +652,109 @@
                     }
                 });
                 
-                $('mk-body').innerHTML = rows || `<tr><td colspan="5" class="text-center py-4">No subjects found.</td></tr>`;
-                $('mk-total').innerText = `${grandTotal} / ${maxTotal}`;
-                $('mk-total-words').innerText = numToWords(grandTotal);
-                $('mk-legend').innerHTML = `<strong>GRADING LEGEND:</strong> ${legendStr}`;
-                
                 const finalPct = maxTotal > 0 ? ((grandTotal / maxTotal) * 100).toFixed(1) : 0;
-                $('mk-pct').innerText = finalPct + '%';
-                const attVal = r.attendance || '0';
-                const attTotal = r.totalAttendance || '0';
-                $('mk-att').innerText = `${attVal}/${attTotal}`;
-                
+                const attVal = r.attendanceDays || r.attendance || '0';
+                const attTotal = r.totalDays || r.totalAttendance || '0';
                 const status = failFlag ? 'FAIL' : 'PASS';
                 const clsName = failFlag ? 'fail' : 'pass';
-                $('mk-stamp-container').innerHTML = `<div class="stamp-status ${clsName}">${status}</div>`;
 
                 let finalGrade = getGrade(finalPct, gradeScale);
                 if(status === 'FAIL') finalGrade = 'F';
-                $('mk-overall-grade').innerText = finalGrade;
+                
+                let appreciation = "Good effort."; let motivation = "Keep working hard!";
+                if(status === 'FAIL') { appreciation = "You faced some challenges this term."; motivation = "Every setback is a setup for a comeback. We believe in you!"; } 
+                else if(finalPct >= 90) { appreciation = "Exceptional performance! Outstanding mastery."; motivation = "Your dedication is inspiring. Keep setting the bar high!"; }
+                else if(finalPct >= 80) { appreciation = "Excellent work! Strong grasp of concepts."; motivation = "Consistency is key. Continue this momentum."; }
+                else if(finalPct >= 60) { appreciation = "Very Good. Steady progress made."; motivation = "Believe in your potential, you can do even more."; }
+
+                // Inject full HTML structure perfectly into the printable container
+                $('mk-printable').innerHTML = `
+                    <div class="transcript-frame">
+                        <div class="watermark-layer">${inst.profileImage ? `<img src="${inst.profileImage}" class="watermark-logo">` : ''}</div>
+                        <div class="transcript-inner">
+                            <div class="content-layer">
+                                <div class="text-center mb-6">
+                                    <div class="inline-block mb-2 p-1 border border-slate-200 rounded-full">
+                                        <div class="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden">
+                                            ${inst.profileImage ? `<img src="${inst.profileImage}" class="max-w-full max-h-full object-contain">` : `<i class="fas fa-university text-3xl text-slate-300"></i>`}
+                                        </div>
+                                    </div>
+                                    <h1 class="text-3xl font-black uppercase mk-header-font text-slate-900 tracking-wide mb-1">${inst.name}</h1>
+                                    <p class="text-xs text-slate-500 uppercase tracking-widest font-bold text-center">${inst.address || ''}</p>
+                                    <div class="mt-4 border-b border-slate-900 w-1/3 mx-auto"></div>
+                                    <p class="mt-1 text-sm font-serif italic text-slate-700 text-center">Official Statement of Marks</p>
+                                </div>
+                                <div class="info-grid flex justify-between mb-4 text-sm">
+                                    <div class="flex flex-col gap-2">
+                                        <div class="info-row"><span class="info-label font-bold text-slate-500 w-24 inline-block">Candidate</span><span class="info-val font-bold text-slate-900">${currentStudent.name}</span></div>
+                                        <div class="info-row"><span class="info-label font-bold text-slate-500 w-24 inline-block">ID No</span><span id="mk-adm" class="info-val font-mono font-bold text-slate-900">${currentStudent.admissionNo}</span></div>
+                                        <div class="info-row"><span class="info-label font-bold text-slate-500 w-24 inline-block">D.O.B</span><span class="info-val font-bold text-slate-900">${currentStudent.dob || 'N/A'}</span></div>
+                                    </div>
+                                    <div class="flex flex-col gap-2 text-right">
+                                        <div class="info-row"><span class="info-label font-bold text-slate-500 mr-2">Class</span><span class="info-val font-bold text-slate-900">${cls.name}</span></div>
+                                        <div class="info-row"><span class="info-label font-bold text-slate-500 mr-2">Exam</span><span class="info-val font-bold text-slate-900">${exam.name} <span class="text-xs text-slate-500 ml-1">[${exam.academicYear||''}]</span></span></div>
+                                        <div class="info-row"><span class="info-label font-bold text-slate-500 mr-2">Date</span><span class="info-val font-bold text-slate-900">${new Date().toLocaleDateString()}</span></div>
+                                    </div>
+                                </div>
+                                <table class="mk-table mb-auto">
+                                    <thead><tr><th class="text-left pl-6">Subject</th><th width="15%">Max Marks</th><th width="15%">Pass Marks</th><th width="15%">Obtained</th><th width="15%">Grade</th></tr></thead>
+                                    <tbody>${rows || `<tr><td colspan="5" class="text-center py-4">No subjects found.</td></tr>`}</tbody>
+                                    <tfoot>
+                                        <tr class="bg-slate-100 text-slate-900"><td class="text-left font-black pl-6 text-sm uppercase tracking-widest">Grand Total</td><td colspan="2" class="text-center font-bold text-slate-500 text-xs uppercase">${numToWords(grandTotal)}</td><td class="text-center text-lg font-bold text-slate-900 py-3" colspan="2">${grandTotal} / ${maxTotal}</td></tr>
+                                    </tfoot>
+                                </table>
+                                ${legendStr ? `<div class="mt-4 mb-2 text-[8px] text-slate-500 font-mono text-center border-t border-slate-200 pt-2"><strong>GRADING LEGEND:</strong> ${legendStr}</div>` : ''}
+                                <div class="feedback-section flex justify-between mt-4 gap-4">
+                                    <div class="appreciation-box w-2/3 p-3 bg-slate-50 rounded border border-slate-200"><h4 class="font-bold text-xs uppercase text-slate-400 mb-1"><i class="fas fa-quote-left mr-2 opacity-50"></i>Insight</h4><p class="appr-text text-sm font-serif italic text-slate-700">"${appreciation}"</p><p class="motiv-text text-xs text-slate-500 mt-1">"${motivation}"</p></div>
+                                    <div class="stats-box w-1/3 p-3 bg-slate-100 rounded border border-slate-200 text-right">
+                                        <div class="stat-row mb-1"><span class="stat-label text-xs text-slate-500 mr-2">Percentage</span><span class="stat-val font-bold text-slate-900">${finalPct}%</span></div>
+                                        <div class="stat-row mb-1"><span class="stat-label text-xs text-slate-500 mr-2">Overall Grade</span><span class="stat-val text-sm font-bold text-slate-900">${finalGrade}</span></div>
+                                        <div class="stat-row mb-1"><span class="stat-label text-xs text-slate-500 mr-2">Attendance</span><span class="stat-val text-sm font-bold text-slate-900">${attVal}/${attTotal}</span></div>
+                                        <div class="stat-row mt-2"><span class="stat-label text-xs text-slate-500 mr-2">Result Status</span><div class="stamp-status ${clsName}">${status}</div></div>
+                                    </div>
+                                </div>
+                                <div class="doc-footer border-t-2 border-slate-900 pt-6 mt-4 flex justify-between items-end">
+                                    <div class="text-[8px] text-slate-500 font-mono w-2/3 leading-tight">This document is securely processed and digitally generated by <span class="dynamic-brand-name">easyresults</span> Cloud Systems.<br>Valid academic record. No physical signature required for web verification.</div>
+                                    <div class="principal-box text-center">
+                                        <div class="h-16 flex items-end justify-center mb-1">${inst.signatureImage ? `<img src="${inst.signatureImage}" class="max-h-full max-w-full object-contain filter grayscale contrast-125">` : '<div class="h-8 border-b border-black w-32 mx-auto"></div>'}</div>
+                                        <div class="border-t-2 border-slate-900 w-32 mx-auto mb-1"></div>
+                                        <p class="text-[9px] font-bold uppercase tracking-widest text-slate-900">Principal Signature</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
 
                 if(!isLiveUpdate) {
                     $('marksheet-modal').classList.remove('hidden');
                 }
+                
+                // Dynamic JS Scaling Calculation using Top Left layout fix
+                setTimeout(() => {
+                    const ctr = document.getElementById('mk-printable');
+                    ctr.style.display = 'block'; 
+                    
+                    if(window.innerWidth < 800) {
+                        const padding = 16; // Visual space on left side
+                        const availableWidth = window.innerWidth - (padding * 2); 
+                        const scale = availableWidth / 794; // 794px is exactly 210mm at standard DPI
+                        
+                        ctr.style.transform = `scale(${scale})`;
+                        ctr.style.transformOrigin = 'top left'; // Top left prevents flexbox push
+                        ctr.style.marginLeft = `${padding}px`; // Applies perfect center padding
+                        
+                        const heightLoss = 1122 * (1 - scale); // 1122px is 297mm height
+                        ctr.style.marginBottom = `-${heightLoss}px`; 
+                    } else {
+                        ctr.style.display = 'inline-block';
+                        ctr.style.margin = '0 auto';
+                        ctr.style.transform = 'scale(0.8)';
+                        ctr.style.transformOrigin = 'top center';
+                        const heightLoss = 1122 * (1 - 0.8);
+                        ctr.style.marginBottom = `-${heightLoss}px`;
+                    }
+                }, 50);
 
             } catch (err) { console.error(err); if(!isLiveUpdate) showToast("Error rendering marksheet", "error"); }
         }
@@ -757,7 +767,21 @@
         async function shareResult() {
             try {
                 showLoader(true);
-                const canvas = await html2canvas(document.getElementById('mk-printable'), { scale: 2 });
+                const element = document.getElementById('mk-printable');
+                const originalTransform = element.style.transform;
+                const originalMargin = element.style.marginBottom;
+                const originalMarginLeft = element.style.marginLeft;
+                
+                element.style.transform = 'scale(1)';
+                element.style.marginBottom = '0';
+                element.style.marginLeft = '0';
+                
+                const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+                
+                element.style.transform = originalTransform;
+                element.style.marginBottom = originalMargin;
+                element.style.marginLeft = originalMarginLeft;
+                
                 canvas.toBlob(async (blob) => {
                     showLoader(false);
                     const file = new File([blob], 'Result.png', { type: 'image/png' });
@@ -774,10 +798,17 @@
             const element = document.getElementById('mk-printable');
             
             const originalTransform = element.style.transform;
+            const originalMargin = element.style.marginBottom;
+            const originalMarginLeft = element.style.marginLeft;
+            
             element.style.transform = 'scale(1)';
+            element.style.marginBottom = '0';
+            element.style.marginLeft = '0';
             
             html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
                 element.style.transform = originalTransform; 
+                element.style.marginBottom = originalMargin;
+                element.style.marginLeft = originalMarginLeft;
                 
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
@@ -788,6 +819,8 @@
                 showLoader(false);
             }).catch(err => {
                 element.style.transform = originalTransform; 
+                element.style.marginBottom = originalMargin;
+                element.style.marginLeft = originalMarginLeft;
                 console.error(err);
                 showLoader(false);
                 showToast("PDF generation failed", "error");

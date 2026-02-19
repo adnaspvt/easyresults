@@ -37,6 +37,9 @@
             border-left: 4px solid #3b82f6;
             transition: transform 0.2s;
         }
+        .step-card.teacher-card { border-left-color: #f59e0b; }
+        .step-card.student-card { border-left-color: #8b5cf6; }
+        
         .step-card:hover { transform: translateX(5px); background: rgba(30, 41, 59, 0.8); }
 
         .faq-card {
@@ -54,20 +57,20 @@
     <div class="bg-orb bottom-0 right-0 w-[500px] h-[500px] bg-purple-600"></div>
 
     <header class="glass-panel sticky top-0 z-50 border-b border-slate-800">
-        <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition smart-back-link">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shrink-0">
                     <i class="fas fa-layer-group"></i>
                 </div>
-                <span class="font-bold text-xl tracking-tight hidden sm:block">easyresults Help</span>
+                <span class="font-bold text-lg sm:text-xl tracking-tight hidden sm:block">easyresults Help</span>
             </a>
             
-            <div class="flex items-center gap-6">
-                <div class="flex gap-4 text-sm font-bold text-slate-400">
+            <div class="flex items-center gap-4 sm:gap-6">
+                <div class="flex gap-3 sm:gap-4 text-xs sm:text-sm font-bold text-slate-400">
                     <button onclick="setLang('en')" id="btn-lang-en" class="lang-btn active pb-1">English</button>
                     <button onclick="setLang('ml')" id="btn-lang-ml" class="lang-btn ml-text pb-1">മലയാളം</button>
                 </div>
-                <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition border border-slate-700"><i class="fas fa-arrow-left mr-2 hidden sm:inline"></i> <span class="hidden sm:inline">Back to Home</span><span class="sm:hidden"><i class="fas fa-home"></i></span></a>
+                <a href="index.html" class="smart-back-link px-3 sm:px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-[10px] sm:text-xs font-bold rounded-lg transition border border-slate-700 whitespace-nowrap"><i class="fas fa-arrow-left sm:mr-2"></i> <span class="hidden sm:inline smart-back-text">Back to Home</span></a>
             </div>
         </div>
     </header>
@@ -77,19 +80,22 @@
         <div class="text-center mb-8 sm:mb-10">
             <h1 class="text-3xl md:text-5xl font-extrabold mb-4 en-content tracking-tight">How to use easyresults</h1>
             <h1 class="text-3xl md:text-4xl font-extrabold mb-4 ml-content hidden ml-text tracking-tight">എളുപ്പത്തിൽ ഉപയോഗിക്കാൻ പഠിക്കാം</h1>
-            <p class="text-slate-400 en-content text-sm sm:text-base">Complete step-by-step tutorial and FAQ.</p>
+            <p class="text-slate-400 en-content text-sm sm:text-base">Complete step-by-step tutorial and feature guide.</p>
             <p class="text-slate-400 ml-content hidden ml-text text-sm sm:text-base">വിശദമായ വിവരങ്ങളും സംശയങ്ങൾക്കുള്ള മറുപടിയും.</p>
         </div>
 
         <div class="flex justify-center mb-10">
             <div class="bg-slate-900 p-1.5 rounded-xl border border-slate-800 flex flex-wrap justify-center gap-1 sm:gap-0">
-                <button onclick="setTab('admin')" id="btn-tab-admin" class="tab-btn active px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2">
+                <button onclick="setTab('admin')" id="btn-tab-admin" class="tab-btn active px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2">
                     <i class="fas fa-user-shield"></i> <span class="en-content">Admins</span><span class="ml-content hidden ml-text">അഡ്മിൻ</span>
                 </button>
-                <button onclick="setTab('student')" id="btn-tab-student" class="tab-btn px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white flex items-center gap-2">
+                <button onclick="setTab('teacher')" id="btn-tab-teacher" class="tab-btn px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white flex items-center gap-2">
+                    <i class="fas fa-chalkboard-teacher"></i> <span class="en-content">Teachers</span><span class="ml-content hidden ml-text">അധ്യാപകർ</span>
+                </button>
+                <button onclick="setTab('student')" id="btn-tab-student" class="tab-btn px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white flex items-center gap-2">
                     <i class="fas fa-user-graduate"></i> <span class="en-content">Students</span><span class="ml-content hidden ml-text">വിദ്യാർത്ഥികൾ</span>
                 </button>
-                <button onclick="setTab('faq')" id="btn-tab-faq" class="tab-btn px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white flex items-center gap-2">
+                <button onclick="setTab('faq')" id="btn-tab-faq" class="tab-btn px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white flex items-center gap-2">
                     <i class="fas fa-question-circle"></i> <span class="en-content">FAQs</span><span class="ml-content hidden ml-text">ചോദ്യങ്ങൾ</span>
                 </button>
             </div>
@@ -100,59 +106,68 @@
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
                     <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">1</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Registering Your Institution</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">സ്ഥാപനം രജിസ്റ്റർ ചെയ്യാൻ</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Registration & Approval</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">രജിസ്ട്രേഷൻ & അപ്രൂവൽ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content mb-3">Go to the easyresults homepage and scroll down to the <strong>"Register Your Institution"</strong> section. Fill in your School Name, Email, Phone Number, and create an Admin Password. Click the Register button.</p>
-                <p class="text-slate-400 text-sm leading-relaxed en-content"><strong>Important:</strong> You will be redirected to WhatsApp to send an automated approval request to our team. Make sure to note down your unique <strong>Account ID</strong> shown on the screen.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">Register your institution on the homepage. Upon submission, your account is created but marked as "Suspended" (Pending Review).</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content">The System Owner will verify and activate your account. Once active, go to your dedicated portal link and log in using your Admin Email and Password.</p>
                 
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-3">പ്രധാന ഹോംപേജിൽ പോയി <strong>"Register Your Institution"</strong> എന്ന ഫോമിൽ സ്കൂളിന്റെ പേര്, ഇമെയിൽ, ഫോൺ നമ്പർ, പുതിയ പാസ്‌വേഡ് എന്നിവ നൽകി രജിസ്റ്റർ ചെയ്യുക.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>ശ്രദ്ധിക്കുക:</strong> അക്കൗണ്ട് വെരിഫിക്കേഷനായി നിങ്ങളെ ഉടനെ WhatsApp-ലേക്ക് കൊണ്ടുപോകും. സ്ക്രീനിൽ കാണിക്കുന്ന നിങ്ങളുടെ <strong>Account ID</strong> പ്രത്യേകം കുറിച്ചുവെക്കാൻ മറക്കരുത്.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2">ഹോം പേജിൽ പോയി 'Register Your Institution' ഫോം പൂരിപ്പിക്കുക. രജിസ്ട്രേഷൻ കഴിഞ്ഞാൽ അക്കൗണ്ട് താല്കാലികമായി "Suspended" (പെൻഡിങ്) അവസ്ഥയിലായിരിക്കും.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">സിസ്റ്റം ഓണർ പരിശോധിച്ചു ആക്റ്റീവ് ആക്കിയ ശേഷം, പോർട്ടലിൽ പോയി നിങ്ങളുടെ ഇമെയിലും പാസ്‌വേഡും ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യാം.</p>
             </div>
 
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
                     <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">2</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Account Approval & Login</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">അക്കൗണ്ട് അപ്രൂവൽ & ലോഗിൻ</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">School Setup & Grading System</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">സ്കൂൾ സെറ്റപ്പ് & ഗ്രേഡിംഗ് സിസ്റ്റം</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content mb-3">Once our team verifies your details, your account will be activated. Go to the easyresults homepage, paste your <strong>Account ID</strong> into the "Find Your Portal" search bar, and hit Enter.</p>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">You will be taken to your school's dedicated portal. Click on "Administration" and log in using the Admin Email and Password you created during registration.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">Go to <strong>'School Profile'</strong> to paste Image URLs for your School Logo and Principal's Signature. You can change your portal's color theme here.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content"><strong>Custom Grading:</strong> Choose a preset (Standard, GPA, O-Level) or build your own custom grade boundaries (e.g., A+ for 90%). This will instantly apply to all student marksheets.</p>
 
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-3">ഞങ്ങളുടെ ടീം പരിശോധിച്ച് അക്കൗണ്ട് ആക്റ്റീവ് ആക്കിയ ശേഷം, ഹോംപേജിലുള്ള "Find Your Portal" സെർച്ച് ബാറിൽ നിങ്ങളുടെ <strong>Account ID</strong> നൽകി സേർച്ച് ചെയ്യുക.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">അപ്പോൾ നിങ്ങളുടെ സ്കൂളിന്റെ പോർട്ടൽ തുറന്നു വരും. അവിടെ "Administration" ക്ലിക്ക് ചെയ്ത്, നിങ്ങളുടെ ഇമെയിലും പാസ്‌വേഡും ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യാം.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'School Profile'</strong> ൽ പോയി സ്കൂളിന്റെ ലോഗോ, പ്രിൻസിപ്പാളിന്റെ ഒപ്പ് എന്നിവയുടെ ഇമേജ് ലിങ്ക് (URL) നൽകാം. പോർട്ടലിന്റെ കളർ മാറ്റാനും സാധിക്കും.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>ഗ്രേഡിംഗ് മാറ്റാൻ:</strong> ഇവിടെ നിങ്ങൾക്ക് GPA, O-Level അല്ലെങ്കിൽ നിങ്ങളുടെ സ്വന്തം ഗ്രേഡിംഗ് സ്കെയിൽ (ഉദാ: A+ 90%) സെറ്റ് ചെയ്യാൻ കഴിയും. ഇത് കുട്ടികളുടെ മാർക്ക് ലിസ്റ്റിൽ തനിയെ വരും.</p>
             </div>
 
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
                     <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">3</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">School Setup & Branding</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">സ്കൂൾ സെറ്റപ്പ് & ഡിസൈൻ</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Staff & Classes</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">ക്ലാസുകളും അധ്യാപകരും</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Inside the Admin Console, go to <strong>'School Profile'</strong>. Here you can upload your School Logo and Principal's Signature. You can also select a color theme and define your Custom Grading Scale (e.g., A+, A, B).</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">അഡ്മിൻ പാനലിൽ <strong>'School Profile'</strong> ൽ പോയി സ്കൂളിന്റെ ലോഗോ, പ്രിൻസിപ്പാളിന്റെ ഒപ്പ് എന്നിവ ചേർക്കാം. പോർട്ടലിന്റെ കളർ മാറ്റാനും ഗ്രേഡിംഗ് സ്കെയിൽ ഉണ്ടാക്കാനും ഇവിടെ സാധിക്കും.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">Create classes and assign subjects under the <strong>'Classes'</strong> tab. Each subject must have a Total Mark and Pass Mark.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content">Go to <strong>'Staff / Teachers'</strong> to create restricted login accounts for your teachers. They can enter marks but cannot access school settings or delete data.</p>
+                
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2">ആദ്യം <strong>'Classes'</strong> ടാബിൽ പോയി ക്ലാസുകളും വിഷയങ്ങളും (മൊത്തം മാർക്കും പാസ്സ് മാർക്കും) ചേർക്കുക.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'Staff / Teachers'</strong> ടാബിൽ പോയി അധ്യാപകർക്കുള്ള ലോഗിൻ ഐഡികൾ നിർമ്മിക്കാം. ഇവർക്ക് മാർക്കുകൾ നൽകാൻ മാത്രമേ സാധിക്കൂ, സെറ്റിങ്സ് മാറ്റാനോ ഡിലീറ്റ് ചെയ്യാനോ കഴിയില്ല.</p>
             </div>
 
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
                     <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">4</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Managing Students & Classes</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">ക്ലാസുകളും കുട്ടികളെയും ചേർക്കാൻ</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Managing Students (Bulk Actions)</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">വിദ്യാർത്ഥികളെ ചേർക്കാൻ (Bulk Actions)</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">First, create your classes and assign subjects under the <strong>'Classes'</strong> tab. Then, go to the <strong>'Student Directory'</strong>. You can register students manually (including parent contact details), or use <strong>'Import Excel'</strong> to upload hundreds at once.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">ആദ്യം <strong>'Classes'</strong> ടാബിൽ പോയി ക്ലാസുകളും വിഷയങ്ങളും ചേർക്കുക. അതിനുശേഷം <strong>'Student Directory'</strong> ൽ പോയി കുട്ടികളെ ചേർക്കാം. എക്സൽ (Excel) വഴി ഒരുമിച്ചു കുട്ടികളെ അപ്‌ലോഡ് ചെയ്യാനുള്ള സൗകര്യവുമുണ്ട്.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">In the <strong>'Student Directory'</strong>, you can add students manually with their Guardian's details. For large numbers, click <strong>'Template'</strong> to download an Excel file, fill it out, and click <strong>'Import Excel'</strong> to upload hundreds at once.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content">You can also select multiple students using checkboxes to <strong>'Bulk Promote'</strong> them to the next class at the end of the year.</p>
+
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'Student Directory'</strong> ൽ കുട്ടികളെയും രക്ഷിതാക്കളുടെ വിവരങ്ങളും ചേർക്കാം. ഒന്നിലധികം പേരെ ചേർക്കാൻ <strong>'Template'</strong> ഡൗൺലോഡ് ചെയ്തു പൂരിപ്പിച്ച ശേഷം <strong>'Import Excel'</strong> ഉപയോഗിച്ച് അപ്‌ലോഡ് ചെയ്യുക.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">അധ്യയന വർഷം കഴിയുമ്പോൾ കുട്ടികളെ സെലക്ട് ചെയ്ത് അടുത്ത ക്ലാസിലേക്ക് ഒറ്റയടിക്ക് <strong>'Bulk Promote'</strong> ചെയ്യാനും സാധിക്കും.</p>
             </div>
 
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
                     <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">5</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Entering Results</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">മാർക്കുകൾ നൽകാൻ</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Exams & Result Entry</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">പരീക്ഷകളും റിസൾട്ടും</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Create a new exam in the <strong>'Exams'</strong> tab. Next, go to <strong>'Result Entry'</strong>, select the Exam and Class, and type in the marks. The system instantly auto-calculates passes and fails. Click <strong>Save Results</strong> when finished.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'Exams'</strong> ൽ പുതിയ പരീക്ഷ ഉണ്ടാക്കിയ ശേഷം, <strong>'Result Entry'</strong> ൽ പോയി പരീക്ഷയും ക്ലാസും സെലക്ട് ചെയ്യുക. മാർക്കുകൾ ടൈപ്പ് ചെയ്ത ശേഷം നിർബന്ധമായും <strong>Save Results</strong> ക്ലിക്ക് ചെയ്യുക.</p>
-            </div>
+                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">Create an exam in the <strong>'Exams'</strong> tab and assign it an <strong>Academic Year</strong> (e.g., 2024-2025) to keep records organized. </p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content">Go to <strong>'Result Entry'</strong>, select the Exam and Class, and type the marks. The system includes <strong>Mark Validation</strong>—it will block any number entered that is higher than the maximum allowed marks. Click <strong>Save Results</strong> to generate ranks.</p>
 
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'Exams'</strong> ൽ പുതിയ പരീക്ഷ ഉണ്ടാക്കുമ്പോൾ ഒരു <strong>Academic Year</strong> (ഉദാ: 2024-2025) നൽകുക. ഇത് പഴയ പരീക്ഷകൾ എളുപ്പം കണ്ടെത്താൻ സഹായിക്കും.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'Result Entry'</strong> ൽ പോയി പരീക്ഷയും ക്ലാസും സെലക്ട് ചെയ്തു മാർക്കുകൾ ടൈപ്പ് ചെയ്യുക. പരമാവധി മാർക്കിനേക്കാൾ കൂടുതൽ നൽകിയാൽ സിസ്റ്റം അത് തടയും (Mark Validation). അവസാനം <strong>Save Results</strong> ക്ലിക്ക് ചെയ്യുക.</p>
+            </div>
+            
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
                     <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">6</div>
@@ -164,9 +179,46 @@
             </div>
         </div>
 
+        <div id="content-teacher" class="space-y-4 sm:space-y-6 hidden fade-in">
+            
+            <div class="step-card teacher-card p-5 sm:p-6 rounded-2xl">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0">1</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Logging in as Staff</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">അധ്യാപകർക്കുള്ള ലോഗിൻ</h3>
+                </div>
+                <p class="text-slate-400 text-sm leading-relaxed en-content">Go to your school's portal and click on <strong>'Administration'</strong>. Log in using the Email and Password provided to you by the School Admin. You will have access to a secure, restricted dashboard.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">സ്കൂൾ പോർട്ടലിൽ കയറി <strong>'Administration'</strong> ക്ലിക്ക് ചെയ്യുക. സ്കൂൾ അഡ്മിൻ നിങ്ങൾക്ക് നൽകിയ ഇമെയിലും പാസ്‌വേഡും ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക.</p>
+            </div>
+
+            <div class="step-card teacher-card p-5 sm:p-6 rounded-2xl">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0">2</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Viewing Students</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">വിദ്യാർത്ഥികളുടെ വിവരങ്ങൾ</h3>
+                </div>
+                <p class="text-slate-400 text-sm leading-relaxed en-content">In the <strong>'Student Directory'</strong>, you can search and view all student names, admission numbers, and parent details. Note: Teachers cannot edit, delete, or add new students.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'Student Directory'</strong> ൽ കുട്ടികളുടെ പേരും രക്ഷിതാക്കളുടെ വിവരങ്ങളും നിങ്ങൾക്ക് കാണാൻ സാധിക്കും. എന്നാൽ പുതിയ കുട്ടികളെ ചേർക്കാനോ വിവരങ്ങൾ മാറ്റാനോ ഡിലീറ്റ് ചെയ്യാനോ അധ്യാപകർക്ക് സാധിക്കില്ല.</p>
+            </div>
+
+            <div class="step-card teacher-card p-5 sm:p-6 rounded-2xl">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0">3</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Entering Marks securely</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">മാർക്കുകൾ എന്റർ ചെയ്യാൻ</h3>
+                </div>
+                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">Go to <strong>'Result Entry'</strong>, select the Exam and your Class. Click 'Load Console'. Simply type the marks into the grid. The system will automatically highlight failed subjects in red.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content"><strong>Validation:</strong> You cannot accidentally enter a mark higher than the maximum allowed. Click <strong>Save Results</strong> at the bottom when you are done.</p>
+
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'Result Entry'</strong> ൽ പോയി പരീക്ഷയും ക്ലാസും സെലക്ട് ചെയ്തു 'Load Console' ക്ലിക്ക് ചെയ്യുക. ശേഷം കുട്ടികളുടെ മാർക്കുകൾ ടൈപ്പ് ചെയ്യുക. തോറ്റ വിഷയങ്ങൾ ചുവപ്പ് നിറത്തിൽ കാണിക്കും.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>സുരക്ഷ:</strong> പരമാവധി മാർക്കിനേക്കാൾ കൂടുതൽ ഒരു കാരണവശാലും സിസ്റ്റം അനുവദിക്കില്ല. മാർക്ക് നൽകിയ ശേഷം <strong>Save Results</strong> ക്ലിക്ക് ചെയ്യുക.</p>
+            </div>
+
+        </div>
+
         <div id="content-student" class="space-y-4 sm:space-y-6 hidden fade-in">
             
-            <div class="step-card p-5 sm:p-6 rounded-2xl" style="border-color: #8b5cf6;">
+            <div class="step-card student-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
                     <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold shrink-0">1</div>
                     <h3 class="text-lg sm:text-xl font-bold text-white en-content">Accessing Your Portal</h3>
@@ -176,27 +228,27 @@
                 <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">സ്കൂൾ ലിങ്ക് അറിയില്ലെങ്കിൽ പ്രധാന വെബ്സൈറ്റിൽ School ID ടൈപ്പ് ചെയ്യുക. 'Student Login' ക്ലിക്ക് ചെയ്ത് <strong>അഡ്മിഷൻ നമ്പറും</strong> <strong>പാസ്‌വേഡും</strong> നൽകുക.</p>
             </div>
 
-            <div class="step-card p-5 sm:p-6 rounded-2xl" style="border-color: #8b5cf6;">
+            <div class="step-card student-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
                     <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold shrink-0">2</div>
                     <h3 class="text-lg sm:text-xl font-bold text-white en-content">Viewing Marksheets</h3>
                     <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">മാർക്ക് ലിസ്റ്റ് കാണാൻ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Tap on the <strong>'Exam Results'</strong> tab. You will see a list of published exams. Click <strong>'View Marksheet'</strong> to see your detailed grades, percentage, and attendance.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'Exam Results'</strong> ടാബിൽ ക്ലിക്ക് ചെയ്യുക. പബ്ലിഷ് ചെയ്ത പരീക്ഷകൾ അവിടെ കാണാം. <strong>'View Marksheet'</strong> ക്ലിക്ക് ചെയ്താൽ നിങ്ങളുടെ ഗ്രേഡ്, ശതമാനം എന്നിവ കാണാം.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content">Tap on the <strong>'Exam Results'</strong> tab. You will see a list of published exams organized by Academic Year. Click <strong>'View Marksheet'</strong> to see your detailed grades, percentage, and attendance.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'Exam Results'</strong> ടാബിൽ ക്ലിക്ക് ചെയ്യുക. വർഷം തിരിച്ചു പബ്ലിഷ് ചെയ്ത പരീക്ഷകൾ അവിടെ കാണാം. <strong>'View Marksheet'</strong> ക്ലിക്ക് ചെയ്താൽ നിങ്ങളുടെ ഗ്രേഡ്, ശതമാനം എന്നിവ കാണാം.</p>
             </div>
 
-            <div class="step-card p-5 sm:p-6 rounded-2xl" style="border-color: #8b5cf6;">
+            <div class="step-card student-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
                     <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold shrink-0">3</div>
                     <h3 class="text-lg sm:text-xl font-bold text-white en-content">Downloading & Sharing</h3>
                     <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">ഡൗൺലോഡ് & ഷെയർ ചെയ്യാൻ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">While viewing your marksheet, use the <strong>Download PDF</strong> button at the top to save an official copy, or click <strong>Share</strong> to send it to your parents via WhatsApp.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">മാർക്ക് ലിസ്റ്റ് തുറക്കുമ്പോൾ മുകളിലുള്ള <strong>Download PDF</strong> ബട്ടൺ ഉപയോഗിച്ച് സേവ് ചെയ്യാം. <strong>Share</strong> ബട്ടൺ വഴി രക്ഷിതാക്കൾക്ക് അയച്ചുകൊടുക്കാനും സാധിക്കും.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content">While viewing your marksheet, use the <strong>Download PDF</strong> button at the top to save a fully formatted A4 copy to your phone, or click <strong>Share</strong> to send it to your parents via WhatsApp.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">മാർക്ക് ലിസ്റ്റ് തുറക്കുമ്പോൾ മുകളിലുള്ള <strong>Download PDF</strong> ബട്ടൺ ഉപയോഗിച്ച് സേവ് ചെയ്യാം. <strong>Share</strong> ബട്ടൺ വഴി രക്ഷിതാക്കൾക്ക് വാട്സാപ്പിൽ അയച്ചുകൊടുക്കാനും സാധിക്കും.</p>
             </div>
 
-            <div class="step-card p-5 sm:p-6 rounded-2xl" style="border-color: #8b5cf6;">
+            <div class="step-card student-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
                     <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold shrink-0">4</div>
                     <h3 class="text-lg sm:text-xl font-bold text-white en-content">Update Your Password</h3>
@@ -235,10 +287,18 @@
             </div>
 
             <div class="faq-card p-5 sm:p-6 rounded-2xl">
+                <h4 class="text-base sm:text-lg font-bold text-white mb-2 en-content"><i class="fas fa-upload text-emerald-400 mr-2"></i> How does the Excel Import work?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-white mb-2 ml-content hidden ml-text"><i class="fas fa-upload text-emerald-400 mr-2"></i> എക്സൽ വഴി കുട്ടികളെ ചേർക്കുന്നത് എങ്ങനെ?</h4>
+                
+                <p class="text-slate-400 text-sm leading-relaxed en-content">In the Student Directory, click 'Template' to download the correct Excel format. Fill in the students' details, ensure the Class Name exactly matches what you created in the system, and click 'Import Excel' to upload it.</p>
+                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">സ്റ്റുഡന്റ് ഡയറക്ടറിയിൽ 'Template' ഡൗൺലോഡ് ചെയ്യുക. കുട്ടികളുടെ വിവരങ്ങൾ നൽകുക (ക്ലാസിന്റെ പേര് സിസ്റ്റത്തിലുള്ളത് പോലെ തന്നെ ആയിരിക്കണം). ശേഷം 'Import Excel' ക്ലിക്ക് ചെയ്ത് അപ്‌ലോഡ് ചെയ്യാം.</p>
+            </div>
+
+            <div class="faq-card p-5 sm:p-6 rounded-2xl">
                 <h4 class="text-base sm:text-lg font-bold text-white mb-2 en-content"><i class="fas fa-lock text-emerald-400 mr-2"></i> Is my school's data secure?</h4>
                 <h4 class="text-base sm:text-lg font-bold text-white mb-2 ml-content hidden ml-text"><i class="fas fa-lock text-emerald-400 mr-2"></i> ഞങ്ങളുടെ ഡാറ്റ സുരക്ഷിതമാണോ?</h4>
                 
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Yes. The platform uses Google's secure Firebase Cloud servers. Students can only see their own marks, and only verified Admins can edit data.</p>
+                <p class="text-slate-400 text-sm leading-relaxed en-content">Yes. The platform uses Google's secure Firebase Cloud servers. Students can only see their own marks, and only verified Admins and Teachers can edit data.</p>
                 <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">അതെ. ഗൂഗിളിന്റെ ഫയർബേസ് ക്ലൗഡ് സെർവറാണ് ഉപയോഗിക്കുന്നത്. ഓരോ വിദ്യാർത്ഥിക്കും അവരുടെ മാർക്കുകൾ മാത്രമേ കാണാൻ സാധിക്കൂ. അഡ്മിന് മാത്രമേ ഡാറ്റ മാറ്റാൻ കഴിയൂ.</p>
             </div>
 
@@ -267,7 +327,7 @@
 
         // Tab Toggle Logic
         function setTab(tab) {
-            const tabs = ['admin', 'student', 'faq'];
+            const tabs = ['admin', 'teacher', 'student', 'faq'];
             
             tabs.forEach(t => {
                 const btn = document.getElementById('btn-tab-' + t);
@@ -284,6 +344,37 @@
                 }
             });
         }
+
+        // --- SMART ROUTING LOGIC ---
+        // Dynamically detects where the user came from and updates the "Back" buttons accordingly.
+        document.addEventListener('DOMContentLoaded', () => {
+            const referrer = document.referrer;
+            const lastSchool = localStorage.getItem('easyresults_last_school');
+            let targetHref = null;
+
+            // If the user came from an internal app page (Portal, Admin, Student)
+            if (referrer && (referrer.includes('home.html') || referrer.includes('student.html') || referrer.includes('admin.html'))) {
+                targetHref = referrer;
+            } 
+            // Fallback: If they opened it in a new tab, but have an active school session saved
+            else if (lastSchool && !referrer.includes('index.html')) {
+                targetHref = `home.html?id=${lastSchool}`;
+            }
+
+            // Apply the dynamic target to the back buttons
+            if (targetHref) {
+                document.querySelectorAll('.smart-back-link').forEach(link => {
+                    link.href = targetHref;
+                });
+                
+                // Update text purely for a better UX
+                document.querySelectorAll('.smart-back-text').forEach(text => {
+                    if (text.innerText === 'Back to Home') {
+                        text.innerText = 'Back to Portal';
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

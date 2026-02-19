@@ -102,36 +102,45 @@
     </div>
 
     <nav class="fixed top-0 w-full z-50 glass-nav">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg overflow-hidden relative bg-black/10 border-theme">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white shadow-lg overflow-hidden relative bg-black/10 border-theme shrink-0">
                     <img id="nav-logo" class="w-full h-full object-cover hidden">
-                    <i id="nav-icon" class="fas fa-university text-2xl opacity-80"></i>
+                    <i id="nav-icon" class="fas fa-university text-xl sm:text-2xl opacity-80"></i>
                 </div>
                 <div>
-                    <h1 id="nav-name" class="font-bold text-lg leading-tight tracking-tight text-main">Loading...</h1>
+                    <h1 id="nav-name" class="font-bold text-sm sm:text-lg leading-tight tracking-tight text-main">Loading...</h1>
                     <div class="flex items-center gap-2">
                         <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background-color: var(--brand);"></span>
-                        <p class="text-[10px] text-muted font-mono uppercase tracking-widest">Official Portal</p>
+                        <p class="text-[9px] sm:text-[10px] text-muted font-mono uppercase tracking-widest">Official Portal</p>
                     </div>
                 </div>
             </div>
-            <a href="index.html" class="hidden md:flex items-center gap-2 px-4 py-2 bg-dark hover:bg-panel rounded-lg transition text-xs font-bold text-muted border-theme hover:text-main">
-                Powered by <span class="dynamic-brand-name">easyresults</span> <i class="fas fa-bolt" style="color: var(--brand);"></i>
-            </a>
+            
+            <div class="flex items-center gap-3">
+                <a href="guide.html" class="flex items-center gap-2 px-3 py-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg transition text-[10px] sm:text-xs font-bold border border-blue-500/20">
+                    <i class="fas fa-book-open"></i> <span class="hidden sm:inline">User Guide</span>
+                </a>
+                <a href="index.html" class="hidden md:flex items-center gap-2 px-4 py-2 bg-dark hover:bg-panel rounded-lg transition text-xs font-bold text-muted border-theme hover:text-main">
+                    Powered by <span class="dynamic-brand-name">easyresults</span> <i class="fas fa-bolt" style="color: var(--brand);"></i>
+                </a>
+            </div>
         </div>
     </nav>
 
     <main id="main-content" class="flex-1 flex flex-col items-center justify-center px-6 pt-32 pb-16 relative hidden w-full max-w-7xl mx-auto">
         
         <div class="text-center max-w-4xl mx-auto mb-16 fade-in">
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight text-main">
+            <h1 class="text-4xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight text-main">
                 Welcome to <br>
                 <span style="color: var(--brand);" class="drop-shadow-lg" id="hero-name-highlight">...</span>
             </h1>
-            <p id="hero-tagline" class="text-lg text-muted leading-relaxed max-w-2xl mx-auto font-light">
+            <p id="hero-tagline" class="text-base sm:text-lg text-muted leading-relaxed max-w-2xl mx-auto font-light">
                 Your secure gateway to academic results and digital student services.
             </p>
+            <a href="guide.html" class="mt-6 inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition text-xs sm:text-sm font-bold border border-slate-700 shadow-lg">
+                <i class="fas fa-question-circle text-blue-400"></i> Need Help? Read the Guide
+            </a>
         </div>
 
         <div class="grid md:grid-cols-2 gap-8 w-full max-w-5xl fade-in" style="animation-delay: 0.1s;">
@@ -202,8 +211,12 @@
             <i id="error-icon" class="fas fa-ban"></i>
         </div>
         <h2 id="error-title" class="text-3xl font-bold text-main mb-3 transition-colors duration-500">Portal Unavailable</h2>
-        <p class="text-muted mb-6 max-w-md leading-relaxed whitespace-pre-line" id="error-message">This institution's digital portal is currently inactive or the link is incorrect. Please check the URL or enter a valid Account ID below.</p>
+        <p class="text-muted mb-8 max-w-md leading-relaxed whitespace-pre-line" id="error-message">This institution's digital portal is currently inactive or the link is incorrect. Please check the URL or enter a valid Account ID below.</p>
         
+        <a id="pending-wa-link" href="#" target="_blank" style="display: none;" class="px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl items-center gap-2 transition shadow-lg shadow-green-900/20 mb-8 inline-flex">
+            <i class="fab fa-whatsapp text-xl"></i> Contact Owner for Fast Approval
+        </a>
+
         <div class="w-full max-w-md mb-8 fade-in" style="animation-delay: 0.2s;">
             <div class="p-1.5 rounded-2xl bg-panel border border-theme flex items-center shadow-xl">
                 <div class="px-4 text-muted"><i class="fas fa-search"></i></div>
@@ -229,16 +242,36 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // --- GLOBAL BRANDING LISTENER ---
+        let ownerWhatsapp = ""; // Store system owner WhatsApp globally
+
+        // --- GLOBAL BRANDING & OWNER WHATSAPP LISTENER ---
         db.collection('site_config').doc('main').onSnapshot(doc => {
             if(doc.exists) {
-                const brandName = doc.data().brandName || 'easyresults';
+                const data = doc.data();
+                const brandName = data.brandName || 'easyresults';
+                ownerWhatsapp = data.whatsapp || ''; // Store owner number for pending requests
+                
+                // Instantly change the Browser Tab Title
                 const currentTitleParts = document.title.split('|');
                 const currentTitle = currentTitleParts[0].trim();
                 document.title = `${currentTitle} | ${brandName}`;
+
+                // Instantly update any text on the screen with the class "dynamic-brand-name"
                 document.querySelectorAll('.dynamic-brand-name').forEach(el => {
                     el.innerText = brandName;
                 });
+
+                // Dynamically show the WhatsApp button if the user is stuck on the pending screen
+                const waBtn = document.getElementById('pending-wa-link');
+                const isErrorStateVisible = !document.getElementById('error-state').classList.contains('hidden');
+                const isPendingTitle = document.getElementById('error-title').innerText === "Approval Pending";
+                
+                if (isErrorStateVisible && isPendingTitle && ownerWhatsapp) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const id = urlParams.get('id') || 'Unknown ID';
+                    waBtn.style.display = 'inline-flex';
+                    waBtn.href = `https://wa.me/${ownerWhatsapp}?text=Hello, my institution (ID: *${id}*) is pending approval on easyresults. Could you please activate my account?`;
+                }
             }
         });
 
@@ -278,7 +311,7 @@
                 
                 // PENDING APPROVAL LOGIC
                 if (data.isActive === false) {
-                    showError("Approval is pending. Contact the owner immediately for approval.\n\n(This page will automatically refresh once approved).", true);
+                    showError("Your institution account is pending verification.\n\nPlease contact the owner for fast approval. (This page will automatically refresh once approved).", true);
                     return;
                 }
 
@@ -373,6 +406,7 @@
             document.getElementById('main-content').classList.add('hidden');
             
             const errState = document.getElementById('error-state');
+            const waBtn = document.getElementById('pending-wa-link');
             errState.classList.remove('hidden');
             
             if (msg) document.getElementById('error-message').innerText = msg;
@@ -381,10 +415,18 @@
                 document.getElementById('error-title').innerText = "Approval Pending";
                 document.getElementById('error-icon').className = "fas fa-clock fa-spin";
                 document.getElementById('error-icon-container').className = "w-24 h-24 bg-yellow-500/10 rounded-3xl flex items-center justify-center text-yellow-500 text-5xl mb-6 border border-yellow-500/20 shadow-2xl transition-colors duration-500";
+                
+                if (ownerWhatsapp) {
+                    waBtn.style.display = 'inline-flex';
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const id = urlParams.get('id') || 'Unknown ID';
+                    waBtn.href = `https://wa.me/${ownerWhatsapp}?text=Hello, my institution (ID: *${id}*) is pending approval on easyresults. Could you please activate my account?`;
+                }
             } else {
                 document.getElementById('error-title').innerText = "Portal Unavailable";
                 document.getElementById('error-icon').className = "fas fa-ban";
                 document.getElementById('error-icon-container').className = "w-24 h-24 bg-red-500/10 rounded-3xl flex items-center justify-center text-red-500 text-5xl mb-6 border border-red-500/20 shadow-2xl transition-colors duration-500";
+                waBtn.style.display = 'none';
             }
         }
     </script>
