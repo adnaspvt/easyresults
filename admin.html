@@ -2,15 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Admin Console | easyresults</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="security.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -18,13 +20,14 @@
     <style>
         :root {
             --bg-dark: #020617;
-            --bg-panel: rgba(15, 23, 42, 0.85);
+            --bg-panel: rgba(15, 23, 42, 0.95);
             --bg-input: rgba(30, 41, 59, 0.6);
             --primary: #6366f1; 
             --primary-glow: rgba(99, 102, 241, 0.5);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: rgba(255,255,255,0.08);
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
         .text-main { color: var(--text-main) !important; }
@@ -40,24 +43,20 @@
             background-image: radial-gradient(at 0% 0%, var(--primary-glow) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
             background-attachment: fixed;
             transition: background-color 0.5s ease, color 0.5s ease;
+            overflow: hidden; /* Prevent body scroll, handle in containers */
         }
         
         .glass-panel { background: var(--bg-panel); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); transition: background 0.5s ease, border-color 0.5s ease; }
         
-        .input-field { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 12px 16px; border-radius: 10px; width: 100%; outline: none; transition: all 0.2s ease; font-size: 0.95rem; }
+        .input-field { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 12px 16px; border-radius: 10px; width: 100%; outline: none; transition: all 0.2s ease; font-size: 0.95rem; min-height: 44px; }
         .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
         
-        input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; }
-
-        .btn-primary { background: linear-gradient(135deg, var(--primary), #4338ca); color: white !important; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.2s; box-shadow: 0 4px 15px -3px var(--primary-glow); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #4338ca); color: white !important; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.2s; box-shadow: 0 4px 15px -3px var(--primary-glow); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; min-height: 44px; }
         .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.1); }
         
-        .btn-secondary { background: rgba(125,125,125,0.1); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-secondary { background: rgba(125,125,125,0.1); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; }
         .btn-secondary:hover { background: rgba(125,125,125,0.2); border-color: var(--primary); }
 
-        /* Desktop Nav & Collapse Logic */
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin-bottom: 6px; border-radius: 10px; color: var(--text-muted); transition: all 0.2s; cursor: pointer; font-weight: 500; border: 1px solid transparent; overflow: hidden; white-space: nowrap; }
         .nav-item:hover { background: rgba(125,125,125,0.1); color: var(--text-main); }
         .nav-item.active { background: var(--primary-glow); color: var(--text-main); border-color: var(--primary); }
@@ -87,9 +86,6 @@
         .att-input { border-color: rgba(251, 191, 36, 0.4); color: #fbbf24 !important; }
         .att-input:focus { border-color: #fbbf24; background: rgba(251, 191, 36, 0.1); box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2); }
 
-        .command-bar { position: fixed; bottom: 2.5rem; left: 50%; transform: translateX(-50%); background: var(--bg-panel); backdrop-filter: blur(20px); border: 1px solid var(--border); padding: 0.8rem 2rem; border-radius: 24px; display: flex; align-items: center; gap: 3rem; box-shadow: 0 25px 60px -10px rgba(0,0,0,0.6); z-index: 50; width: auto; min-width: 600px; justify-content: space-between; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideUp { from { transform: translate(-50%, 150%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
-        
         .stat-group { display: flex; flex-direction: column; align-items: flex-start; }
         .stat-label { font-size: 0.6rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; letter-spacing: 1px; margin-bottom: 2px; }
         .stat-val { font-size: 1.25rem; font-weight: 700; color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1; }
@@ -115,49 +111,98 @@
         .stamp-status { padding: 0.25rem 1rem; border: 2px solid; border-radius: 6px; font-weight: 800; text-transform: uppercase; display: inline-block; font-size: 0.85rem; }
         .pass { color: #059669; border-color: #059669; background: #ecfdf5; } .fail { color: #dc2626; border-color: #dc2626; background: #fef2f2; }
 
-        /* --- MOBILE & TABLET APP UI OPTIMIZATIONS --- */
+        /* --- MOBILE & RESPONSIVE FIXES --- */
         @media (max-width: 1024px) {
-            .sidebar { position: fixed; transform: translateX(-100%); height: 100%; z-index: 50; width: 280px; transition: transform 0.3s; }
-            .sidebar.open { transform: translateX(0); }
-            .overlay { display: none; }
-            .overlay.open { display: block; }
-            
-            #content-area { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
-            
-            .mobile-nav-item.active { color: var(--primary); }
-            .mobile-nav-item.active i { transform: translateY(-3px) scale(1.15); filter: drop-shadow(0 4px 6px var(--primary-glow)); color: var(--primary); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+            /* FIX 2: Added !important so Tailwind's "relative" class doesn't break the drawer layout */
+            .sidebar { 
+                position: fixed !important; 
+                top: 0; 
+                left: 0; 
+                height: 100%; 
+                width: 280px; 
+                transform: translateX(-100%); 
+                background: var(--bg-dark); 
+                border-right: 1px solid var(--border); 
+                box-shadow: 10px 0 30px rgba(0,0,0,0.5); 
+                z-index: 100;
+            }
+            .sidebar.open { transform: translateX(0); } 
 
-            .command-bar { min-width: 90%; flex-wrap: wrap; justify-content: center; gap: 1rem; bottom: 5rem; border-radius: 16px; padding: 0.8rem; z-index: 40; }
-            .stat-group { align-items: center; }
-            .a4-container { transform: scale(0.42); margin-top: -20%; margin-bottom: -35%; }
+            .overlay { 
+                display: none; 
+                position: fixed; 
+                inset: 0; 
+                background: rgba(0,0,0,0.6); 
+                backdrop-filter: blur(4px); 
+                z-index: 90; 
+            }
+            .overlay.open { display: block; }
+
+            /* Transform Table to Card View */
+            .me-table thead { display: none; } 
             
-            /* Transforms Result Entry Table into Mobile Cards */
-            .me-table, .me-table tbody, .me-table tr, .me-table td { display: block; width: 100%; }
-            .me-table thead { display: none; }
-            .me-table tr { margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-panel); position: relative; padding: 1rem; padding-left: 1.5rem; }
-            .me-table td { border: none !important; display: flex !important; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px dashed var(--border) !important; position: static !important; background: transparent !important; }
-            .me-table td:last-child { border-bottom: none !important; }
-            .me-table td::before { content: attr(data-label); font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; }
-            .row-status { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-radius: 12px 0 0 12px; }
+            .me-table, .me-table tbody, .me-table tr, .me-table td { 
+                display: block; 
+                width: 100%; 
+            }
+            
+            .me-table tr { 
+                margin-bottom: 1rem; 
+                border: 1px solid var(--border); 
+                border-radius: 12px; 
+                background: rgba(255,255,255,0.03); 
+                padding: 1rem; 
+                position: relative; 
+            }
+            
+            .me-table td { 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+                padding: 10px 0; 
+                border-bottom: 1px dashed var(--border); 
+                text-align: right; 
+            }
+            .me-table td:last-child { border-bottom: none; }
+            
+            .me-table td::before { 
+                content: attr(data-label); 
+                font-size: 0.7rem; 
+                font-weight: 700; 
+                text-transform: uppercase; 
+                color: var(--text-muted); 
+                text-align: left; 
+            }
+            
+            .mark-input { width: 80px; height: 44px; font-size: 1.1rem; }
+            
+            /* Bottom Sheet Modal Animation */
+            #modal-content-wrapper { 
+                position: fixed; bottom: 0; left: 0; width: 100%; max-width: 100%; 
+                border-radius: 20px 20px 0 0; max-height: 85vh; 
+                animation: slideUp 0.3s ease-out;
+            }
         }
+
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
-<body class="overflow-hidden h-screen flex text-sm selection:bg-indigo-500/30">
+<body class="overflow-hidden h-[100dvh] w-[100vw] flex text-sm selection:bg-indigo-500/30">
 
-    <div id="global-loader" class="fixed inset-0 flex flex-col items-center justify-center text-white">
+    <div id="global-loader" class="fixed inset-0 flex flex-col items-center justify-center text-white z-[9999] hidden">
         <div class="spinner mb-4"></div>
         <p class="text-sm font-bold tracking-widest animate-pulse font-mono">SYNCING CLOUD...</p>
     </div>
 
     <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <section id="view-login" class="fixed inset-0 z-50 flex items-center justify-center bg-dark hidden p-4">
+    <section id="view-login" class="fixed inset-0 z-[60] flex items-center justify-center bg-dark hidden p-4">
         <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-sm relative z-10 border-theme">
             <div class="text-center mb-8">
                 <div class="w-16 h-16 bg-panel rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6 border-theme shadow-lg text-main">
                     <i class="fas fa-shield-alt"></i>
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight text-main">Admin Console</h1>
+                <h1 class="text-2xl font-bold tracking-tight text-main">Staff Console</h1>
                 <p class="text-muted text-xs uppercase tracking-widest mt-2">Secure Access</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-5">
@@ -169,10 +214,11 @@
         </div>
     </section>
 
-    <div id="view-dashboard" class="hidden w-full h-full flex bg-dark">
-        <div id="mobile-overlay" onclick="toggleSidebar()" class="overlay fixed inset-0 bg-black/50 z-30 hidden backdrop-blur-sm"></div>
+    <div id="view-dashboard" class="hidden w-full h-full flex bg-dark max-w-[100vw] overflow-hidden">
+        
+        <div id="mobile-overlay" onclick="toggleSidebar()" class="overlay"></div>
 
-        <aside id="main-sidebar" class="sidebar w-72 bg-panel border-r border-theme flex flex-col flex-shrink-0 z-40 relative transition-all duration-300 backdrop-blur-md">
+        <aside id="main-sidebar" class="sidebar bg-panel border-r border-theme flex flex-col flex-shrink-0 relative transition-all duration-300 backdrop-blur-md">
             <div class="p-6 lg:p-8 border-b border-theme flex items-center gap-4 sidebar-header">
                 <div class="sidebar-logo-container w-10 h-10 rounded-xl flex items-center justify-center text-white bg-dark font-bold border border-white/10 overflow-hidden shadow-lg relative flex-shrink-0 transition-all" style="background-color: var(--primary);">
                     <img id="sidebar-logo" class="w-full h-full object-cover hidden">
@@ -180,32 +226,33 @@
                 </div>
                 <div class="overflow-hidden sidebar-header-text">
                     <h2 class="font-bold text-main text-sm leading-tight truncate w-32" id="sidebar-inst-name">Loading...</h2>
-                    <span class="text-[10px] text-muted font-mono uppercase tracking-wider font-bold">Administrator</span>
+                    <span class="text-[10px] text-muted font-mono uppercase tracking-wider font-bold" id="sidebar-role-text">Administrator</span>
                 </div>
             </div>
             <nav class="flex-1 p-4 lg:p-5 space-y-2 overflow-y-auto overflow-x-hidden">
                 <div class="text-[10px] font-extrabold text-muted uppercase tracking-widest mb-2 px-3 sidebar-text">Management</div>
                 <div onclick="renderTab('overview')" class="nav-item active"><i class="fas fa-chart-line w-5 text-center shrink-0"></i> <span class="sidebar-text">Overview</span></div>
-                <div onclick="renderTab('classes')" class="nav-item"><i class="fas fa-chalkboard w-5 text-center shrink-0"></i> <span class="sidebar-text">Classes</span></div>
+                <div onclick="renderTab('classes')" class="nav-item admin-only"><i class="fas fa-chalkboard w-5 text-center shrink-0"></i> <span class="sidebar-text">Classes</span></div>
                 <div onclick="renderTab('students')" class="nav-item"><i class="fas fa-user-graduate w-5 text-center shrink-0"></i> <span class="sidebar-text">Students</span></div>
+                <div onclick="renderTab('staff')" class="nav-item admin-only"><i class="fas fa-chalkboard-teacher w-5 text-center shrink-0"></i> <span class="sidebar-text">Staff / Teachers</span></div>
                 
                 <div class="text-[10px] font-extrabold text-muted uppercase tracking-widest mb-2 px-3 mt-6 sidebar-text">Academics</div>
-                <div onclick="renderTab('exams')" class="nav-item"><i class="fas fa-clock w-5 text-center shrink-0"></i> <span class="sidebar-text">Exams</span></div>
+                <div onclick="renderTab('exams')" class="nav-item admin-only"><i class="fas fa-clock w-5 text-center shrink-0"></i> <span class="sidebar-text">Exams</span></div>
                 <div onclick="renderTab('publish')" class="nav-item"><i class="fas fa-edit w-5 text-center shrink-0"></i> <span class="sidebar-text">Result Entry</span></div>
                 
-                <div class="text-[10px] font-extrabold text-muted uppercase tracking-widest mb-2 px-3 mt-6 sidebar-text">System</div>
-                <div onclick="renderTab('settings')" class="nav-item"><i class="fas fa-cog w-5 text-center shrink-0"></i> <span class="sidebar-text">School Profile</span></div>
+                <div class="text-[10px] font-extrabold text-muted uppercase tracking-widest mb-2 px-3 mt-6 sidebar-text admin-only">System</div>
+                <div onclick="renderTab('settings')" class="nav-item admin-only"><i class="fas fa-cog w-5 text-center shrink-0"></i> <span class="sidebar-text">School Profile</span></div>
             </nav>
-            <div class="p-4 lg:p-5 border-t border-theme bg-panel hidden lg:block">
-                <button onclick="logout()" class="w-full py-2.5 text-red-500 text-xs font-bold hover:bg-red-500/10 rounded-xl transition border border-red-500/20 flex items-center justify-center gap-2 overflow-hidden"><i class="fas fa-sign-out-alt shrink-0"></i> <span class="sidebar-text">Sign Out</span></button>
+            <div class="p-4 lg:p-5 border-t border-theme bg-panel">
+                <button onclick="logout()" class="w-full py-3 lg:py-2.5 text-red-500 text-xs font-bold hover:bg-red-500/10 rounded-xl transition border border-red-500/20 flex items-center justify-center gap-2 overflow-hidden"><i class="fas fa-sign-out-alt shrink-0"></i> <span class="sidebar-text">Sign Out</span></button>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col min-w-0 relative h-full">
+        <main class="flex-1 flex flex-col min-w-0 relative h-full w-full overflow-hidden">
             
-            <header class="h-16 lg:h-20 border-b border-theme bg-panel backdrop-blur-md flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30 transition-colors duration-500">
+            <header class="h-16 lg:h-20 border-b border-theme bg-panel/95 backdrop-blur-xl flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30 transition-colors duration-500 w-full shrink-0">
                 <div class="flex items-center gap-3">
-                    <button onclick="toggleSidebar()" class="lg:hidden text-muted hover:text-main"><i class="fas fa-bars text-xl"></i></button>
+                    <button onclick="toggleSidebar()" class="lg:hidden text-muted hover:text-main p-2 -ml-2"><i class="fas fa-bars text-xl"></i></button>
                     <button onclick="toggleDesktopSidebar()" class="hidden lg:block text-muted hover:text-main mr-2 transition-transform" id="desktop-sidebar-toggle"><i class="fas fa-outdent text-xl"></i></button>
                     
                     <div class="w-9 h-9 rounded-lg bg-dark flex items-center justify-center lg:hidden overflow-hidden border border-theme shadow-sm">
@@ -214,7 +261,7 @@
                     </div>
                     <div class="lg:hidden flex flex-col justify-center">
                         <h2 id="mobile-header-school-admin" class="text-xs font-extrabold text-main leading-tight truncate max-w-[150px]">Loading...</h2>
-                        <p class="text-[10px] text-muted truncate max-w-[150px] font-mono">Admin Console</p>
+                        <p class="text-[10px] text-muted truncate max-w-[150px] font-mono" id="mobile-role-text">Admin Console</p>
                     </div>
                     <h2 id="page-title" class="text-xl font-bold tracking-tight text-main hidden sm:block">Overview</h2>
                 </div>
@@ -223,48 +270,57 @@
                 </div>
             </header>
 
-            <div id="content-area" class="flex-1 overflow-y-auto p-4 lg:p-10 pb-24 lg:pb-32 w-full scroll-smooth"></div>
+            <div id="content-area" class="flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-10 w-full scroll-smooth"></div>
         </main>
-        
-        <nav class="lg:hidden fixed bottom-0 w-full bg-panel backdrop-blur-2xl border-t border-theme flex justify-around items-center z-50 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
-            <button onclick="renderTab('overview')" class="mobile-nav-item active flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
-                <i class="fas fa-chart-pie text-[1.1rem] mb-1"></i>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Home</span>
-            </button>
-            <button onclick="renderTab('students')" class="mobile-nav-item flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
-                <i class="fas fa-users text-[1.1rem] mb-1"></i>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Students</span>
-            </button>
-            <button onclick="renderTab('publish')" class="mobile-nav-item flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
-                <i class="fas fa-edit text-[1.1rem] mb-1"></i>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Results</span>
-            </button>
-            <button onclick="toggleSidebar()" class="flex flex-col items-center p-3 flex-1 text-muted transition-all duration-300">
-                <i class="fas fa-bars text-[1.1rem] mb-1"></i>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Menu</span>
-            </button>
-        </nav>
     </div>
 
-    <div id="modal-overlay" class="hidden fixed inset-0 z-[70] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 fade-in overflow-y-auto">
-        <div class="glass-panel w-full max-w-4xl rounded-2xl overflow-hidden relative border-t border-theme my-auto" id="modal-content-wrapper">
-            <div class="p-4 md:p-6 border-b border-theme flex justify-between items-center bg-panel">
+    <div id="modal-overlay" class="hidden fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm flex items-center justify-center p-0 sm:p-4 fade-in overflow-hidden">
+        <div class="glass-panel w-full max-w-4xl sm:rounded-2xl rounded-t-2xl overflow-hidden relative border-t border-theme h-[85dvh] sm:h-auto max-h-[90dvh] flex flex-col" id="modal-content-wrapper">
+            <div class="p-4 md:p-6 border-b border-theme flex justify-between items-center bg-panel shrink-0">
                 <h3 class="text-lg font-bold text-main" id="modal-title">Edit</h3>
-                <button onclick="closeModal()" class="text-muted hover:text-main transition p-2"><i class="fas fa-times text-xl"></i></button>
+                <button onclick="closeModal()" class="text-muted hover:text-main transition p-2 bg-dark rounded-full border border-theme w-8 h-8 flex items-center justify-center"><i class="fas fa-times"></i></button>
             </div>
-            <div id="modal-body" class="p-4 md:p-6 bg-dark max-h-[80vh] overflow-y-auto"></div>
+            <div id="modal-body" class="p-4 md:p-6 bg-dark overflow-y-auto flex-1 w-full overflow-x-hidden"></div>
         </div>
     </div>
 
-    <div id="promote-modal" class="hidden fixed inset-0 z-[80] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 fade-in">
-        <div class="glass-panel w-full max-w-md rounded-2xl overflow-hidden border-t border-theme">
-            <div class="p-4 md:p-6 border-b border-theme"><h3 class="text-lg font-bold text-main">Bulk Promote Students</h3></div>
-            <div class="p-4 md:p-6 space-y-4">
+    <div id="promote-modal" class="hidden fixed inset-0 z-[80] bg-black/90 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 fade-in">
+        <div class="glass-panel w-full max-w-md sm:rounded-2xl rounded-t-2xl overflow-hidden border-t border-theme pb-8 sm:pb-0" id="promote-content-wrapper">
+            <div class="p-4 md:p-6 border-b border-theme flex justify-between items-center bg-panel">
+                <h3 class="text-lg font-bold text-main">Bulk Promote Students</h3>
+                <button onclick="$('promote-modal').classList.add('hidden')" class="sm:hidden text-muted hover:text-main transition p-2 bg-dark rounded-full border border-theme w-8 h-8 flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4 md:p-6 space-y-4 bg-dark">
                 <p class="text-muted text-sm">Select the new class for the selected students:</p>
                 <select id="promote-target-class" class="input-field"></select>
                 <div class="flex justify-end gap-3 mt-4">
-                    <button onclick="$('promote-modal').classList.add('hidden')" class="px-4 py-2 bg-dark text-main border-theme border rounded-lg text-sm">Cancel</button>
-                    <button onclick="confirmPromote()" class="btn-primary px-6 py-2 text-sm">Promote</button>
+                    <button onclick="$('promote-modal').classList.add('hidden')" class="hidden sm:block px-4 py-2 bg-dark text-main border-theme border rounded-lg text-sm">Cancel</button>
+                    <button onclick="confirmPromote()" class="btn-primary w-full sm:w-auto px-6 py-2 text-sm">Promote</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="marksheet-modal" class="hidden fixed inset-0 z-[100] bg-dark sm:bg-black/95 sm:backdrop-blur-sm flex justify-center sm:items-center overflow-hidden fade-in">
+        <div id="marksheet-modal-content" class="w-full sm:max-w-[210mm] relative bg-dark sm:bg-transparent h-[100dvh] sm:h-[90vh] sm:rounded-2xl flex flex-col">
+            
+            <div class="sticky top-0 w-full flex items-center justify-between sm:justify-end gap-2 p-3 sm:p-0 bg-panel/90 backdrop-blur-md sm:bg-transparent z-[110] border-b border-theme sm:border-none sm:absolute sm:-top-16 sm:right-0">
+                <button onclick="closeModal()" class="sm:hidden bg-dark text-white w-10 h-10 rounded-full flex items-center justify-center border border-theme"><i class="fas fa-arrow-left"></i></button>
+                <div class="flex gap-2">
+                    <button onclick="downloadPDF()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 transition border border-blue-400"><i class="fas fa-file-pdf"></i> Save</button>
+                    <button onclick="closeModal()" class="hidden sm:flex bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-full text-xs font-bold backdrop-blur-md border border-white/10 transition items-center gap-2"><i class="fas fa-times"></i> Close</button>
+                </div>
+            </div>
+            
+            <div id="marksheet-scroll-area" class="flex-1 overflow-x-hidden overflow-y-auto w-full flex justify-center pb-20 sm:pb-0">
+                <div id="mk-printable" class="a4-container">
+                    <div class="transcript-frame">
+                        <div class="watermark-layer"><img id="mk-watermark" class="watermark-logo"></div>
+                        <div class="transcript-inner">
+                            <div class="content-layer" id="mk-content-layer">
+                                </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -298,10 +354,9 @@
         const SESSION_KEY = 'easyresults_admin_session';
         let currentUser = null;
         let activeChart = null;
-        let localState = { students: [], classes: [], exams: [], results: [], subjects: [] };
+        let localState = { students: [], classes: [], exams: [], results: [], subjects: [], staff: [] };
         let currentSort = { key: 'rank', order: 'asc' };
 
-        // --- THEMES & GRADES ---
         const THEMES = {
             'deep_space': { bg: '#020617', glass: 'rgba(15, 23, 42, 0.85)', text: '#f8fafc', muted: '#94a3b8' },
             'minimal_light': { bg: '#f8fafc', glass: 'rgba(255, 255, 255, 0.85)', text: '#0f172a', muted: '#64748b' },
@@ -355,10 +410,11 @@
             }).join(' | ');
         }
 
+        // Updated Sidebar Toggle logic
         function toggleSidebar() { 
-            $('main-sidebar').classList.toggle('open'); 
-            $('mobile-overlay').classList.toggle('hidden'); 
-            $('mobile-overlay').classList.toggle('open');
+            document.getElementById('main-sidebar').classList.toggle('open'); 
+            document.getElementById('mobile-overlay').classList.toggle('open'); 
+            document.getElementById('mobile-overlay').classList.toggle('hidden'); 
         }
 
         function toggleDesktopSidebar() {
@@ -403,14 +459,43 @@
             const pass = $('login-pass').value;
 
             try {
-                const snap = await db.collection('institutions').where('email', '==', email).where('pass', '==', pass).get();
+                // 1. Check if it's the Main Admin
+                let snap = await db.collection('institutions').where('email', '==', email).where('pass', '==', pass).get();
                 if(!snap.empty) {
                     const doc = snap.docs[0];
                     if(doc.data().isActive === false) return showToast("Account Suspended", "error");
-                    currentUser = { id: doc.id, ...doc.data() };
+                    currentUser = { id: doc.id, role: 'admin', ...doc.data() };
                     localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
                     initDashboard();
-                } else { showToast("Invalid Credentials", "error"); btn.innerText = "Access Dashboard"; }
+                    return;
+                }
+
+                // 2. Check if it's a Teacher / Staff
+                snap = await db.collection('staff').where('email', '==', email).where('password', '==', pass).get();
+                if(!snap.empty) {
+                    const staffDoc = snap.docs[0];
+                    const instDoc = await db.collection('institutions').doc(staffDoc.data().institutionId).get();
+                    
+                    if(!instDoc.exists || instDoc.data().isActive === false) {
+                        showToast("Institution Suspended", "error");
+                        btn.innerText = "Access Dashboard";
+                        return;
+                    }
+                    
+                    currentUser = { 
+                        id: instDoc.id, 
+                        staffId: staffDoc.id,
+                        role: 'teacher', 
+                        staffName: staffDoc.data().name,
+                        ...instDoc.data() 
+                    };
+                    localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+                    initDashboard();
+                    return;
+                }
+
+                showToast("Invalid Credentials", "error"); 
+                btn.innerText = "Access Dashboard";
             } catch(e) { console.error(e); showToast("Network Error", "error"); btn.innerText = "Access Dashboard"; }
         }
 
@@ -433,8 +518,18 @@
             $('view-login').classList.add('hidden');
             $('global-loader').classList.remove('hidden');
             $('view-dashboard').classList.remove('hidden');
-            $('sidebar-inst-name').innerText = currentUser.name;
-            if($('mobile-header-school-admin')) $('mobile-header-school-admin').innerText = currentUser.name;
+            
+            const isTeacher = currentUser.role === 'teacher';
+            if (isTeacher) {
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+                $('sidebar-inst-name').innerText = currentUser.staffName;
+                $('sidebar-role-text').innerText = "Teacher";
+                $('mobile-header-school-admin').innerText = currentUser.staffName;
+                $('mobile-role-text').innerText = "Teacher Console";
+            } else {
+                $('sidebar-inst-name').innerText = currentUser.name;
+                $('mobile-header-school-admin').innerText = currentUser.name;
+            }
             
             if(currentUser.profileImage) { 
                 $('sidebar-logo').src = currentUser.profileImage; 
@@ -469,12 +564,13 @@
 
         async function refreshData() {
             try {
-                const [c, s, e, r, sub] = await Promise.all([
+                const [c, s, e, r, sub, stf] = await Promise.all([
                     db.collection('classes').where('institutionId', '==', currentUser.id).get(),
                     db.collection('students').where('institutionId', '==', currentUser.id).get(),
                     db.collection('exams').where('institutionId', '==', currentUser.id).get(),
                     db.collection('results').where('institutionId', '==', currentUser.id).get(),
-                    db.collection('subjects').where('institutionId', '==', currentUser.id).get()
+                    db.collection('subjects').where('institutionId', '==', currentUser.id).get(),
+                    db.collection('staff').where('institutionId', '==', currentUser.id).get()
                 ]);
                 
                 localState.classes = c.docs.map(d => ({id: d.id, ...d.data()}));
@@ -482,21 +578,24 @@
                 localState.exams = e.docs.map(d => ({id: d.id, ...d.data()}));
                 localState.results = r.docs.map(d => ({id: d.id, ...d.data()}));
                 localState.subjects = sub.docs.map(d => ({id: d.id, ...d.data()}));
+                localState.staff = stf.docs.map(d => ({id: d.id, ...d.data()}));
             } catch(e) { console.error("Sync Error", e); }
         }
 
+        // Updated RenderTab with Auto-Close Sidebar logic
         async function renderTab(tab) {
             document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(el => {
                 if(el.getAttribute('onclick')) el.classList.toggle('active', el.getAttribute('onclick').includes(tab));
             });
+            
+            // Auto close sidebar on mobile
             if(window.innerWidth < 1024) { 
-                $('main-sidebar').classList.remove('open'); 
-                $('mobile-overlay').classList.add('hidden'); 
-                $('mobile-overlay').classList.remove('open'); 
+                toggleSidebar();
             }
             
             const content = $('content-area');
             const title = $('page-title');
+            const isTeacher = currentUser.role === 'teacher';
             
             if(tab === 'overview') {
                 title.innerText = 'Overview';
@@ -511,7 +610,7 @@
                         <div class="glass-panel p-5 md:p-6 rounded-2xl border-l-4 border-l-purple-500"><p class="text-[10px] md:text-xs font-bold uppercase text-muted">Active Classes</p><h3 class="text-2xl md:text-3xl font-bold mt-2 text-main">${cCount}</h3></div>
                         <div class="glass-panel p-5 md:p-6 rounded-2xl border-l-4 border-l-emerald-500"><p class="text-[10px] md:text-xs font-bold uppercase text-muted">Exams Conducted</p><h3 class="text-2xl md:text-3xl font-bold mt-2 text-main">${eCount}</h3></div>
                     </div>
-                    <div class="glass-panel p-5 lg:p-8 rounded-2xl fade-in w-full"><h4 class="text-sm md:text-lg font-bold mb-4 md:mb-6 text-main">Student Distribution</h4><div class="h-48 md:h-64"><canvas id="mainChart"></canvas></div></div>`;
+                    <div class="glass-panel p-5 lg:p-8 rounded-2xl fade-in w-full overflow-hidden"><h4 class="text-sm md:text-lg font-bold mb-4 md:mb-6 text-main">Student Distribution</h4><div class="h-48 md:h-64 relative w-full"><canvas id="mainChart"></canvas></div></div>`;
                 
                 if(activeChart) activeChart.destroy();
                 const ctx = $('mainChart').getContext('2d');
@@ -526,6 +625,7 @@
             }
 
             if(tab === 'classes') {
+                if(isTeacher) return renderTab('overview');
                 title.innerText = 'Classes & Subjects';
                 await refreshData();
                 content.innerHTML = `
@@ -542,8 +642,47 @@
                                     <button onclick="deleteItem('classes','${c.id}')" class="text-muted hover:text-red-400 transition p-2"><i class="fas fa-trash"></i></button>
                                 </div>
                             </div>
-                            <button onclick="manageSubjects('${c.id}')" class="w-full py-2 bg-dark hover:bg-panel rounded-lg text-xs font-bold text-main transition border-theme">Manage ${localState.subjects.filter(s=>s.classId===c.id).length} Subjects</button>
+                            <button onclick="manageSubjects('${c.id}')" class="w-full py-3 bg-dark hover:bg-panel rounded-xl text-xs font-bold text-main transition border-theme">Manage ${localState.subjects.filter(s=>s.classId===c.id).length} Subjects</button>
                         </div>`).join('') || '<div class="text-muted p-4 col-span-full text-center">No classes found. Add one above.</div>'}
+                    </div>`;
+            }
+
+            if(tab === 'staff') {
+                if(isTeacher) return renderTab('overview');
+                title.innerText = 'Staff Directory';
+                await refreshData();
+                content.innerHTML = `
+                    <div class="grid lg:grid-cols-3 gap-4 md:gap-6 mb-6 fade-in">
+                        <div class="glass-panel p-4 lg:p-6 rounded-2xl lg:col-span-1 h-fit">
+                            <h4 class="font-bold mb-4 border-b border-theme pb-2 text-main">Register Teacher</h4>
+                            <div class="space-y-3">
+                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Full Name</label><input id="st-name" class="input-field text-sm" placeholder="e.g. Mr. Smith"></div>
+                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Email (Login ID)</label><input id="st-email" type="email" class="input-field text-sm" placeholder="teacher@school.com"></div>
+                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Password</label><input id="st-pass" class="input-field text-sm" placeholder="Secret Password"></div>
+                                <button onclick="addStaff()" class="w-full btn-primary mt-4 py-3"><i class="fas fa-plus"></i> Add Staff Member</button>
+                            </div>
+                        </div>
+                        <div class="glass-panel rounded-2xl lg:col-span-2 overflow-hidden flex flex-col w-full h-fit">
+                            <div class="p-3 lg:p-4 border-b border-theme bg-panel"><h4 class="font-bold text-main">Active Staff Members</h4></div>
+                            <div class="p-0 bg-panel/30">
+                                ${localState.staff.length === 0 ? '<div class="p-8 text-center text-muted">No staff members found.</div>' : 
+                                `<div class="divide-y divide-theme/50">${localState.staff.map(s => `
+                                    <div class="p-4 flex justify-between items-center hover:bg-slate-800/10 transition group px-6 border-b border-theme/50 last:border-0">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 rounded-full bg-dark flex items-center justify-center text-primary border border-theme shadow-sm shrink-0"><i class="fas fa-chalkboard-teacher"></i></div>
+                                            <div class="overflow-hidden">
+                                                <p class="font-bold text-sm text-main truncate">${s.name}</p>
+                                                <p class="text-[10px] text-muted font-mono">${s.email}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2 sm:opacity-50 group-hover:opacity-100 transition shrink-0">
+                                            <button onclick="editItem('staff','${s.id}')" class="px-3 py-1.5 md:p-2 text-xs md:text-sm text-muted hover:text-blue-500 bg-dark md:bg-transparent rounded transition border border-theme md:border-transparent md:hover:border-theme shadow-sm md:shadow-none"><i class="fas fa-edit mr-1 md:mr-0"></i><span class="md:hidden">Edit</span></button>
+                                            <button onclick="deleteItem('staff','${s.id}')" class="px-3 py-1.5 md:p-2 text-xs md:text-sm text-red-500 hover:bg-red-500 hover:text-white bg-dark md:bg-transparent rounded transition border border-theme md:border-transparent md:hover:border-red-500 shadow-sm md:shadow-none"><i class="fas fa-trash mr-1 md:mr-0"></i><span class="md:hidden">Delete</span></button>
+                                        </div>
+                                    </div>
+                                `).join('')}</div>`}
+                            </div>
+                        </div>
                     </div>`;
             }
 
@@ -553,7 +692,7 @@
                 const opts = localState.classes.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
                 
                 content.innerHTML = `
-                    <div class="glass-panel p-4 lg:p-6 rounded-2xl mb-6 fade-in flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="glass-panel p-4 lg:p-6 rounded-2xl mb-6 fade-in flex flex-col md:flex-row justify-between items-center gap-4 ${isTeacher ? 'hidden' : ''}">
                         <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
                             <button onclick="openRegisterModal()" class="btn-primary w-full sm:w-auto"><i class="fas fa-plus"></i> Register Student</button>
                             <div class="flex gap-2 w-full sm:w-auto">
@@ -567,11 +706,11 @@
                         </div>
                     </div>
                     
-                    <div class="glass-panel rounded-2xl overflow-hidden flex flex-col min-h-[500px] fade-in shadow-xl">
+                    <div class="glass-panel rounded-2xl overflow-hidden flex flex-col fade-in shadow-xl w-full h-fit">
                         <div class="p-3 lg:p-4 border-b border-theme bg-panel flex flex-col md:flex-row gap-3 items-center justify-between">
                             <div class="flex items-center gap-3 w-full md:w-auto flex-1">
                                 <i class="fas fa-search text-muted pl-2"></i>
-                                <input id="s-search" onkeyup="renderStudentList()" class="input-field bg-transparent border-none shadow-none focus:ring-0 p-0 w-full" placeholder="Search name, adm no, or parent...">
+                                <input id="s-search" onkeyup="renderStudentList()" class="input-field bg-transparent border-none shadow-none focus:ring-0 p-0 w-full min-h-[30px]" placeholder="Search name, adm no, or parent...">
                             </div>
                             <div class="flex gap-2 w-full md:w-auto">
                                 <select id="s-filter-class" onchange="renderStudentList()" class="input-field w-1/2 sm:w-auto text-xs py-2"><option value="">All Classes</option>${opts}</select>
@@ -582,49 +721,57 @@
                                     <option value="adm_desc">Adm No (Desc)</option>
                                 </select>
                             </div>
-                            <button onclick="openPromoteModal()" id="btn-promote" class="hidden w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition">Promote</button>
+                            ${!isTeacher ? `<button onclick="openPromoteModal()" id="btn-promote" class="hidden w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition min-h-[44px]">Promote</button>` : ''}
                         </div>
-                        <div class="px-4 lg:px-6 py-2.5 bg-dark text-[10px] uppercase font-bold text-muted flex items-center gap-3 border-b border-theme">
-                            <input type="checkbox" id="check-all" class="rounded bg-dark border-theme" onchange="toggleSelectAll(this)"> 
-                            <span>Select All</span>
+                        <div class="px-4 lg:px-6 py-2.5 bg-dark text-[10px] uppercase font-bold text-muted flex items-center gap-3 border-b border-theme shrink-0">
+                            ${!isTeacher ? `<input type="checkbox" id="check-all" class="rounded bg-dark border-theme" onchange="toggleSelectAll(this)"> <span>Select All</span>` : `<span>Student Name</span>`}
                         </div>
-                        <div class="flex-1 overflow-y-auto p-0 bg-panel/30" id="student-list"></div>
+                        <div class="p-0 bg-panel/30 w-full" id="student-list"></div>
                     </div>
                 `;
                 renderStudentList();
             }
 
             if(tab === 'exams') {
+                if(isTeacher) return renderTab('overview');
                 title.innerText = 'Exams';
                 await refreshData();
                 content.innerHTML = `
                     <div class="glass-panel p-4 md:p-6 rounded-2xl mb-4 md:mb-6 fade-in flex flex-col md:flex-row gap-3 md:gap-4 items-end">
                         <div class="flex-grow w-full md:w-auto">
                             <label class="text-[10px] md:text-xs font-bold text-muted uppercase mb-1 block">Exam Title</label>
-                            <input id="new-exam" class="input-field" placeholder="e.g. Finals 2024">
+                            <input id="new-exam" class="input-field" placeholder="e.g. Finals">
+                        </div>
+                        <div class="w-full md:w-auto">
+                            <label class="text-[10px] md:text-xs font-bold text-muted uppercase mb-1 block">Academic Year</label>
+                            <select id="new-exam-year" class="input-field text-muted w-full cursor-pointer">
+                                <option value="2023-2024">2023-2024</option>
+                                <option value="2024-2025" selected>2024-2025</option>
+                                <option value="2025-2026">2025-2026</option>
+                            </select>
                         </div>
                         <div class="w-full md:w-auto">
                             <label class="text-[10px] md:text-xs font-bold text-muted uppercase mb-1 block">Result Publish Date</label>
                             <input id="new-exam-date" type="datetime-local" class="input-field text-muted w-full">
                         </div>
-                        <button onclick="addExam()" class="btn-primary flex-shrink-0 h-[46px] w-full md:w-auto mt-2 md:mt-0">Create Exam</button>
+                        <button onclick="addExam()" class="btn-primary flex-shrink-0 w-full md:w-auto mt-2 md:mt-0">Create Exam</button>
                     </div>
                     <div class="space-y-3 fade-in">${localState.exams.map(e=> {
                         const d = e.publishDate ? new Date(e.publishDate).toLocaleString() : 'Immediate';
                         const isPub = e.isPublished || false;
                         return `
-                        <div class="glass-panel p-3 md:p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 group">
+                        <div class="glass-panel p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group">
                             <div>
-                                <span class="font-bold block text-main">${e.name}</span>
-                                <span class="text-[10px] text-muted font-mono"><i class="fas fa-clock mr-1"></i> Scheduled: ${d}</span>
+                                <span class="font-bold block text-main">${e.name} <span class="text-indigo-400 text-xs ml-2">[${e.academicYear || 'N/A'}]</span></span>
+                                <span class="text-[10px] text-muted font-mono block mt-1"><i class="fas fa-clock mr-1"></i> Scheduled: ${d}</span>
                             </div>
-                            <div class="flex gap-4 items-center w-full sm:w-auto justify-between sm:justify-end">
-                                <button onclick="toggleExamPublish('${e.id}', ${isPub})" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition border ${isPub ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30' : 'bg-dark text-muted border-theme hover:bg-panel hover:text-main'}">
+                            <div class="flex gap-3 items-center w-full sm:w-auto justify-between sm:justify-end mt-2 sm:mt-0">
+                                <button onclick="toggleExamPublish('${e.id}', ${isPub})" class="px-3 py-2 sm:py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition border flex-1 sm:flex-none text-center justify-center flex items-center ${isPub ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30' : 'bg-dark text-muted border-theme hover:bg-panel hover:text-main'}">
                                     ${isPub ? '<i class="fas fa-eye mr-1"></i> Published' : '<i class="fas fa-eye-slash mr-1"></i> Unpublished'}
                                 </button>
-                                <div class="flex gap-2 sm:opacity-50 group-hover:opacity-100 transition">
-                                    <button onclick="editItem('exams','${e.id}')" class="text-muted hover:text-blue-500 p-2"><i class="fas fa-edit"></i></button>
-                                    <button onclick="deleteItem('exams','${e.id}')" class="text-muted hover:text-red-500 p-2"><i class="fas fa-trash"></i></button>
+                                <div class="flex gap-2 sm:opacity-50 group-hover:opacity-100 transition shrink-0">
+                                    <button onclick="editItem('exams','${e.id}')" class="text-muted hover:text-blue-500 p-2 bg-dark sm:bg-transparent rounded border border-theme sm:border-transparent"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteItem('exams','${e.id}')" class="text-red-500 sm:text-muted hover:text-red-500 p-2 bg-dark sm:bg-transparent rounded border border-theme sm:border-transparent"><i class="fas fa-trash"></i></button>
                                 </div>
                             </div>
                         </div>`;
@@ -636,19 +783,20 @@
                 title.innerText = 'Result Entry';
                 await refreshData();
                 content.innerHTML = `
-                    <div class="glass-panel p-5 md:p-8 rounded-2xl max-w-5xl mx-auto fade-in text-center border-t-4 border-indigo-500">
+                    <div class="glass-panel p-5 md:p-8 rounded-2xl max-w-full mx-auto fade-in text-center border-t-4 border-indigo-500 w-full">
                         <h3 class="text-xl md:text-2xl font-bold mb-2 text-main">Enter Results</h3>
                         <p class="text-xs md:text-sm text-muted mb-6">Select exam and class to enter marks. Existing marks will load automatically.</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6">
-                            <select id="pub-exam" class="input-field cursor-pointer"><option value="">Select Exam</option>${localState.exams.map(e=>`<option value="${e.id}">${e.name}</option>`)}</select>
+                            <select id="pub-exam" class="input-field cursor-pointer"><option value="">Select Exam</option>${localState.exams.map(e=>`<option value="${e.id}">[${e.academicYear || 'Year'}] ${e.name}</option>`)}</select>
                             <select id="pub-class" class="input-field cursor-pointer"><option value="">Select Class</option>${localState.classes.map(c=>`<option value="${c.id}">${c.name}</option>`)}</select>
                         </div>
                         <button onclick="loadResultGrid()" class="btn-primary px-10 py-3 rounded-xl shadow-lg mx-auto w-full md:w-auto">Load Console</button>
                     </div>
-                    <div id="result-grid-container" class="mt-6 md:mt-8 fade-in"></div>`;
+                    <div id="result-grid-container" class="mt-6 md:mt-8 fade-in w-full"></div>`;
             }
 
             if(tab === 'settings') {
+                if(isTeacher) return renderTab('overview');
                 title.innerText = 'School Profile';
                 const i = currentUser;
                 const currentTemplate = i.gradeScale || 'standard';
@@ -657,7 +805,7 @@
                 else { draftGradeScale = JSON.parse(JSON.stringify(DEFAULT_SCALES[currentTemplate])); }
 
                 content.innerHTML = `
-                    <div class="w-full fade-in space-y-4 md:space-y-6 max-w-6xl mx-auto">
+                    <div class="w-full fade-in space-y-4 md:space-y-6 max-w-none mx-auto">
                         <div class="glass-panel p-5 md:p-8 rounded-2xl">
                             <h4 class="font-bold border-b border-theme pb-3 md:pb-4 mb-4 md:mb-6 text-main">Identity & Branding</h4>
                             <div class="grid md:grid-cols-2 gap-4 md:gap-6 mb-6">
@@ -669,7 +817,7 @@
                                     <div>
                                         <label class="text-[10px] md:text-xs font-bold text-muted uppercase">Brand Color</label>
                                         <div class="flex items-center gap-4 mt-2">
-                                            <input type="color" id="set-color" class="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0" value="${i.themeColor || '#6366f1'}">
+                                            <input type="color" id="set-color" class="w-12 h-12 rounded cursor-pointer bg-transparent border-0 p-0" value="${i.themeColor || '#6366f1'}">
                                             <span class="text-xs text-muted">Select your primary accent color</span>
                                         </div>
                                     </div>
@@ -691,7 +839,7 @@
                                     </div>
                                 </div>
 
-                                <div class="md:col-span-2 mt-2 pt-6 border-t border-theme">
+                                <div class="md:col-span-2 mt-2 pt-6 border-t border-theme w-full overflow-hidden">
                                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                                         <div>
                                             <h4 class="font-bold text-main">Custom Grading Scale</h4>
@@ -705,7 +853,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div id="grade-scale-editor" class="mb-4 bg-black/20 p-3 md:p-4 rounded-xl border border-theme overflow-x-auto"></div>
+                                    <div id="grade-scale-editor" class="mb-4 bg-black/20 p-3 md:p-4 rounded-xl border border-theme overflow-x-hidden w-full"></div>
                                     <button onclick="addGradeRow()" class="btn-secondary text-xs w-full sm:w-auto"><i class="fas fa-plus"></i> Add Grade Boundary</button>
                                 </div>
 
@@ -732,18 +880,18 @@
         function renderGradeScaleEditor() {
             draftGradeScale.sort((a, b) => b.m - a.m);
             let html = `
-                <div class="flex gap-4 text-[10px] uppercase font-bold text-muted px-2 mb-2 min-w-[300px]">
-                    <div class="w-1/2">Grade Letter / Name</div>
-                    <div class="w-1/2">Minimum % Required</div>
+                <div class="flex gap-2 text-[10px] uppercase font-bold text-muted px-2 mb-2 w-full">
+                    <div class="flex-1">Grade Letter / Name</div>
+                    <div class="flex-1">Minimum % Required</div>
                     <div class="w-8"></div>
                 </div>
             `;
             draftGradeScale.forEach((row, idx) => {
                 html += `
-                <div class="flex items-center gap-4 mb-2 min-w-[300px]">
-                    <input type="text" class="input-field w-1/2 py-2" value="${row.g}" onchange="updateGradeRow(${idx}, 'g', this.value)" placeholder="e.g. A+">
-                    <input type="number" class="input-field w-1/2 py-2" value="${row.m}" onchange="updateGradeRow(${idx}, 'm', this.value)" placeholder="e.g. 90">
-                    <button onclick="removeGradeRow(${idx})" class="text-slate-600 hover:text-red-500 p-2 transition"><i class="fas fa-trash"></i></button>
+                <div class="flex items-center gap-2 mb-2 w-full">
+                    <input type="text" class="input-field py-2 flex-1 min-w-0" value="${row.g}" onchange="updateGradeRow(${idx}, 'g', this.value)" placeholder="e.g. A+">
+                    <input type="number" class="input-field py-2 flex-1 min-w-0" value="${row.m}" onchange="updateGradeRow(${idx}, 'm', this.value)" placeholder="e.g. 90">
+                    <button onclick="removeGradeRow(${idx})" class="text-slate-600 hover:text-red-500 p-2 transition shrink-0 bg-dark md:bg-transparent rounded-lg border border-theme md:border-transparent"><i class="fas fa-trash"></i></button>
                 </div>`;
             });
             if(draftGradeScale.length === 0) html += `<div class="text-center text-muted text-xs py-4">No grades configured. Please add boundaries.</div>`;
@@ -833,10 +981,26 @@
                     <button onclick="saveEdit('${type}', '${id}')" class="w-full btn-primary mt-4">Save Changes</button>
                 </div>`;
             }
+            else if(type === 'staff') {
+                html = `<div class="space-y-4">
+                    <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Full Name</label><input id="edit-val-name" class="input-field text-sm" value="${item.name}"></div>
+                    <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Email (Login ID)</label><input id="edit-val-email" type="email" class="input-field text-sm" value="${item.email}"></div>
+                    <div class="border-t border-theme pt-4 mt-2">
+                        <h4 class="text-[10px] md:text-xs font-bold text-main mb-3 uppercase tracking-wider text-red-400">Security</h4>
+                        <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Staff Password</label><input id="edit-val-pass" class="input-field text-sm" value="${item.password || ''}"></div>
+                    </div>
+                    <button onclick="saveEdit('${type}', '${id}')" class="w-full btn-primary mt-4">Save Changes</button>
+                </div>`;
+            }
             else if(type === 'exams') {
                 let dateVal = '';
                 if(item.publishDate) { const d = new Date(item.publishDate); dateVal = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16); }
-                html = `<div class="space-y-4"><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Exam Name</label><input id="edit-val-name" class="input-field" value="${item.name}"></div><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Publish Date</label><input id="edit-val-date" type="datetime-local" class="input-field text-muted" value="${dateVal}"></div><button onclick="saveEdit('${type}', '${id}')" class="w-full btn-primary">Save Changes</button></div>`;
+                html = `<div class="space-y-4">
+                    <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Exam Name</label><input id="edit-val-name" class="input-field" value="${item.name}"></div>
+                    <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Academic Year</label><input id="edit-val-year" class="input-field" value="${item.academicYear || ''}"></div>
+                    <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Publish Date</label><input id="edit-val-date" type="datetime-local" class="input-field text-muted" value="${dateVal}"></div>
+                    <button onclick="saveEdit('${type}', '${id}')" class="w-full btn-primary">Save Changes</button>
+                </div>`;
             }
             else if(type === 'subjects') {
                 html = `<div class="space-y-4"><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Subject Name</label><input id="edit-sub-name" class="input-field" value="${item.name}"></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Total Marks</label><input id="edit-sub-full" type="number" class="input-field" value="${item.fullMarks}"></div><div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Pass Marks</label><input id="edit-sub-pass" type="number" class="input-field" value="${item.passMarks}"></div></div><input type="hidden" id="edit-sub-cid" value="${item.classId}"><button onclick="saveEdit('subjects', '${id}')" class="w-full btn-primary">Update Subject</button></div>`;
@@ -864,7 +1028,14 @@
                     address: $('edit-val-address').value
                 };
             }
-            else if(type === 'exams') { const d = $('edit-val-date').value; updateData = { name: $('edit-val-name').value, publishDate: d ? new Date(d).toISOString() : new Date().toISOString() }; }
+            else if(type === 'staff') {
+                updateData = { 
+                    name: $('edit-val-name').value, 
+                    email: $('edit-val-email').value, 
+                    password: $('edit-val-pass').value 
+                };
+            }
+            else if(type === 'exams') { const d = $('edit-val-date').value; updateData = { name: $('edit-val-name').value, academicYear: $('edit-val-year').value, publishDate: d ? new Date(d).toISOString() : new Date().toISOString() }; }
             else if(type === 'subjects') updateData = { name: $('edit-sub-name').value, fullMarks: Number($('edit-sub-full').value), passMarks: Number($('edit-sub-pass').value) };
             
             await db.collection(type).doc(id).update(updateData);
@@ -894,10 +1065,25 @@
                 showToast("Name, Adm No and Class are required", "error");
             }
         }
+
+        async function addStaff() {
+            const n=$('st-name').value, e=$('st-email').value, p=$('st-pass').value;
+            if(n&&e&&p) {
+                showLoader(true);
+                await db.collection('staff').add({
+                    institutionId: currentUser.id,
+                    name: n, email: e, password: p, createdAt: new Date().toISOString()
+                });
+                await renderTab('staff');
+                showLoader(false); showToast("Teacher Added");
+            } else {
+                showToast("All fields are required", "error");
+            }
+        }
         
         async function addExam() {
-            const n = $('new-exam').value; const d = $('new-exam-date').value;
-            if(n) { showLoader(true); const pubDate = d ? new Date(d).toISOString() : new Date().toISOString(); await db.collection('exams').add({ institutionId: currentUser.id, name: n, publishDate: pubDate, isPublished: false }); await renderTab('exams'); showLoader(false); showToast("Exam Created"); }
+            const n = $('new-exam').value; const y = $('new-exam-year').value; const d = $('new-exam-date').value;
+            if(n) { showLoader(true); const pubDate = d ? new Date(d).toISOString() : new Date().toISOString(); await db.collection('exams').add({ institutionId: currentUser.id, name: n, academicYear: y, publishDate: pubDate, isPublished: false }); await renderTab('exams'); showLoader(false); showToast("Exam Created"); }
         }
 
         async function deleteItem(col, id) {
@@ -927,6 +1113,7 @@
         }
 
         function renderStudentList() {
+            const isTeacher = currentUser.role === 'teacher';
             let list = [...localState.students];
             const filterClass = $('s-filter-class') ? $('s-filter-class').value : '';
             const search = $('s-search') ? $('s-search').value.toLowerCase() : '';
@@ -947,18 +1134,19 @@
 
             container.innerHTML = `<div class="divide-y divide-theme/50">${list.map(s => {
                 const cls = localState.classes.find(c=>c.id===s.classId)?.name || 'N/A';
-                return `<div class="p-3 md:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center hover:bg-slate-800/10 transition group px-4 md:px-6 gap-3 border-b border-theme/50 last:border-0">
+                return `<div class="p-3 md:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center hover:bg-slate-800/10 transition group px-4 md:px-6 gap-3 border-b border-theme/50 last:border-0 w-full">
                     <div class="flex items-center gap-3 md:gap-4 w-full sm:w-auto">
-                        <input type="checkbox" class="stu-check rounded bg-dark border-theme" value="${s.id}" onchange="updateBulkState()">
-                        <div class="flex-1">
-                            <p class="font-bold text-sm text-main">${s.name}</p>
-                            <p class="text-[10px] text-muted font-mono mt-0.5">${s.admissionNo} • <span class="text-indigo-400">${cls}</span> ${s.parentName ? `<span class="opacity-70 hidden md:inline"> • <i class="fas fa-user-friends mx-1"></i>${s.parentName}</span>` : ''}</p>
+                        ${!isTeacher ? `<input type="checkbox" class="stu-check rounded bg-dark border-theme shrink-0" value="${s.id}" onchange="updateBulkState()">` : ''}
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-sm text-main truncate">${s.name}</p>
+                            <p class="text-[10px] text-muted font-mono mt-0.5 truncate">${s.admissionNo} • <span class="text-indigo-400">${cls}</span> ${s.parentName ? `<span class="opacity-70 hidden md:inline"> • <i class="fas fa-user-friends mx-1"></i>${s.parentName}</span>` : ''}</p>
                         </div>
                     </div>
-                    <div class="flex gap-2 w-full sm:w-auto justify-end sm:opacity-50 group-hover:opacity-100 transition">
-                        <button onclick="editItem('students','${s.id}')" class="px-3 py-1.5 md:p-2 text-xs md:text-sm text-muted hover:text-blue-500 bg-dark md:bg-transparent rounded transition border border-theme md:border-transparent md:hover:border-theme shadow-sm md:shadow-none"><i class="fas fa-edit mr-1 md:mr-0"></i><span class="md:hidden">Edit</span></button>
-                        <button onclick="deleteItem('students','${s.id}')" class="px-3 py-1.5 md:p-2 text-xs md:text-sm text-red-500 hover:bg-red-500 hover:text-white bg-dark md:bg-transparent rounded transition border border-theme md:border-transparent md:hover:border-red-500 shadow-sm md:shadow-none"><i class="fas fa-trash mr-1 md:mr-0"></i><span class="md:hidden">Delete</span></button>
-                    </div>
+                    ${!isTeacher ? `
+                    <div class="flex gap-2 w-full sm:w-auto justify-end sm:opacity-50 group-hover:opacity-100 transition shrink-0 mt-2 sm:mt-0">
+                        <button onclick="editItem('students','${s.id}')" class="px-4 py-2 md:p-2 text-xs md:text-sm text-muted hover:text-blue-500 bg-dark md:bg-transparent rounded-lg transition border border-theme md:border-transparent md:hover:border-theme shadow-sm md:shadow-none flex-1 sm:flex-none text-center"><i class="fas fa-edit mr-2 md:mr-0"></i><span class="md:hidden">Edit</span></button>
+                        <button onclick="deleteItem('students','${s.id}')" class="px-4 py-2 md:p-2 text-xs md:text-sm text-red-500 hover:bg-red-500 hover:text-white bg-dark md:bg-transparent rounded-lg transition border border-theme md:border-transparent md:hover:border-red-500 shadow-sm md:shadow-none flex-1 sm:flex-none text-center"><i class="fas fa-trash mr-2 md:mr-0"></i><span class="md:hidden">Delete</span></button>
+                    </div>` : ''}
                 </div>`;
             }).join('')}</div>`;
             updateBulkState();
@@ -999,12 +1187,12 @@
                         <div class="flex items-end"><button onclick="addSub('${cid}')" class="w-full btn-primary text-xs py-2.5 rounded-lg"><i class="fas fa-plus"></i> Add</button></div>
                     </div>
                 </div>
-                <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
-                    ${subs.map(s => `<div class="flex justify-between bg-panel p-3 rounded-lg border border-theme text-xs items-center group">
-                        <span class="font-bold text-main">${s.name} <span class="text-muted font-normal ml-1">(Max: ${s.fullMarks})</span></span>
-                        <div class="flex gap-2">
-                            <button onclick="editItem('subjects', '${s.id}')" class="text-muted hover:text-blue-500"><i class="fas fa-edit"></i></button>
-                            <button onclick="delSub('${s.id}','${cid}')" class="text-muted hover:text-red-500"><i class="fas fa-trash"></i></button>
+                <div class="space-y-2 max-h-60 overflow-y-auto pr-2 w-full overflow-x-hidden">
+                    ${subs.map(s => `<div class="flex justify-between bg-panel p-3 rounded-lg border border-theme text-xs items-center group w-full">
+                        <span class="font-bold text-main min-w-0 truncate">${s.name} <span class="text-muted font-normal ml-1 hidden sm:inline">(Max: ${s.fullMarks})</span></span>
+                        <div class="flex gap-2 shrink-0">
+                            <button onclick="editItem('subjects', '${s.id}')" class="text-muted hover:text-blue-500 p-2 bg-dark rounded border border-theme sm:border-transparent"><i class="fas fa-edit"></i></button>
+                            <button onclick="delSub('${s.id}','${cid}')" class="text-red-500 sm:text-muted hover:text-red-500 p-2 bg-dark rounded border border-theme sm:border-transparent"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>`).join('')}
                 </div>`;
@@ -1132,18 +1320,31 @@
             }
             
             let html=`
-                <div class="glass-panel p-4 mb-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <div class="flex items-center gap-4 w-full md:w-auto">
-                        <button onclick="downloadMarksTemplate('${cid}', '${eid}')" class="btn-secondary text-xs flex-1"><i class="fas fa-download mr-2"></i> Template</button>
-                        <button onclick="$('mark-file').click()" class="btn-secondary text-xs flex-1"><i class="fas fa-file-upload mr-2"></i> Upload Excel</button>
-                        <input type="file" id="mark-file" hidden onchange="importMarks(this)" accept=".xlsx,.csv">
+                <div class="glass-panel p-5 md:p-6 mb-6 rounded-2xl flex flex-col gap-5 shadow-xl relative z-20 border-t-4 border-indigo-500 w-full">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 w-full">
+                        <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                            <button onclick="downloadMarksTemplate('${cid}', '${eid}')" class="btn-secondary text-xs flex-1 sm:flex-none"><i class="fas fa-download mr-1"></i> Template</button>
+                            <button onclick="$('mark-file').click()" class="btn-secondary text-xs flex-1 sm:flex-none"><i class="fas fa-file-upload mr-1"></i> Upload Excel</button>
+                            <input type="file" id="mark-file" hidden onchange="importMarks(this)" accept=".xlsx,.csv">
+                            
+                            <div class="flex items-center justify-between gap-3 bg-dark/60 px-4 py-2 rounded-lg border border-theme w-full sm:w-auto mt-1 sm:mt-0">
+                                <span class="font-bold text-muted uppercase text-[10px] tracking-wider">Attendance Days</span>
+                                <input type="number" id="total-att" class="bg-transparent border-none text-yellow-400 font-bold w-16 text-right focus:outline-none p-0 m-0 text-sm" value="${totalAtt}" placeholder="0">
+                            </div>
+                        </div>
+                        
+                        <button onclick="saveResults('${eid}','${cid}')" class="btn-primary px-8 py-3 rounded-xl shadow-lg shadow-indigo-500/20 w-full lg:w-auto flex items-center justify-center gap-2 shrink-0 text-sm">
+                            <i class="fas fa-save text-lg"></i> Save Results
+                        </button>
                     </div>
-                    <div class="flex items-center justify-between w-full md:w-auto gap-2 border-t md:border-t-0 border-theme pt-3 md:pt-0">
-                        <h4 class="font-bold text-muted uppercase text-xs">Total Working Days</h4>
-                        <input type="number" id="total-att" class="input-field w-32 text-center text-yellow-500 font-bold py-1.5" value="${totalAtt}" placeholder="e.g. 200">
+                    
+                    <div class="flex items-center justify-between sm:justify-start sm:gap-10 border-t border-theme pt-4">
+                        <div class="stat-group"><span class="stat-label">Students</span><span class="stat-val text-xl">${stus.length}</span></div>
+                        <div class="stat-group"><span class="stat-label">Class Avg</span><span class="stat-val text-xl" id="live-avg">--</span></div>
+                        <div class="stat-group"><span class="stat-label">Pass Rate</span><span class="stat-val text-xl text-emerald-500" id="live-pass">--%</span></div>
                     </div>
                 </div>
-                <div class="me-container shadow-2xl relative"><div class="overflow-x-auto"><table class="w-full text-left me-table"><thead><tr>
+                <div class="me-container shadow-2xl relative z-10 w-full overflow-hidden"><div class="overflow-x-auto pb-6 w-full"><table class="w-full text-left me-table min-w-full"><thead><tr>
                     <th class="sticky left-0 bg-panel z-20 w-48 border-r border-theme" onclick="sortGrid('name')">Student Identity <i class="fas fa-sort ml-1"></i></th>
                     ${subs.map(s=>`<th class="text-center min-w-[100px] border-l border-theme">${s.name}<br><span class="text-[9px] opacity-50 font-normal">Max: ${s.fullMarks}</span></th>`).join('')}
                     <th class="text-center w-24 border-l border-theme text-yellow-500" onclick="sortGrid('attendance')">Attendance <i class="fas fa-sort ml-1"></i></th>
@@ -1167,14 +1368,35 @@
                 <td data-label="Preview" class="border-l border-theme text-center p-1"><button onclick="previewTranscript('${s.id}')" class="p-2 text-muted hover:text-main transition w-full py-2 bg-dark rounded"><i class="fas fa-eye"></i> View</button></td></tr>`;
             });
             
-            html += `</tbody></table></div></div><div class="command-bar"><div class="flex gap-8 hidden md:flex"><div class="stat-group"><span class="stat-label">Students</span><span class="stat-val">${stus.length}</span></div><div class="stat-group"><span class="stat-label">Class Avg</span><span class="stat-val" id="live-avg">--</span></div><div class="stat-group"><span class="stat-label">Pass Rate</span><span class="stat-val text-emerald-500" id="live-pass">--%</span></div></div><button onclick="saveResults('${eid}','${cid}')" class="btn-primary px-8 py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 w-full md:w-auto"><i class="fas fa-save"></i> Save Results</button></div>`;
+            html += `</tbody></table></div></div>
+            <div class="mt-6 flex justify-end pb-8">
+                <button onclick="saveResults('${eid}','${cid}')" class="btn-primary px-8 py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 w-full sm:w-auto">
+                    <i class="fas fa-check-circle text-lg"></i> Confirm & Save All
+                </button>
+            </div>`;
+            
             $('result-grid-container').innerHTML = html; updateLiveStats();
         }
 
         function sortGrid(key) { currentSort = { key, order: currentSort.key === key && currentSort.order === 'asc' ? 'desc' : 'asc' }; loadResultGrid(true); }
 
         function calcRow(inp) {
-            const val = Number(inp.value); const max = Number(inp.dataset.max); const pass = Number(inp.dataset.pass); const sid = inp.dataset.sid;
+            let val = Number(inp.value); 
+            const max = Number(inp.dataset.max); 
+            const pass = Number(inp.dataset.pass); 
+            const sid = inp.dataset.sid;
+
+            // MARK VALIDATION LOGIC
+            if(val > max) {
+                val = max;
+                inp.value = max;
+                showToast(`Max marks allowed is ${max}`, "error");
+            }
+            if(val < 0) {
+                val = 0;
+                inp.value = 0;
+            }
+
             if(val < pass && inp.value !== '') inp.classList.add('fail-mark'); else inp.classList.remove('fail-mark');
             
             let isFail = false; 
@@ -1243,6 +1465,7 @@
             await batch.commit(); await refreshData(); loadResultGrid(); showLoader(false); showToast("Results Saved & Ranked");
         }
 
+        // Updated PreviewSheet with JS-based Scaling
         function previewTranscript(sid) {
             const s = localState.students.find(x => x.id === sid); const eid = $('pub-exam').value; const exam = localState.exams.find(e => e.id === eid);
             const inputs = document.querySelectorAll(`input[data-sid="${sid}"]:not(.att-input)`); const attVal = document.querySelector(`input.att-input[data-sid="${sid}"]`)?.value || '0'; const totalAtt = $('total-att').value || '-';
@@ -1277,26 +1500,32 @@
             else if(finalPct >= 80) { appreciation = "Excellent work! Strong grasp of concepts."; motivation = "Consistency is key. Continue this momentum."; }
             else if(finalPct >= 60) { appreciation = "Very Good. Steady progress made."; motivation = "Believe in your potential, you can do even more."; }
 
-            $('modal-overlay').classList.remove('hidden');
-            $('modal-body').innerHTML = `
-                <div class="a4-container"><div class="transcript-frame"><div class="watermark-layer"><img src="${currentUser.profileImage}" class="watermark-logo"></div><div class="transcript-inner"><div class="content-layer">
-                    <div class="text-center mb-6"><div class="inline-block mb-2 p-1 border border-slate-200 rounded-full"><div class="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden"><img src="${currentUser.profileImage}" class="max-w-full max-h-full object-contain"></div></div><h1 class="text-3xl font-black uppercase mk-header-font text-slate-900 mb-1 text-center">${currentUser.name}</h1><p class="text-xs text-slate-500 uppercase tracking-widest font-bold text-center">${currentUser.address || ''}</p><div class="mt-4 border-b border-slate-900 w-1/3 mx-auto"></div><p class="mt-1 text-sm font-serif italic text-slate-700 text-center">Official Statement of Marks</p></div>
-                    <div class="info-grid"><div class="flex flex-col gap-2"><div class="info-row"><span class="info-label">Candidate</span><span class="info-val">${s.name}</span></div><div class="info-row"><span class="info-label">ID No</span><span id="mk-adm" class="info-val font-mono">${s.admissionNo}</span></div><div class="info-row"><span class="info-label">D.O.B</span><span class="info-val">${s.dob || 'N/A'}</span></div></div><div class="flex flex-col gap-2"><div class="info-row"><span class="info-label">Class</span><span class="info-val">${localState.classes.find(c=>c.id===s.classId)?.name}</span></div><div class="info-row"><span class="info-label">Exam</span><span class="info-val">${exam.name}</span></div><div class="info-row"><span class="info-label">Date</span><span class="info-val">${new Date().toLocaleDateString()}</span></div></div></div>
-                    <table class="mk-table mb-auto"><thead><tr><th class="text-left pl-6">Subject</th><th width="15%">Max Marks</th><th width="15%">Pass Marks</th><th width="15%">Obtained</th><th width="15%">Grade</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-100 text-slate-900"><td class="text-left font-black pl-6 text-sm uppercase tracking-widest">Grand Total</td><td colspan="2" class="text-center font-bold text-slate-500 text-xs uppercase">${numToWords(total)}</td><td class="text-center text-lg font-bold text-slate-900 py-3" colspan="2">${total}</td></tr></tfoot></table>
-                    ${legendStr ? `<div class="mt-4 mb-2 text-[8px] text-slate-500 font-mono text-center border-t border-slate-200 pt-2"><strong>GRADING LEGEND:</strong> ${legendStr}</div>` : ''}
-                    <div class="feedback-section"><div class="appreciation-box"><h4><i class="fas fa-quote-left mr-2 opacity-50"></i>Insight</h4><p class="appr-text">"${appreciation}"</p><p class="motiv-text">"${motivation}"</p></div><div class="stats-box"><div class="stat-row mb-1"><span class="stat-label">Percentage</span><span class="stat-val">${finalPct}%</span></div><div class="stat-row mb-1"><span class="stat-label">Overall Grade</span><span class="stat-val text-sm">${finalGrade}</span></div><div class="stat-row mb-1"><span class="stat-label">Attendance</span><span class="stat-val text-sm">${attVal}/${totalAtt}</span></div><div class="stat-row mt-2"><span class="stat-label">Result Status</span><div class="stamp-status ${clsName}">${status}</div></div></div></div>
-                    <div class="doc-footer border-t-2 border-slate-900 pt-6 mt-4 flex justify-between items-end"><div class="text-[8px] text-slate-500 font-mono w-2/3 leading-tight">This document is securely processed and digitally generated by <span class="dynamic-brand-name">easyresults</span> Cloud Systems.<br>Valid academic record. No physical signature required for web verification.</div><div class="principal-box text-center"><div class="h-16 flex items-end justify-center mb-1">${currentUser.signatureImage ? `<img src="${currentUser.signatureImage}" class="max-h-full max-w-full object-contain filter grayscale contrast-125">` : '<div class="h-8 border-b border-black w-32"></div>'}</div><div class="border-t-2 border-slate-900 w-32 mx-auto mb-1"></div><p class="text-[9px] font-bold uppercase tracking-widest text-slate-900">Principal Signature</p></div></div>
-                </div></div></div></div>
-                <div class="text-center mt-4 flex justify-center gap-4">
-                    <button onclick="downloadPDF()" class="btn-primary"><i class="fas fa-file-pdf mr-2"></i> Download PDF</button>
-                    <button onclick="closeModal()" class="btn-secondary">Close Preview</button>
-                </div>`;
+            $('marksheet-modal').classList.remove('hidden');
+            $('mk-content-layer').innerHTML = `
+                <div class="text-center mb-6"><div class="inline-block mb-2 p-1 border border-slate-200 rounded-full"><div class="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden"><img src="${currentUser.profileImage}" class="max-w-full max-h-full object-contain"></div></div><h1 class="text-3xl font-black uppercase mk-header-font text-slate-900 mb-1 text-center">${currentUser.name}</h1><p class="text-xs text-slate-500 uppercase tracking-widest font-bold text-center">${currentUser.address || ''}</p><div class="mt-4 border-b border-slate-900 w-1/3 mx-auto"></div><p class="mt-1 text-sm font-serif italic text-slate-700 text-center">Official Statement of Marks</p></div>
+                <div class="info-grid flex justify-between mb-4 text-sm"><div class="flex flex-col gap-2"><div class="info-row"><span class="info-label font-bold text-slate-500 w-24 inline-block">Candidate</span><span class="info-val font-bold text-slate-900">${s.name}</span></div><div class="info-row"><span class="info-label font-bold text-slate-500 w-24 inline-block">ID No</span><span id="mk-adm" class="info-val font-mono font-bold text-slate-900">${s.admissionNo}</span></div><div class="info-row"><span class="info-label font-bold text-slate-500 w-24 inline-block">D.O.B</span><span class="info-val font-bold text-slate-900">${s.dob || 'N/A'}</span></div></div><div class="flex flex-col gap-2 text-right"><div class="info-row"><span class="info-label font-bold text-slate-500 mr-2">Class</span><span class="info-val font-bold text-slate-900">${localState.classes.find(c=>c.id===s.classId)?.name}</span></div><div class="info-row"><span class="info-label font-bold text-slate-500 mr-2">Exam</span><span class="info-val font-bold text-slate-900">${exam.name} <span class="text-xs text-slate-500 ml-1">[${exam.academicYear||''}]</span></span></div><div class="info-row"><span class="info-label font-bold text-slate-500 mr-2">Date</span><span class="info-val font-bold text-slate-900">${new Date().toLocaleDateString()}</span></div></div></div>
+                <table class="mk-table mb-auto"><thead><tr><th class="text-left pl-6">Subject</th><th width="15%">Max Marks</th><th width="15%">Pass Marks</th><th width="15%">Obtained</th><th width="15%">Grade</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-100 text-slate-900"><td class="text-left font-black pl-6 text-sm uppercase tracking-widest">Grand Total</td><td colspan="2" class="text-center font-bold text-slate-500 text-xs uppercase">${numToWords(total)}</td><td class="text-center text-lg font-bold text-slate-900 py-3" colspan="2">${total}</td></tr></tfoot></table>
+                ${legendStr ? `<div class="mt-4 mb-2 text-[8px] text-slate-500 font-mono text-center border-t border-slate-200 pt-2"><strong>GRADING LEGEND:</strong> ${legendStr}</div>` : ''}
+                <div class="feedback-section flex justify-between mt-4 gap-4"><div class="appreciation-box w-2/3 p-3 bg-slate-50 rounded border border-slate-200"><h4 class="font-bold text-xs uppercase text-slate-400 mb-1"><i class="fas fa-quote-left mr-2 opacity-50"></i>Insight</h4><p class="appr-text text-sm font-serif italic text-slate-700">"${appreciation}"</p><p class="motiv-text text-xs text-slate-500 mt-1">"${motivation}"</p></div><div class="stats-box w-1/3 p-3 bg-slate-100 rounded border border-slate-200 text-right"><div class="stat-row mb-1"><span class="stat-label text-xs text-slate-500 mr-2">Percentage</span><span class="stat-val font-bold text-slate-900">${finalPct}%</span></div><div class="stat-row mb-1"><span class="stat-label text-xs text-slate-500 mr-2">Overall Grade</span><span class="stat-val text-sm font-bold text-slate-900">${finalGrade}</span></div><div class="stat-row mb-1"><span class="stat-label text-xs text-slate-500 mr-2">Attendance</span><span class="stat-val text-sm font-bold text-slate-900">${attVal}/${totalAtt}</span></div><div class="stat-row mt-2"><span class="stat-label text-xs text-slate-500 mr-2">Result Status</span><div class="stamp-status ${clsName}">${status}</div></div></div></div>
+                <div class="doc-footer border-t-2 border-slate-900 pt-6 mt-4 flex justify-between items-end"><div class="text-[8px] text-slate-500 font-mono w-2/3 leading-tight">This document is securely processed and digitally generated by <span class="dynamic-brand-name">easyresults</span> Cloud Systems.<br>Valid academic record. No physical signature required for web verification.</div><div class="principal-box text-center"><div class="h-16 flex items-end justify-center mb-1">${currentUser.signatureImage ? `<img src="${currentUser.signatureImage}" class="max-h-full max-w-full object-contain filter grayscale contrast-125">` : '<div class="h-8 border-b border-black w-32"></div>'}</div><div class="border-t-2 border-slate-900 w-32 mx-auto mb-1"></div><p class="text-[9px] font-bold uppercase tracking-widest text-slate-900">Principal Signature</p></div></div>
+            `;
+            
+            // Dynamic JS Scaling for A4 Preview on Mobile
+            const ctr = document.getElementById('mk-printable');
+            if(window.innerWidth < 800) {
+                const scale = (window.innerWidth - 32) / ctr.offsetWidth;
+                ctr.style.transform = `scale(${scale})`;
+                ctr.style.marginBottom = `-${(1-scale)*100}%`; 
+            } else {
+                ctr.style.transform = 'none';
+                ctr.style.marginBottom = '0';
+            }
         }
         
         function downloadPDF() {
             showLoader(true);
             const { jsPDF } = window.jspdf;
-            const element = document.getElementById('modal-body').querySelector('.a4-container');
+            const element = document.getElementById('mk-printable'); // Fixed selector
             
             // Temporary scale up for high-res PDF rendering
             const originalTransform = element.style.transform;
