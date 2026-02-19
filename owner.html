@@ -14,6 +14,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
 
     <style>
         /* --- ORIGINAL DESIGN SYSTEM --- */
@@ -63,6 +65,7 @@
         
         /* Animations & Utilities */
         .fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(10px); }
+        .fade-in { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(10px); } /* Ensures compatibility with utils.js */
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
         
         ::-webkit-scrollbar { width: 6px; }
@@ -71,8 +74,6 @@
         
         .loader { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.1); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        
     </style>
 </head>
 <body class="overflow-hidden h-screen flex text-sm selection:bg-blue-500/30">
@@ -90,8 +91,8 @@
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
         <div class="glass-panel p-10 rounded-3xl shadow-2xl w-full max-w-sm relative z-10 border border-white/10">
             <div class="text-center mb-10">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-2xl text-white mx-auto mb-6 shadow-lg shadow-blue-500/30">
-                    <i class="fas fa-cube"></i>
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-2xl text-white mx-auto mb-6 shadow-lg shadow-blue-500/30 border border-white/10 overflow-hidden">
+                    <img id="owner-login-logo" src="logo.png" class="w-full h-full object-cover" alt="easyresults">
                 </div>
                 <h1 class="text-3xl font-bold tracking-tight text-white">Owner Portal</h1>
                 <p class="text-slate-400 text-sm mt-2">Identify yourself to continue.</p>
@@ -124,9 +125,11 @@
         <aside class="w-72 bg-[#020617] border-r border-slate-800 flex flex-col flex-shrink-0 z-40">
             <div class="p-8 border-b border-slate-800/50">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">ER</div>
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg border border-white/10 overflow-hidden">
+                        <img id="owner-sidebar-logo" src="logo.png" class="w-full h-full object-cover" alt="ER">
+                    </div>
                     <div>
-                        <h2 class="font-bold text-white text-lg leading-tight">easyresults</h2>
+                        <h2 id="owner-brand-name" class="font-bold text-white text-lg leading-tight">easyresults</h2>
                         <span class="text-[10px] text-blue-400 font-mono font-bold tracking-widest uppercase">God Mode</span>
                     </div>
                 </div>
@@ -213,20 +216,33 @@
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyBDluJn6c-9vr3jJUEIl3FJ2l4HD4W1M2k",
-            authDomain: "gradewise-app.firebaseapp.com",
-            projectId: "gradewise-app",
-            storageBucket: "gradewise-app.firebasestorage.app",
-            messagingSenderId: "938150156100",
-            appId: "1:938150156100:web:219cfacbf0452ddfe2e911"
-        };
+        // --- GLOBAL BRANDING & SUPPORT LISTENER ---
+        let supportWhatsapp = "";
+        
+        db.collection('site_config').doc('main').onSnapshot(doc => {
+            if(doc.exists) {
+                const data = doc.data();
+                const brandName = data.brandName || 'easyresults';
+                supportWhatsapp = data.whatsapp || '';
+                
+                const currentTitle = document.title.split('|')[0].trim();
+                document.title = `${currentTitle} | ${brandName}`;
+                
+                // Update specific owner branding texts
+                if(document.getElementById('owner-brand-name')) {
+                    document.getElementById('owner-brand-name').innerText = brandName;
+                }
+                
+                // If a brandLogo exists in the DB, it overrides logo.png
+                if(data.brandLogo) {
+                    const formattedLogo = formatImageUrl(data.brandLogo);
+                    if(document.getElementById('owner-login-logo')) document.getElementById('owner-login-logo').src = formattedLogo;
+                    if(document.getElementById('owner-sidebar-logo')) document.getElementById('owner-sidebar-logo').src = formattedLogo;
+                }
+            }
+        });
 
-        // Initialize Firebase (Compat)
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
+        const auth = firebase.auth(); 
 
         const SESSION_KEY = 'easyresults_owner_session';
         const CREDENTIALS = { id: 'owner', pass: 'admin123' };
@@ -234,18 +250,6 @@
         // Globals for Charts
         let oMainChart = null;
         let oPieChart = null;
-
-        // --- HELPERS ---
-        const $ = id => document.getElementById(id);
-        const showLoader = (show) => $('global-loader').classList.toggle('hidden', !show);
-        
-        function showToast(msg, type='success') {
-            const el = document.createElement('div');
-            el.className = `px-5 py-4 rounded-xl shadow-2xl border backdrop-blur-md text-sm font-bold flex items-center gap-3 fade-in-up ${type==='success'?'bg-emerald-500/10 border-emerald-500/30 text-emerald-400':'bg-red-500/10 border-red-500/30 text-red-400'}`;
-            el.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-triangle'} text-lg"></i> ${msg}`;
-            $('toast-container').appendChild(el);
-            setTimeout(() => el.remove(), 4000);
-        }
 
         function toggleSidebar() { 
             document.querySelector('aside').classList.toggle('open'); 
@@ -317,7 +321,6 @@
         async function saveSiteConfig(data) {
             await db.collection('site_config').doc('main').set(data, { merge: true });
         }
-
 
         // --- DASHBOARD LOGIC ---
         async function renderTab(tab) {
@@ -480,7 +483,7 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div><label class="text-xs font-bold text-slate-500 uppercase">Website Name</label><input id="g-brand" class="input-dark mt-1" value="${c.brandName||'easyresults'}"></div>
                                         <div>
-                                            <label class="text-xs font-bold text-slate-500 uppercase">Logo URL</label>
+                                            <label class="text-xs font-bold text-slate-500 uppercase">Global Logo URL</label>
                                             <input type="url" id="g-logo" class="input-dark mt-1 text-xs" placeholder="https://..." value="${c.brandLogo||''}">
                                         </div>
                                     </div>
@@ -572,7 +575,8 @@
                                                     <option value="golden_luxury">Golden Luxury</option>
                                                 </select>
                                             </div>
-                                            <div><label class="text-xs text-slate-500 uppercase font-bold">Logo URL</label><input type="url" id="c-logo" class="input-dark mt-1 text-xs" placeholder="https://..."></div>
+                                            <div><label class="text-xs text-slate-500 uppercase font-bold">School Logo URL</label><input type="url" id="c-logo" class="input-dark mt-1 text-xs" placeholder="https://..."></div>
+                                            <div><label class="text-xs text-slate-500 uppercase font-bold">Principal Signature URL</label><input type="url" id="c-sig" class="input-dark mt-1 text-xs" placeholder="https://..."></div>
                                         </div>
                                     </div>
                                 </div>
@@ -624,9 +628,16 @@
                             <div><div class="text-sm">${i.name || 'Unnamed School'}</div><div class="text-[10px] text-slate-500">ID: ${i.id}</div></div>
                         </td>
                         <td class="p-5 font-mono text-xs text-indigo-300">${i.email}</td>
-                        <td class="p-5"><span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border flex items-center gap-2 w-fit ${i.isActive!==false ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}"><span class="w-1.5 h-1.5 rounded-full ${i.isActive!==false?'bg-emerald-400':'bg-red-400'} animate-pulse"></span>${i.isActive!==false?'Online':'Suspended'}</span></td>
+                        <td class="p-5">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border flex items-center gap-2 w-fit ${i.isActive!==false ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}">
+                                <span class="w-1.5 h-1.5 rounded-full ${i.isActive!==false?'bg-emerald-400':'bg-red-400'} animate-pulse"></span>
+                                ${i.isActive!==false?'Online':'Suspended'}
+                            </span>
+                            ${i.hasFullAccess ? '<span class="px-3 py-1 mt-2 rounded-full text-[9px] font-bold uppercase tracking-wide border flex items-center gap-1 w-fit bg-yellow-500/10 text-yellow-500 border-yellow-500/20"><i class="fas fa-star"></i> Full Access</span>' : ''}
+                        </td>
                         <td class="p-5 text-right">
                             <div class="flex items-center justify-end gap-2 opacity-100 lg:opacity-80 group-hover:opacity-100 transition">
+                                <button onclick="toggleFullAccess('${i.id}', ${!!i.hasFullAccess})" class="p-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 hover:text-yellow-400 transition" title="Toggle Full Access"><i class="fas fa-star ${i.hasFullAccess ? 'text-yellow-400' : ''}"></i></button>
                                 <button onclick="sendWhatsAppLink('${i.id}')" class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500 hover:text-white transition" title="Send Link via WhatsApp"><i class="fab fa-whatsapp"></i></button>
                                 <button onclick="loginAs('${i.id}')" class="p-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-600 hover:text-white transition" title="Login As Admin"><i class="fas fa-sign-in-alt"></i></button>
                                 <button onclick="openEditModal('${i.id}')" class="p-2 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 transition" title="Edit"><i class="fas fa-edit"></i></button>
@@ -638,6 +649,14 @@
                     </tr>`).join('')}
                 </tbody>
             </table>`;
+        }
+
+        async function toggleFullAccess(id, currentStatus) {
+            showLoader(true);
+            await updateDocFunc('institutions', id, { hasFullAccess: !currentStatus });
+            await renderTab('institutions');
+            showLoader(false);
+            showToast(!currentStatus ? "Full Access Granted" : "Full Access Revoked");
         }
 
         function sendWhatsAppLink(id) {
@@ -736,6 +755,7 @@
                 $('c-name').value=i.name; $('c-tag').value=i.tagline||'';
                 $('c-theme').value=i.theme||'deep_space';
                 $('c-logo').value=i.profileImage||'';
+                $('c-sig').value=i.signatureImage||'';
             }
         }
 
@@ -746,8 +766,8 @@
                 name: $('c-name').value, tagline: $('c-tag').value, theme: $('c-theme').value
             };
             
-            const logoUrl = $('c-logo').value.trim();
-            if(logoUrl) data.profileImage = logoUrl;
+            data.profileImage = formatImageUrl($('c-logo').value.trim());
+            data.signatureImage = formatImageUrl($('c-sig').value.trim());
             
             await updateDocFunc('institutions', id, data);
             showToast("Branding Updated");
@@ -767,8 +787,7 @@
                 f3Title: val('g-f3-t'), f3Desc: val('g-f3-d'), aboutHead: val('g-ab-h'), aboutText: val('g-ab-t'),
             };
             
-            const logoUrl = $('g-logo').value.trim();
-            if(logoUrl) config.brandLogo = logoUrl;
+            config.brandLogo = formatImageUrl($('g-logo').value.trim());
 
             try {
                 await saveSiteConfig(config);

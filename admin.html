@@ -6,6 +6,7 @@
     <title>Admin Console | easyresults</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="security.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
@@ -16,6 +17,8 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
 
     <style>
         :root {
@@ -43,7 +46,7 @@
             background-image: radial-gradient(at 0% 0%, var(--primary-glow) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
             background-attachment: fixed;
             transition: background-color 0.5s ease, color 0.5s ease;
-            overflow: hidden; /* Prevent body scroll, handle in containers */
+            overflow: hidden; 
         }
         
         .glass-panel { background: var(--bg-panel); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); transition: background 0.5s ease, border-color 0.5s ease; }
@@ -100,7 +103,7 @@
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         
-        .a4-container { width: 210mm; min-height: 297mm; background: #fff; color: #1e293b; font-family: 'Inter', sans-serif; transform: scale(0.65); transform-origin: top center; margin: 0 auto; display: flex; flex-direction: column; }
+        .a4-container { width: 210mm; min-height: 297mm; background: #fff; color: #1e293b; font-family: 'Inter', sans-serif; transform: scale(0.65); transform-origin: top left; margin: 0 auto; display: flex; flex-direction: column; }
         .transcript-frame { border: 8px solid #1e293b; outline: 2px solid #94a3b8; outline-offset: -12px; height: 100%; min-height: 290mm; margin: 8mm; position: relative; display: flex; flex-direction: column; background: #fff; }
         .transcript-inner { padding: 8mm 12mm; height: 100%; display: flex; flex-direction: column; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 25px 25px; }
         .mk-serif { font-family: 'Playfair Display', serif; }
@@ -113,7 +116,6 @@
 
         /* --- MOBILE & RESPONSIVE FIXES --- */
         @media (max-width: 1024px) {
-            /* FIX 2: Added !important so Tailwind's "relative" class doesn't break the drawer layout */
             .sidebar { 
                 position: fixed !important; 
                 top: 0; 
@@ -126,25 +128,17 @@
                 box-shadow: 10px 0 30px rgba(0,0,0,0.5); 
                 z-index: 100;
             }
-            .sidebar.open { transform: translateX(0); } 
+            .sidebar.open { transform: translateX(0); }
 
-            .overlay { 
-                display: none; 
-                position: fixed; 
-                inset: 0; 
-                background: rgba(0,0,0,0.6); 
-                backdrop-filter: blur(4px); 
-                z-index: 90; 
-            }
+            #view-dashboard { flex-direction: column; }
+            main { width: 100% !important; max-width: 100% !important; margin: 0; padding: 0; flex: 1; display: flex; flex-direction: column; }
+            #content-area { width: 100%; max-width: 100%; overflow-x: hidden; padding: 1rem; padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+
+            .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 90; }
             .overlay.open { display: block; }
 
-            /* Transform Table to Card View */
             .me-table thead { display: none; } 
-            
-            .me-table, .me-table tbody, .me-table tr, .me-table td { 
-                display: block; 
-                width: 100%; 
-            }
+            .me-table, .me-table tbody, .me-table tr, .me-table td { display: block; width: 100%; }
             
             .me-table tr { 
                 margin-bottom: 1rem; 
@@ -162,6 +156,7 @@
                 padding: 10px 0; 
                 border-bottom: 1px dashed var(--border); 
                 text-align: right; 
+                background: transparent !important;
             }
             .me-table td:last-child { border-bottom: none; }
             
@@ -172,11 +167,11 @@
                 text-transform: uppercase; 
                 color: var(--text-muted); 
                 text-align: left; 
+                margin-right: 10px;
             }
             
             .mark-input { width: 80px; height: 44px; font-size: 1.1rem; }
             
-            /* Bottom Sheet Modal Animation */
             #modal-content-wrapper { 
                 position: fixed; bottom: 0; left: 0; width: 100%; max-width: 100%; 
                 border-radius: 20px 20px 0 0; max-height: 85vh; 
@@ -187,7 +182,7 @@
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
-<body class="overflow-hidden h-[100dvh] w-[100vw] flex text-sm selection:bg-indigo-500/30">
+<body class="overflow-hidden h-screen w-screen flex text-sm selection:bg-indigo-500/30">
 
     <div id="global-loader" class="fixed inset-0 flex flex-col items-center justify-center text-white z-[9999] hidden">
         <div class="spinner mb-4"></div>
@@ -214,7 +209,7 @@
         </div>
     </section>
 
-    <div id="view-dashboard" class="hidden w-full h-full flex bg-dark max-w-[100vw] overflow-hidden">
+    <div id="view-dashboard" class="hidden w-full h-full flex bg-dark overflow-hidden">
         
         <div id="mobile-overlay" onclick="toggleSidebar()" class="overlay"></div>
 
@@ -263,7 +258,7 @@
                         <h2 id="mobile-header-school-admin" class="text-xs font-extrabold text-main leading-tight truncate max-w-[150px]">Loading...</h2>
                         <p class="text-[10px] text-muted truncate max-w-[150px] font-mono" id="mobile-role-text">Admin Console</p>
                     </div>
-                    <h2 id="page-title" class="text-xl font-bold tracking-tight text-main hidden sm:block">Overview</h2>
+                    <h2 id="page-title" class="text-xl font-bold tracking-tight text-main hidden lg:block">Overview</h2>
                 </div>
                 <div class="flex items-center gap-3">
                     <button onclick="viewPublicPage()" class="px-3 py-1.5 md:px-4 md:py-2 bg-dark hover:bg-panel text-muted rounded-lg border border-theme transition text-xs font-bold flex items-center gap-2 hover:text-main"><span class="hidden md:inline">Homepage</span> <i class="fas fa-external-link-alt"></i></button>
@@ -327,22 +322,15 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBDluJn6c-9vr3jJUEIl3FJ2l4HD4W1M2k",
-            authDomain: "gradewise-app.firebaseapp.com",
-            projectId: "gradewise-app",
-            storageBucket: "gradewise-app.firebasestorage.app",
-            messagingSenderId: "938150156100",
-            appId: "1:938150156100:web:219cfacbf0452ddfe2e911"
-        };
+        // --- GLOBAL BRANDING & SUPPORT LISTENER ---
+        let supportWhatsapp = "";
         
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // --- GLOBAL BRANDING LISTENER ---
         db.collection('site_config').doc('main').onSnapshot(doc => {
             if(doc.exists) {
-                const brandName = doc.data().brandName || 'easyresults';
+                const data = doc.data();
+                const brandName = data.brandName || 'easyresults';
+                supportWhatsapp = data.whatsapp || '';
+                
                 const currentTitle = document.title.split('|')[0].trim();
                 document.title = `${currentTitle} | ${brandName}`;
                 document.querySelectorAll('.dynamic-brand-name').forEach(el => {
@@ -357,60 +345,8 @@
         let localState = { students: [], classes: [], exams: [], results: [], subjects: [], staff: [] };
         let currentSort = { key: 'rank', order: 'asc' };
 
-        const THEMES = {
-            'deep_space': { bg: '#020617', glass: 'rgba(15, 23, 42, 0.85)', text: '#f8fafc', muted: '#94a3b8' },
-            'minimal_light': { bg: '#f8fafc', glass: 'rgba(255, 255, 255, 0.85)', text: '#0f172a', muted: '#64748b' },
-            'midnight_blue': { bg: '#0b1121', glass: 'rgba(30, 41, 59, 0.85)', text: '#f0f9ff', muted: '#94a3b8' },
-            'emerald_city': { bg: '#022c22', glass: 'rgba(6, 78, 59, 0.85)', text: '#ecfdf5', muted: '#6ee7b7' },
-            'crimson_fury': { bg: '#450a0a', glass: 'rgba(127, 29, 29, 0.85)', text: '#fff1f2', muted: '#fda4af' },
-            'royal_purple': { bg: '#2e1065', glass: 'rgba(76, 29, 149, 0.85)', text: '#faf5ff', muted: '#c4b5fd' },
-            'classic_academia': { bg: '#27272a', glass: 'rgba(63, 63, 70, 0.85)', text: '#fafafa', muted: '#a1a1aa' },
-            'modern_teal': { bg: '#134e4a', glass: 'rgba(17, 94, 89, 0.85)', text: '#f0fdfa', muted: '#99f6e4' },
-            'solar_flare': { bg: '#431407', glass: 'rgba(124, 45, 18, 0.85)', text: '#fff7ed', muted: '#fdba74' },
-            'oceanic_depth': { bg: '#0c4a6e', glass: 'rgba(12, 74, 110, 0.85)', text: '#f0f9ff', muted: '#bae6fd' },
-            'slate_minimal': { bg: '#0f172a', glass: 'rgba(51, 65, 85, 0.85)', text: '#f8fafc', muted: '#cbd5e1' }
-        };
-
-        const DEFAULT_SCALES = {
-            standard: [{g:'A+',m:90},{g:'A',m:80},{g:'B',m:70},{g:'C',m:60},{g:'D',m:50},{g:'F',m:0}],
-            gpa: [{g:'A',m:90},{g:'B',m:80},{g:'C',m:70},{g:'D',m:60},{g:'F',m:0}],
-            o_level: [{g:'O',m:90},{g:'A+',m:80},{g:'A',m:70},{g:'B',m:60},{g:'C',m:50},{g:'F',m:0}]
-        };
         let draftGradeScale = [];
 
-        const $ = id => document.getElementById(id);
-        const showLoader = (show) => $('global-loader').classList.toggle('hidden', !show);
-        
-        function showToast(msg, type='success') {
-            const el = document.createElement('div');
-            el.className = `px-5 py-4 rounded-xl shadow-2xl border backdrop-blur-md text-sm font-bold flex items-center gap-3 fade-in ${type==='success'?'bg-emerald-500/10 border-emerald-500/30 text-emerald-400':'bg-red-500/10 border-red-500/30 text-red-400'}`;
-            el.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'} text-lg"></i> ${msg}`;
-            $('toast-container').appendChild(el);
-            setTimeout(() => el.remove(), 4000);
-        }
-
-        function getGrade(pct, customScale) {
-            pct = Number(pct);
-            if(!customScale || customScale.length === 0) return '-';
-            const sorted = [...customScale].sort((a, b) => b.m - a.m);
-            for(let i=0; i<sorted.length; i++) {
-                if(pct >= sorted[i].m) return sorted[i].g;
-            }
-            return sorted[sorted.length-1].g;
-        }
-
-        function getGradeLegend(customScale) {
-            if(!customScale || customScale.length === 0) return '';
-            const sorted = [...customScale].sort((a, b) => b.m - a.m);
-            return sorted.map((row, i) => {
-                if (sorted.length === 1) return `${row.g} (All)`;
-                if(i === 0) return `${row.g} (${row.m}-100%)`;
-                if(i === sorted.length - 1) return `${row.g} (<${sorted[i-1].m}%)`;
-                return `${row.g} (${row.m}-${sorted[i-1].m - 1}%)`;
-            }).join(' | ');
-        }
-
-        // Updated Sidebar Toggle logic
         function toggleSidebar() { 
             document.getElementById('main-sidebar').classList.toggle('open'); 
             document.getElementById('mobile-overlay').classList.toggle('open'); 
@@ -427,28 +363,6 @@
             } else {
                 icon.classList.remove('fa-indent');
                 icon.classList.add('fa-outdent');
-            }
-        }
-
-        function applyTheme(inst) {
-            const color = inst.themeColor || '#6366f1';
-            const themeKey = inst.theme || 'deep_space';
-            const t = THEMES[themeKey] || THEMES['deep_space'];
-            
-            const root = document.documentElement;
-            root.style.setProperty('--primary', color);
-            root.style.setProperty('--primary-glow', color + '40');
-            root.style.setProperty('--bg-dark', t.bg);
-            root.style.setProperty('--bg-panel', t.glass);
-            root.style.setProperty('--text-main', t.text);
-            root.style.setProperty('--text-muted', t.muted);
-
-            if (t.bg === '#f8fafc' || t.bg === '#ffffff') {
-                root.style.setProperty('--border', 'rgba(0, 0, 0, 0.1)');
-                root.style.setProperty('--bg-input', 'rgba(0, 0, 0, 0.05)');
-            } else {
-                root.style.setProperty('--border', 'rgba(255, 255, 255, 0.08)');
-                root.style.setProperty('--bg-input', 'rgba(30, 41, 59, 0.6)');
             }
         }
 
@@ -582,15 +496,15 @@
             } catch(e) { console.error("Sync Error", e); }
         }
 
-        // Updated RenderTab with Auto-Close Sidebar logic
         async function renderTab(tab) {
             document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(el => {
                 if(el.getAttribute('onclick')) el.classList.toggle('active', el.getAttribute('onclick').includes(tab));
             });
             
-            // Auto close sidebar on mobile
             if(window.innerWidth < 1024) { 
-                toggleSidebar();
+                document.getElementById('main-sidebar').classList.remove('open'); 
+                document.getElementById('mobile-overlay').classList.remove('open'); 
+                document.getElementById('mobile-overlay').classList.add('hidden'); 
             }
             
             const content = $('content-area');
@@ -865,8 +779,25 @@
                                 <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Email</label><input id="set-email" class="input-field mt-1" value="${i.contactEmail||''}"></div>
                                 <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Phone</label><input id="set-phone" class="input-field mt-1" value="${i.contactPhone||''}"></div>
                                 <div class="sm:col-span-2"><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Address</label><input id="set-addr" class="input-field mt-1" value="${i.address||''}"></div>
-                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">School Logo URL</label><input type="url" id="set-logo" class="input-field mt-1 text-sm" value="${i.profileImage||''}" placeholder="https://..."></div>
-                                <div><label class="text-[10px] md:text-xs font-bold text-muted uppercase">Principal Signature URL</label><input type="url" id="set-sig" class="input-field mt-1 text-sm" value="${i.signatureImage||''}" placeholder="https://..."></div>
+                                
+                                <div class="opacity-50 grayscale pointer-events-none">
+                                    <label class="text-[10px] md:text-xs font-bold text-muted uppercase flex items-center gap-2">School Logo URL <i class="fas fa-lock text-yellow-500"></i></label>
+                                    <input type="url" id="set-logo" class="input-field mt-1 text-sm" value="${i.profileImage||''}" placeholder="Locked" disabled>
+                                </div>
+                                <div class="opacity-50 grayscale pointer-events-none">
+                                    <label class="text-[10px] md:text-xs font-bold text-muted uppercase flex items-center gap-2">Principal Signature URL <i class="fas fa-lock text-yellow-500"></i></label>
+                                    <input type="url" id="set-sig" class="input-field mt-1 text-sm" value="${i.signatureImage||''}" placeholder="Locked" disabled>
+                                </div>
+                                
+                                <div class="sm:col-span-2 text-[13px] font-bold text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl mt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                    <div class="flex items-start sm:items-center gap-2">
+                                        <i class="fas fa-shield-alt text-lg mt-0.5 sm:mt-0"></i> 
+                                        <span>School branding assets are locked for security. Contact easyresults support to update your Logo and Principal Signature.</span>
+                                    </div>
+                                    <button onclick="contactSupport()" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg transition text-xs font-bold flex items-center gap-2 shrink-0 border border-green-500 w-full sm:w-auto justify-center shadow-lg shadow-green-900/20">
+                                        <i class="fab fa-whatsapp text-sm"></i> Chat Support
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <button onclick="saveSettings()" class="w-full btn-primary py-4 rounded-xl shadow-lg">Save & Update Profile</button>
@@ -874,6 +805,12 @@
 
                 setTimeout(renderGradeScaleEditor, 0);
             }
+        }
+
+        function contactSupport() {
+            if(!supportWhatsapp) return showToast("Support contact not configured by owner.", "error");
+            const text = encodeURIComponent(`Hello Support, I need help updating the Logo/Signature for my institution: ${currentUser.name} (ID: ${currentUser.id}).`);
+            window.open(`https://wa.me/${supportWhatsapp}?text=${text}`, '_blank');
         }
 
         // --- CUSTOM GRADE SCALE EDITOR LOGIC ---
@@ -1043,7 +980,10 @@
             if(type === 'subjects') manageSubjects($('edit-sub-cid').value); else await renderTab(type);
         }
 
-        function closeModal() { $('modal-overlay').classList.add('hidden'); }
+        function closeModal() { 
+            $('modal-overlay').classList.add('hidden'); 
+            $('marksheet-modal').classList.add('hidden'); 
+        }
 
         async function addClass() { const n = $('new-class').value; if(n) { showLoader(true); await db.collection('classes').add({ institutionId: currentUser.id, name: n, createdAt: new Date().toISOString() }); await renderTab('classes'); showLoader(false); showToast("Class Added"); } }
         
@@ -1386,7 +1326,6 @@
             const pass = Number(inp.dataset.pass); 
             const sid = inp.dataset.sid;
 
-            // MARK VALIDATION LOGIC
             if(val > max) {
                 val = max;
                 inp.value = max;
@@ -1403,13 +1342,12 @@
             let hasMarks = false;
             document.querySelectorAll(`.mark-input[data-sid="${sid}"]:not([data-type="att"])`).forEach(i => { 
                 if(i.value !== '') {
-                    hasMarks = true; // Confirm they have at least 1 mark
+                    hasMarks = true;
                     if(Number(i.value) < Number(i.dataset.pass)) isFail = true; 
                 }
             });
             
             const statusDiv = $(`rs-${sid}`); 
-            // Only turn green if they have marks, otherwise stay neutral
             statusDiv.className = `row-status ${hasMarks ? (isFail ? 'rs-fail' : 'rs-pass') : 'rs-neutral'}`;
             updateLiveStats();
         }
@@ -1465,7 +1403,6 @@
             await batch.commit(); await refreshData(); loadResultGrid(); showLoader(false); showToast("Results Saved & Ranked");
         }
 
-        // Updated PreviewSheet with JS-based Scaling
         function previewTranscript(sid) {
             const s = localState.students.find(x => x.id === sid); const eid = $('pub-exam').value; const exam = localState.exams.find(e => e.id === eid);
             const inputs = document.querySelectorAll(`input[data-sid="${sid}"]:not(.att-input)`); const attVal = document.querySelector(`input.att-input[data-sid="${sid}"]`)?.value || '0'; const totalAtt = $('total-att').value || '-';
@@ -1483,7 +1420,6 @@
                     maxTotal += sub.fullMarks;
                     grade = getGrade((score / sub.fullMarks) * 100, gradeScale);
                 }
-                
                 rows += `<tr><td class="text-left font-bold pl-6 text-slate-800">${sub.name}</td><td>${sub.fullMarks}</td><td>${sub.passMarks}</td><td class="font-bold ${score !== '-' ? (score < sub.passMarks ? 'text-red-600' : 'text-emerald-600') : 'text-slate-900'}">${score}</td><td class="font-bold text-slate-700">${grade}</td></tr>`;
             });
 
@@ -1502,15 +1438,18 @@
 
             $('marksheet-modal').classList.remove('hidden');
             $('mk-content-layer').innerHTML = `
-                <div class="text-center mb-6"><div class="inline-block mb-2 p-1 border border-slate-200 rounded-full"><div class="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden"><img src="${currentUser.profileImage}" class="max-w-full max-h-full object-contain"></div></div><h1 class="text-3xl font-black uppercase mk-header-font text-slate-900 mb-1 text-center">${currentUser.name}</h1><p class="text-xs text-slate-500 uppercase tracking-widest font-bold text-center">${currentUser.address || ''}</p><div class="mt-4 border-b border-slate-900 w-1/3 mx-auto"></div><p class="mt-1 text-sm font-serif italic text-slate-700 text-center">Official Statement of Marks</p></div>
+                <div class="text-center mb-6"><div class="inline-block mb-2 p-1 border border-slate-200 rounded-full">
+                <div class="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden bg-slate-100">
+                    ${currentUser.profileImage ? `<img src="${currentUser.profileImage}" crossorigin="anonymous" class="max-w-full max-h-full object-contain">` : `<i class="fas fa-university text-4xl text-slate-300"></i>`}
+                </div>
+                </div><h1 class="text-3xl font-black uppercase mk-header-font text-slate-900 mb-1 text-center">${currentUser.name}</h1><p class="text-xs text-slate-500 uppercase tracking-widest font-bold text-center">${currentUser.address || ''}</p><div class="mt-4 border-b border-slate-900 w-1/3 mx-auto"></div><p class="mt-1 text-sm font-serif italic text-slate-700 text-center">Official Statement of Marks</p></div>
                 <div class="info-grid flex justify-between mb-4 text-sm"><div class="flex flex-col gap-2"><div class="info-row"><span class="info-label font-bold text-slate-500 w-24 inline-block">Candidate</span><span class="info-val font-bold text-slate-900">${s.name}</span></div><div class="info-row"><span class="info-label font-bold text-slate-500 w-24 inline-block">ID No</span><span id="mk-adm" class="info-val font-mono font-bold text-slate-900">${s.admissionNo}</span></div><div class="info-row"><span class="info-label font-bold text-slate-500 w-24 inline-block">D.O.B</span><span class="info-val font-bold text-slate-900">${s.dob || 'N/A'}</span></div></div><div class="flex flex-col gap-2 text-right"><div class="info-row"><span class="info-label font-bold text-slate-500 mr-2">Class</span><span class="info-val font-bold text-slate-900">${localState.classes.find(c=>c.id===s.classId)?.name}</span></div><div class="info-row"><span class="info-label font-bold text-slate-500 mr-2">Exam</span><span class="info-val font-bold text-slate-900">${exam.name} <span class="text-xs text-slate-500 ml-1">[${exam.academicYear||''}]</span></span></div><div class="info-row"><span class="info-label font-bold text-slate-500 mr-2">Date</span><span class="info-val font-bold text-slate-900">${new Date().toLocaleDateString()}</span></div></div></div>
-                <table class="mk-table mb-auto"><thead><tr><th class="text-left pl-6">Subject</th><th width="15%">Max Marks</th><th width="15%">Pass Marks</th><th width="15%">Obtained</th><th width="15%">Grade</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-100 text-slate-900"><td class="text-left font-black pl-6 text-sm uppercase tracking-widest">Grand Total</td><td colspan="2" class="text-center font-bold text-slate-500 text-xs uppercase">${numToWords(total)}</td><td class="text-center text-lg font-bold text-slate-900 py-3" colspan="2">${total}</td></tr></tfoot></table>
+                <table class="mk-table mb-auto"><thead><tr><th class="text-left pl-6">Subject</th><th width="15%">Max Marks</th><th width="15%">Pass Marks</th><th width="15%">Obtained</th><th width="15%">Grade</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-100 text-slate-900"><td class="text-left font-black pl-6 text-sm uppercase tracking-widest">Grand Total</td><td colspan="2" class="text-center font-bold text-slate-500 text-xs uppercase">${numToWords(total)}</td><td class="text-center text-lg font-bold text-slate-900 py-3" colspan="2">${total} / ${maxTotal}</td></tr></tfoot></table>
                 ${legendStr ? `<div class="mt-4 mb-2 text-[8px] text-slate-500 font-mono text-center border-t border-slate-200 pt-2"><strong>GRADING LEGEND:</strong> ${legendStr}</div>` : ''}
                 <div class="feedback-section flex justify-between mt-4 gap-4"><div class="appreciation-box w-2/3 p-3 bg-slate-50 rounded border border-slate-200"><h4 class="font-bold text-xs uppercase text-slate-400 mb-1"><i class="fas fa-quote-left mr-2 opacity-50"></i>Insight</h4><p class="appr-text text-sm font-serif italic text-slate-700">"${appreciation}"</p><p class="motiv-text text-xs text-slate-500 mt-1">"${motivation}"</p></div><div class="stats-box w-1/3 p-3 bg-slate-100 rounded border border-slate-200 text-right"><div class="stat-row mb-1"><span class="stat-label text-xs text-slate-500 mr-2">Percentage</span><span class="stat-val font-bold text-slate-900">${finalPct}%</span></div><div class="stat-row mb-1"><span class="stat-label text-xs text-slate-500 mr-2">Overall Grade</span><span class="stat-val text-sm font-bold text-slate-900">${finalGrade}</span></div><div class="stat-row mb-1"><span class="stat-label text-xs text-slate-500 mr-2">Attendance</span><span class="stat-val text-sm font-bold text-slate-900">${attVal}/${totalAtt}</span></div><div class="stat-row mt-2"><span class="stat-label text-xs text-slate-500 mr-2">Result Status</span><div class="stamp-status ${clsName}">${status}</div></div></div></div>
-                <div class="doc-footer border-t-2 border-slate-900 pt-6 mt-4 flex justify-between items-end"><div class="text-[8px] text-slate-500 font-mono w-2/3 leading-tight">This document is securely processed and digitally generated by <span class="dynamic-brand-name">easyresults</span> Cloud Systems.<br>Valid academic record. No physical signature required for web verification.</div><div class="principal-box text-center"><div class="h-16 flex items-end justify-center mb-1">${currentUser.signatureImage ? `<img src="${currentUser.signatureImage}" class="max-h-full max-w-full object-contain filter grayscale contrast-125">` : '<div class="h-8 border-b border-black w-32"></div>'}</div><div class="border-t-2 border-slate-900 w-32 mx-auto mb-1"></div><p class="text-[9px] font-bold uppercase tracking-widest text-slate-900">Principal Signature</p></div></div>
+                <div class="doc-footer border-t-2 border-slate-900 pt-6 mt-4 flex justify-between items-end"><div class="text-[8px] text-slate-500 font-mono w-2/3 leading-tight">This document is securely processed and digitally generated by <span class="dynamic-brand-name">easyresults</span> Cloud Systems.<br>Valid academic record. No physical signature required for web verification.</div><div class="principal-box text-center"><div class="h-16 flex items-end justify-center mb-1">${currentUser.signatureImage ? `<img src="${currentUser.signatureImage}" crossorigin="anonymous" class="max-h-full max-w-full object-contain filter grayscale contrast-125">` : '<div class="h-8 border-b border-black w-32 mx-auto"></div>'}</div><div class="border-t-2 border-slate-900 w-32 mx-auto mb-1"></div><p class="text-[9px] font-bold uppercase tracking-widest text-slate-900">Principal Signature</p></div></div>
             `;
             
-            // Dynamic JS Scaling for A4 Preview on Mobile
             const ctr = document.getElementById('mk-printable');
             if(window.innerWidth < 800) {
                 const scale = (window.innerWidth - 32) / ctr.offsetWidth;
@@ -1525,14 +1464,13 @@
         function downloadPDF() {
             showLoader(true);
             const { jsPDF } = window.jspdf;
-            const element = document.getElementById('mk-printable'); // Fixed selector
+            const element = document.getElementById('mk-printable'); 
             
-            // Temporary scale up for high-res PDF rendering
             const originalTransform = element.style.transform;
             element.style.transform = 'scale(1)';
             
             html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
-                element.style.transform = originalTransform; // Restore original scale
+                element.style.transform = originalTransform; 
                 
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
@@ -1551,21 +1489,6 @@
                 showToast("PDF generation failed", "error");
             });
         }
-        
-        function numToWords(n) {
-            const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
-            const b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
-            if ((n = n.toString()).length > 9) return 'Overflow';
-            let n_ = ('000000000' + n).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-            if (!n_) return; 
-            let str = '';
-            str += (n_[1] != 0) ? (a[Number(n_[1])] || b[n_[1][0]] + ' ' + a[n_[1][1]]) + 'Crore ' : '';
-            str += (n_[2] != 0) ? (a[Number(n_[2])] || b[n_[2][0]] + ' ' + a[n_[2][1]]) + 'Lakh ' : '';
-            str += (n_[3] != 0) ? (a[Number(n_[3])] || b[n_[3][0]] + ' ' + a[n_[3][1]]) + 'Thousand ' : '';
-            str += (n_[4] != 0) ? (a[Number(n_[4])] || b[n_[4][0]] + ' ' + a[n_[4][1]]) + 'Hundred ' : '';
-            str += (n_[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n_[5])] || b[n_[5][0]] + ' ' + a[n_[5][1]]) : '';
-            return str.trim() ? str.trim() + " Only" : "Zero Only";
-        }
 
         async function saveSettings() {
             showLoader(true);
@@ -1579,16 +1502,37 @@
                 gradeScale: $('set-grade-scale').value, customGradeScale: draftGradeScale
             };
             
-            const logoUrl = $('set-logo').value.trim();
-            const sigUrl = $('set-sig').value.trim();
-            if(logoUrl) data.profileImage = logoUrl;
-            if(sigUrl) data.signatureImage = sigUrl;
+            // SECURITY CHECK: Only allow saving logo/sig if owner gave Full Access
+            if (currentUser.hasFullAccess === true) {
+                data.profileImage = formatImageUrl($('set-logo').value.trim());
+                data.signatureImage = formatImageUrl($('set-sig').value.trim());
+            }
             
             await db.collection('institutions').doc(currentUser.id).update(data);
             
+            // Update local session data
             currentUser = { ...currentUser, ...data }; 
             localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
             applyTheme(currentUser); 
+            
+            // FIXED: Use 'currentUser.profileImage' instead of 'data.profileImage'
+            if (currentUser.profileImage) {
+                $('sidebar-logo').src = currentUser.profileImage;
+                $('sidebar-logo').classList.remove('hidden');
+                $('sidebar-icon').classList.add('hidden');
+                if($('mobile-header-logo-admin')) {
+                    $('mobile-header-logo-admin').src = currentUser.profileImage;
+                    $('mobile-header-logo-admin').classList.remove('hidden');
+                    $('mobile-header-icon-admin').classList.add('hidden');
+                }
+            } else {
+                $('sidebar-logo').classList.add('hidden');
+                $('sidebar-icon').classList.remove('hidden');
+                if($('mobile-header-logo-admin')) {
+                    $('mobile-header-logo-admin').classList.add('hidden');
+                    $('mobile-header-icon-admin').classList.remove('hidden');
+                }
+            }
             
             showLoader(false); 
             showToast("Profile Updated");

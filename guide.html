@@ -10,67 +10,96 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap" rel="stylesheet">
 
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
+
     <style>
+        /* Dynamic Theme Variables Fallback */
+        :root {
+            --bg-dark: #020617;
+            --bg-panel: rgba(15, 23, 42, 0.7);
+            --primary: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Utility Classes for Auto-Theming */
+        .text-main { color: var(--text-main) !important; }
+        .text-muted { color: var(--text-muted) !important; }
+        .bg-dark { background-color: var(--bg-dark) !important; }
+        .bg-panel { background-color: var(--bg-panel) !important; }
+        .border-theme { border-color: var(--border) !important; }
+
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #020617; 
-            color: #f8fafc; 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
         .ml-text { font-family: 'Noto Sans Malayalam', sans-serif; }
         
         .glass-panel { 
-            background: rgba(15, 23, 42, 0.7); 
+            background: var(--bg-panel); 
             backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255,255,255,0.08); 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4); 
+            border: 1px solid var(--border); 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1); 
+            transition: border-color 0.5s ease, background 0.5s ease;
         }
 
         .tab-btn { transition: all 0.3s ease; }
-        .tab-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+        .tab-btn.active { background: var(--primary); color: #ffffff !important; border-color: var(--primary); }
         
-        .lang-btn { transition: all 0.3s ease; }
-        .lang-btn.active { color: #3b82f6; border-bottom: 2px solid #3b82f6; }
+        .lang-btn { transition: all 0.3s ease; border-bottom: 2px solid transparent; }
+        .lang-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
         .step-card {
-            background: rgba(30, 41, 59, 0.4); 
-            border: 1px solid rgba(255,255,255,0.05);
-            border-left: 4px solid #3b82f6;
-            transition: transform 0.2s;
+            background: var(--bg-panel); 
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            transition: transform 0.2s, background 0.5s ease, border-color 0.5s ease;
         }
+        
+        /* Specific Role Colors */
         .step-card.teacher-card { border-left-color: #f59e0b; }
         .step-card.student-card { border-left-color: #8b5cf6; }
         
-        .step-card:hover { transform: translateX(5px); background: rgba(30, 41, 59, 0.8); }
+        .step-card:hover { transform: translateX(5px); filter: brightness(1.05); }
 
         .faq-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255,255,255,0.05);
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
             border-left: 4px solid #10b981;
+            transition: background 0.5s ease, border-color 0.5s ease;
         }
 
         .bg-orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.15; z-index: -1; pointer-events: none;}
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="overflow-x-hidden min-h-screen flex flex-col relative pb-20">
 
-    <div class="bg-orb top-0 left-0 w-[500px] h-[500px] bg-blue-600"></div>
+    <div class="bg-orb top-0 left-0 w-[500px] h-[500px]" style="background-color: var(--primary);"></div>
     <div class="bg-orb bottom-0 right-0 w-[500px] h-[500px] bg-purple-600"></div>
 
-    <header class="glass-panel sticky top-0 z-50 border-b border-slate-800">
+    <header class="glass-panel sticky top-0 z-50 border-b border-theme">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition smart-back-link">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shrink-0">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg shrink-0" style="background: linear-gradient(135deg, var(--primary), #4338ca);">
                     <i class="fas fa-layer-group"></i>
                 </div>
-                <span class="font-bold text-lg sm:text-xl tracking-tight hidden sm:block">easyresults Help</span>
+                <span class="font-bold text-lg sm:text-xl tracking-tight hidden sm:block text-main"><span class="dynamic-brand-name">easyresults</span> Help</span>
             </a>
             
             <div class="flex items-center gap-4 sm:gap-6">
-                <div class="flex gap-3 sm:gap-4 text-xs sm:text-sm font-bold text-slate-400">
+                <div class="flex gap-3 sm:gap-4 text-xs sm:text-sm font-bold text-muted">
                     <button onclick="setLang('en')" id="btn-lang-en" class="lang-btn active pb-1">English</button>
                     <button onclick="setLang('ml')" id="btn-lang-ml" class="lang-btn ml-text pb-1">മലയാളം</button>
                 </div>
-                <a href="index.html" class="smart-back-link px-3 sm:px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-[10px] sm:text-xs font-bold rounded-lg transition border border-slate-700 whitespace-nowrap"><i class="fas fa-arrow-left sm:mr-2"></i> <span class="hidden sm:inline smart-back-text">Back to Home</span></a>
+                <a href="index.html" class="smart-back-link px-3 sm:px-4 py-2 bg-panel hover:brightness-110 text-main text-[10px] sm:text-xs font-bold rounded-lg transition border border-theme whitespace-nowrap"><i class="fas fa-arrow-left sm:mr-2"></i> <span class="hidden sm:inline smart-back-text">Back to Home</span></a>
             </div>
         </div>
     </header>
@@ -78,24 +107,24 @@
     <main class="max-w-4xl mx-auto w-full px-4 sm:px-6 pt-8 sm:pt-12">
         
         <div class="text-center mb-8 sm:mb-10">
-            <h1 class="text-3xl md:text-5xl font-extrabold mb-4 en-content tracking-tight">How to use easyresults</h1>
-            <h1 class="text-3xl md:text-4xl font-extrabold mb-4 ml-content hidden ml-text tracking-tight">എളുപ്പത്തിൽ ഉപയോഗിക്കാൻ പഠിക്കാം</h1>
-            <p class="text-slate-400 en-content text-sm sm:text-base">Complete step-by-step tutorial and feature guide.</p>
-            <p class="text-slate-400 ml-content hidden ml-text text-sm sm:text-base">വിശദമായ വിവരങ്ങളും സംശയങ്ങൾക്കുള്ള മറുപടിയും.</p>
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-4 en-content tracking-tight text-main">How to use <span class="dynamic-brand-name text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, var(--primary), #8b5cf6);">easyresults</span></h1>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4 ml-content hidden ml-text tracking-tight text-main">എളുപ്പത്തിൽ ഉപയോഗിക്കാൻ പഠിക്കാം</h1>
+            <p class="text-muted en-content text-sm sm:text-base">Complete step-by-step tutorial and feature guide.</p>
+            <p class="text-muted ml-content hidden ml-text text-sm sm:text-base">വിശദമായ വിവരങ്ങളും സംശയങ്ങൾക്കുള്ള മറുപടിയും.</p>
         </div>
 
         <div class="flex justify-center mb-10">
-            <div class="bg-slate-900 p-1.5 rounded-xl border border-slate-800 flex flex-wrap justify-center gap-1 sm:gap-0">
+            <div class="bg-dark p-1.5 rounded-xl border border-theme flex flex-wrap justify-center gap-1 sm:gap-0">
                 <button onclick="setTab('admin')" id="btn-tab-admin" class="tab-btn active px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2">
                     <i class="fas fa-user-shield"></i> <span class="en-content">Admins</span><span class="ml-content hidden ml-text">അഡ്മിൻ</span>
                 </button>
-                <button onclick="setTab('teacher')" id="btn-tab-teacher" class="tab-btn px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white flex items-center gap-2">
+                <button onclick="setTab('teacher')" id="btn-tab-teacher" class="tab-btn px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-muted hover:text-main flex items-center gap-2">
                     <i class="fas fa-chalkboard-teacher"></i> <span class="en-content">Teachers</span><span class="ml-content hidden ml-text">അധ്യാപകർ</span>
                 </button>
-                <button onclick="setTab('student')" id="btn-tab-student" class="tab-btn px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white flex items-center gap-2">
+                <button onclick="setTab('student')" id="btn-tab-student" class="tab-btn px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-muted hover:text-main flex items-center gap-2">
                     <i class="fas fa-user-graduate"></i> <span class="en-content">Students</span><span class="ml-content hidden ml-text">വിദ്യാർത്ഥികൾ</span>
                 </button>
-                <button onclick="setTab('faq')" id="btn-tab-faq" class="tab-btn px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white flex items-center gap-2">
+                <button onclick="setTab('faq')" id="btn-tab-faq" class="tab-btn px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-muted hover:text-main flex items-center gap-2">
                     <i class="fas fa-question-circle"></i> <span class="en-content">FAQs</span><span class="ml-content hidden ml-text">ചോദ്യങ്ങൾ</span>
                 </button>
             </div>
@@ -105,77 +134,77 @@
             
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">1</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Registration & Approval</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">രജിസ്ട്രേഷൻ & അപ്രൂവൽ</h3>
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0" style="background: rgba(59, 130, 246, 0.2); color: var(--primary);">1</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Registration & Approval</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">രജിസ്ട്രേഷൻ & അപ്രൂവൽ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">Register your institution on the homepage. Upon submission, your account is created but marked as "Suspended" (Pending Review).</p>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">The System Owner will verify and activate your account. Once active, go to your dedicated portal link and log in using your Admin Email and Password.</p>
+                <p class="text-muted text-sm leading-relaxed en-content mb-2">Register your institution on the homepage. Upon submission, your account is created but marked as "Suspended" (Pending Review).</p>
+                <p class="text-muted text-sm leading-relaxed en-content">The System Owner will verify and activate your account. Once active, go to your dedicated portal link and log in using your Admin Email and Password.</p>
                 
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2">ഹോം പേജിൽ പോയി 'Register Your Institution' ഫോം പൂരിപ്പിക്കുക. രജിസ്ട്രേഷൻ കഴിഞ്ഞാൽ അക്കൗണ്ട് താല്കാലികമായി "Suspended" (പെൻഡിങ്) അവസ്ഥയിലായിരിക്കും.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">സിസ്റ്റം ഓണർ പരിശോധിച്ചു ആക്റ്റീവ് ആക്കിയ ശേഷം, പോർട്ടലിൽ പോയി നിങ്ങളുടെ ഇമെയിലും പാസ്‌വേഡും ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യാം.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text mb-2">ഹോം പേജിൽ പോയി 'Register Your Institution' ഫോം പൂരിപ്പിക്കുക. രജിസ്ട്രേഷൻ കഴിഞ്ഞാൽ അക്കൗണ്ട് താല്കാലികമായി "Suspended" (പെൻഡിങ്) അവസ്ഥയിലായിരിക്കും.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">സിസ്റ്റം ഓണർ പരിശോധിച്ചു ആക്റ്റീവ് ആക്കിയ ശേഷം, പോർട്ടലിൽ പോയി നിങ്ങളുടെ ഇമെയിലും പാസ്‌വേഡും ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യാം.</p>
+            </div>
+
+            <div class="step-card p-5 sm:p-6 rounded-2xl border-l-4 border-yellow-500">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0" style="background: rgba(234, 179, 8, 0.2); color: #eab308;">2</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">School Profile, Logos & Branding</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">ലോഗോ, ഒപ്പ് & ബ്രാൻഡിംഗ്</h3>
+                </div>
+                <p class="text-muted text-sm leading-relaxed en-content mb-2">Go to the <strong>'School Profile'</strong> tab. Here you can set your Custom Grading System (e.g., A+ for 90%) and theme colors.</p>
+                <p class="text-main text-sm leading-relaxed en-content bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20"><i class="fas fa-shield-alt text-yellow-500 mr-1"></i> <strong>Important Security Update:</strong> Uploading the School Logo and Principal's Signature is locked by default. To update them, simply click the <strong>Chat Support</strong> button in your profile to send your logo to our team, and we will apply it for you to ensure document authenticity.</p>
+
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'School Profile'</strong> ൽ പോയി ഗ്രേഡിംഗ് സിസ്റ്റം മാറ്റാം (ഉദാ: A+ 90%).</p>
+                <p class="text-main text-sm leading-relaxed ml-content hidden ml-text bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20"><i class="fas fa-shield-alt text-yellow-500 mr-1"></i> <strong>ശ്രദ്ധിക്കുക:</strong> സുരക്ഷാ കാരണങ്ങളാൽ സ്കൂൾ ലോഗോ, ഒപ്പ് എന്നിവ ലോക്ക് ചെയ്തിരിക്കുകയാണ്. ഇവ മാറ്റാൻ പ്രൊഫൈലിലുള്ള <strong>Chat Support</strong> ബട്ടൺ ഉപയോഗിച്ച് ഞങ്ങൾക്ക് മെസ്സേജ് അയക്കാവുന്നതാണ്.</p>
             </div>
 
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">2</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">School Setup & Grading System</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">സ്കൂൾ സെറ്റപ്പ് & ഗ്രേഡിംഗ് സിസ്റ്റം</h3>
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0" style="background: rgba(59, 130, 246, 0.2); color: var(--primary);">3</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Classes & Staff Setup</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">ക്ലാസുകളും അധ്യാപകരും</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">Go to <strong>'School Profile'</strong> to paste Image URLs for your School Logo and Principal's Signature. You can change your portal's color theme here.</p>
-                <p class="text-slate-400 text-sm leading-relaxed en-content"><strong>Custom Grading:</strong> Choose a preset (Standard, GPA, O-Level) or build your own custom grade boundaries (e.g., A+ for 90%). This will instantly apply to all student marksheets.</p>
-
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'School Profile'</strong> ൽ പോയി സ്കൂളിന്റെ ലോഗോ, പ്രിൻസിപ്പാളിന്റെ ഒപ്പ് എന്നിവയുടെ ഇമേജ് ലിങ്ക് (URL) നൽകാം. പോർട്ടലിന്റെ കളർ മാറ്റാനും സാധിക്കും.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>ഗ്രേഡിംഗ് മാറ്റാൻ:</strong> ഇവിടെ നിങ്ങൾക്ക് GPA, O-Level അല്ലെങ്കിൽ നിങ്ങളുടെ സ്വന്തം ഗ്രേഡിംഗ് സ്കെയിൽ (ഉദാ: A+ 90%) സെറ്റ് ചെയ്യാൻ കഴിയും. ഇത് കുട്ടികളുടെ മാർക്ക് ലിസ്റ്റിൽ തനിയെ വരും.</p>
-            </div>
-
-            <div class="step-card p-5 sm:p-6 rounded-2xl">
-                <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">3</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Staff & Classes</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">ക്ലാസുകളും അധ്യാപകരും</h3>
-                </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">Create classes and assign subjects under the <strong>'Classes'</strong> tab. Each subject must have a Total Mark and Pass Mark.</p>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Go to <strong>'Staff / Teachers'</strong> to create restricted login accounts for your teachers. They can enter marks but cannot access school settings or delete data.</p>
+                <p class="text-muted text-sm leading-relaxed en-content mb-2">Create classes and assign subjects under the <strong>'Classes'</strong> tab. Each subject must have a Total Mark and Pass Mark.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">Go to <strong>'Staff / Teachers'</strong> to create restricted login accounts for your teachers. They can enter marks but cannot access school settings or delete data.</p>
                 
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2">ആദ്യം <strong>'Classes'</strong> ടാബിൽ പോയി ക്ലാസുകളും വിഷയങ്ങളും (മൊത്തം മാർക്കും പാസ്സ് മാർക്കും) ചേർക്കുക.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'Staff / Teachers'</strong> ടാബിൽ പോയി അധ്യാപകർക്കുള്ള ലോഗിൻ ഐഡികൾ നിർമ്മിക്കാം. ഇവർക്ക് മാർക്കുകൾ നൽകാൻ മാത്രമേ സാധിക്കൂ, സെറ്റിങ്സ് മാറ്റാനോ ഡിലീറ്റ് ചെയ്യാനോ കഴിയില്ല.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text mb-2">ആദ്യം <strong>'Classes'</strong> ടാബിൽ പോയി ക്ലാസുകളും വിഷയങ്ങളും (മൊത്തം മാർക്കും പാസ്സ് മാർക്കും) ചേർക്കുക.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text"><strong>'Staff / Teachers'</strong> ടാബിൽ പോയി അധ്യാപകർക്കുള്ള ലോഗിൻ ഐഡികൾ നിർമ്മിക്കാം. ഇവർക്ക് മാർക്കുകൾ നൽകാൻ മാത്രമേ സാധിക്കൂ, സെറ്റിങ്സ് മാറ്റാനോ ഡിലീറ്റ് ചെയ്യാനോ കഴിയില്ല.</p>
             </div>
 
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">4</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Managing Students (Bulk Actions)</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">വിദ്യാർത്ഥികളെ ചേർക്കാൻ (Bulk Actions)</h3>
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0" style="background: rgba(59, 130, 246, 0.2); color: var(--primary);">4</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Managing Students (Bulk Actions)</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">വിദ്യാർത്ഥികളെ ചേർക്കാൻ (Bulk Actions)</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">In the <strong>'Student Directory'</strong>, you can add students manually with their Guardian's details. For large numbers, click <strong>'Template'</strong> to download an Excel file, fill it out, and click <strong>'Import Excel'</strong> to upload hundreds at once.</p>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">You can also select multiple students using checkboxes to <strong>'Bulk Promote'</strong> them to the next class at the end of the year.</p>
+                <p class="text-muted text-sm leading-relaxed en-content mb-2">In the <strong>'Student Directory'</strong>, you can add students manually. For large numbers, click <strong>'Template'</strong> to download an Excel file, fill it out, and click <strong>'Import Excel'</strong> to upload hundreds at once.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">You can also select multiple students using checkboxes to <strong>'Bulk Promote'</strong> them to the next class at the end of the year.</p>
 
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'Student Directory'</strong> ൽ കുട്ടികളെയും രക്ഷിതാക്കളുടെ വിവരങ്ങളും ചേർക്കാം. ഒന്നിലധികം പേരെ ചേർക്കാൻ <strong>'Template'</strong> ഡൗൺലോഡ് ചെയ്തു പൂരിപ്പിച്ച ശേഷം <strong>'Import Excel'</strong> ഉപയോഗിച്ച് അപ്‌ലോഡ് ചെയ്യുക.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">അധ്യയന വർഷം കഴിയുമ്പോൾ കുട്ടികളെ സെലക്ട് ചെയ്ത് അടുത്ത ക്ലാസിലേക്ക് ഒറ്റയടിക്ക് <strong>'Bulk Promote'</strong> ചെയ്യാനും സാധിക്കും.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'Student Directory'</strong> ൽ കുട്ടികളെയും രക്ഷിതാക്കളുടെ വിവരങ്ങളും ചേർക്കാം. ഒന്നിലധികം പേരെ ചേർക്കാൻ <strong>'Template'</strong> ഡൗൺലോഡ് ചെയ്തു പൂരിപ്പിച്ച ശേഷം <strong>'Import Excel'</strong> ഉപയോഗിച്ച് അപ്‌ലോഡ് ചെയ്യുക.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">അധ്യയന വർഷം കഴിയുമ്പോൾ കുട്ടികളെ സെലക്ട് ചെയ്ത് അടുത്ത ക്ലാസിലേക്ക് ഒറ്റയടിക്ക് <strong>'Bulk Promote'</strong> ചെയ്യാനും സാധിക്കും.</p>
             </div>
 
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">5</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Exams & Result Entry</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">പരീക്ഷകളും റിസൾട്ടും</h3>
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0" style="background: rgba(59, 130, 246, 0.2); color: var(--primary);">5</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Exams & Result Entry</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">പരീക്ഷകളും റിസൾട്ടും</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">Create an exam in the <strong>'Exams'</strong> tab and assign it an <strong>Academic Year</strong> (e.g., 2024-2025) to keep records organized. </p>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Go to <strong>'Result Entry'</strong>, select the Exam and Class, and type the marks. The system includes <strong>Mark Validation</strong>—it will block any number entered that is higher than the maximum allowed marks. Click <strong>Save Results</strong> to generate ranks.</p>
+                <p class="text-muted text-sm leading-relaxed en-content mb-2">Create an exam in the <strong>'Exams'</strong> tab and assign it an <strong>Academic Year</strong> (e.g., 2024-2025). </p>
+                <p class="text-muted text-sm leading-relaxed en-content">Go to <strong>'Result Entry'</strong>, select the Exam and Class, and type the marks. The system includes <strong>Mark Validation</strong> to prevent typing errors. Click <strong>Save Results</strong> to generate ranks automatically.</p>
 
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'Exams'</strong> ൽ പുതിയ പരീക്ഷ ഉണ്ടാക്കുമ്പോൾ ഒരു <strong>Academic Year</strong> (ഉദാ: 2024-2025) നൽകുക. ഇത് പഴയ പരീക്ഷകൾ എളുപ്പം കണ്ടെത്താൻ സഹായിക്കും.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'Result Entry'</strong> ൽ പോയി പരീക്ഷയും ക്ലാസും സെലക്ട് ചെയ്തു മാർക്കുകൾ ടൈപ്പ് ചെയ്യുക. പരമാവധി മാർക്കിനേക്കാൾ കൂടുതൽ നൽകിയാൽ സിസ്റ്റം അത് തടയും (Mark Validation). അവസാനം <strong>Save Results</strong> ക്ലിക്ക് ചെയ്യുക.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'Exams'</strong> ൽ പുതിയ പരീക്ഷ ഉണ്ടാക്കുമ്പോൾ ഒരു <strong>Academic Year</strong> (ഉദാ: 2024-2025) നൽകുക.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text"><strong>'Result Entry'</strong> ൽ പോയി പരീക്ഷയും ക്ലാസും സെലക്ട് ചെയ്തു മാർക്കുകൾ ടൈപ്പ് ചെയ്യുക. പരമാവധി മാർക്കിനേക്കാൾ കൂടുതൽ നൽകിയാൽ സിസ്റ്റം അത് തടയും. അവസാനം <strong>Save Results</strong> ക്ലിക്ക് ചെയ്യുക.</p>
             </div>
             
             <div class="step-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0">6</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Publishing Marksheets</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">മാർക്ക് ലിസ്റ്റ് പബ്ലിഷ് ചെയ്യാൻ</h3>
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0" style="background: rgba(59, 130, 246, 0.2); color: var(--primary);">6</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Publishing Marksheets</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">മാർക്ക് ലിസ്റ്റ് പബ്ലിഷ് ചെയ്യാൻ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Go back to the <strong>'Exams'</strong> tab and toggle your exam status to <strong>'Published'</strong>. Students can now immediately log in to view their grades and download automatic A4 PDF Marksheets.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">മാർക്കുകൾ സേവ് ചെയ്ത ശേഷം <strong>'Exams'</strong> ടാബിൽ പോയി പരീക്ഷ <strong>'Published'</strong> ആക്കുക. ഇതോടെ കുട്ടികൾക്ക് പോർട്ടലിൽ കയറി റിസൾട്ട് കാണാനും PDF ഡൗൺലോഡ് ചെയ്യാനും സാധിക്കും.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">Go back to the <strong>'Exams'</strong> tab and toggle your exam status to <strong>'Published'</strong>. Students can now immediately log in to view their grades and download automatic A4 PDF Marksheets.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">മാർക്കുകൾ സേവ് ചെയ്ത ശേഷം <strong>'Exams'</strong> ടാബിൽ പോയി പരീക്ഷ <strong>'Published'</strong> ആക്കുക. ഇതോടെ കുട്ടികൾക്ക് പോർട്ടലിൽ കയറി റിസൾട്ട് കാണാനും PDF ഡൗൺലോഡ് ചെയ്യാനും സാധിക്കും.</p>
             </div>
         </div>
 
@@ -183,35 +212,35 @@
             
             <div class="step-card teacher-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0">1</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Logging in as Staff</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">അധ്യാപകർക്കുള്ള ലോഗിൻ</h3>
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold shrink-0">1</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Logging in as Staff</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">അധ്യാപകർക്കുള്ള ലോഗിൻ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Go to your school's portal and click on <strong>'Administration'</strong>. Log in using the Email and Password provided to you by the School Admin. You will have access to a secure, restricted dashboard.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">സ്കൂൾ പോർട്ടലിൽ കയറി <strong>'Administration'</strong> ക്ലിക്ക് ചെയ്യുക. സ്കൂൾ അഡ്മിൻ നിങ്ങൾക്ക് നൽകിയ ഇമെയിലും പാസ്‌വേഡും ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">Go to your school's portal and click on <strong>'Administration'</strong>. Log in using the Email and Password provided to you by the School Admin. You will have access to a secure, restricted dashboard.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">സ്കൂൾ പോർട്ടലിൽ കയറി <strong>'Administration'</strong> ക്ലിക്ക് ചെയ്യുക. സ്കൂൾ അഡ്മിൻ നിങ്ങൾക്ക് നൽകിയ ഇമെയിലും പാസ്‌വേഡും ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക.</p>
             </div>
 
             <div class="step-card teacher-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0">2</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Viewing Students</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">വിദ്യാർത്ഥികളുടെ വിവരങ്ങൾ</h3>
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold shrink-0">2</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Viewing Students</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">വിദ്യാർത്ഥികളുടെ വിവരങ്ങൾ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">In the <strong>'Student Directory'</strong>, you can search and view all student names, admission numbers, and parent details. Note: Teachers cannot edit, delete, or add new students.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'Student Directory'</strong> ൽ കുട്ടികളുടെ പേരും രക്ഷിതാക്കളുടെ വിവരങ്ങളും നിങ്ങൾക്ക് കാണാൻ സാധിക്കും. എന്നാൽ പുതിയ കുട്ടികളെ ചേർക്കാനോ വിവരങ്ങൾ മാറ്റാനോ ഡിലീറ്റ് ചെയ്യാനോ അധ്യാപകർക്ക് സാധിക്കില്ല.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">In the <strong>'Student Directory'</strong>, you can search and view all student names, admission numbers, and parent details. Note: Teachers cannot edit, delete, or add new students.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text"><strong>'Student Directory'</strong> ൽ കുട്ടികളുടെ പേരും രക്ഷിതാക്കളുടെ വിവരങ്ങളും നിങ്ങൾക്ക് കാണാൻ സാധിക്കും. എന്നാൽ പുതിയ കുട്ടികളെ ചേർക്കാനോ വിവരങ്ങൾ മാറ്റാനോ ഡിലീറ്റ് ചെയ്യാനോ അധ്യാപകർക്ക് സാധിക്കില്ല.</p>
             </div>
 
             <div class="step-card teacher-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0">3</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Entering Marks securely</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">മാർക്കുകൾ എന്റർ ചെയ്യാൻ</h3>
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold shrink-0">3</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Entering Marks securely</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">മാർക്കുകൾ എന്റർ ചെയ്യാൻ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content mb-2">Go to <strong>'Result Entry'</strong>, select the Exam and your Class. Click 'Load Console'. Simply type the marks into the grid. The system will automatically highlight failed subjects in red.</p>
-                <p class="text-slate-400 text-sm leading-relaxed en-content"><strong>Validation:</strong> You cannot accidentally enter a mark higher than the maximum allowed. Click <strong>Save Results</strong> at the bottom when you are done.</p>
+                <p class="text-muted text-sm leading-relaxed en-content mb-2">Go to <strong>'Result Entry'</strong>, select the Exam and your Class. Click 'Load Console'. Simply type the marks into the grid. The system will automatically highlight failed subjects in red.</p>
+                <p class="text-muted text-sm leading-relaxed en-content"><strong>Validation:</strong> You cannot accidentally enter a mark higher than the maximum allowed. Click <strong>Save Results</strong> at the bottom when you are done.</p>
 
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'Result Entry'</strong> ൽ പോയി പരീക്ഷയും ക്ലാസും സെലക്ട് ചെയ്തു 'Load Console' ക്ലിക്ക് ചെയ്യുക. ശേഷം കുട്ടികളുടെ മാർക്കുകൾ ടൈപ്പ് ചെയ്യുക. തോറ്റ വിഷയങ്ങൾ ചുവപ്പ് നിറത്തിൽ കാണിക്കും.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>സുരക്ഷ:</strong> പരമാവധി മാർക്കിനേക്കാൾ കൂടുതൽ ഒരു കാരണവശാലും സിസ്റ്റം അനുവദിക്കില്ല. മാർക്ക് നൽകിയ ശേഷം <strong>Save Results</strong> ക്ലിക്ക് ചെയ്യുക.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text mb-2"><strong>'Result Entry'</strong> ൽ പോയി പരീക്ഷയും ക്ലാസും സെലക്ട് ചെയ്തു 'Load Console' ക്ലിക്ക് ചെയ്യുക. ശേഷം കുട്ടികളുടെ മാർക്കുകൾ ടൈപ്പ് ചെയ്യുക. തോറ്റ വിഷയങ്ങൾ ചുവപ്പ് നിറത്തിൽ കാണിക്കും.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text"><strong>സുരക്ഷ:</strong> പരമാവധി മാർക്കിനേക്കാൾ കൂടുതൽ ഒരു കാരണവശാലും സിസ്റ്റം അനുവദിക്കില്ല. മാർക്ക് നൽകിയ ശേഷം <strong>Save Results</strong> ക്ലിക്ക് ചെയ്യുക.</p>
             </div>
 
         </div>
@@ -220,42 +249,42 @@
             
             <div class="step-card student-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold shrink-0">1</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Accessing Your Portal</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">പോർട്ടലിൽ പ്രവേശിക്കാൻ</h3>
+                    <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center font-bold shrink-0">1</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Accessing Your Portal</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">പോർട്ടലിൽ പ്രവേശിക്കാൻ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">If you don't have your school link, enter your School ID on the easyresults homepage. Click 'Student Login' and enter your <strong>Admission Number</strong> and <strong>Password</strong>.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">സ്കൂൾ ലിങ്ക് അറിയില്ലെങ്കിൽ പ്രധാന വെബ്സൈറ്റിൽ School ID ടൈപ്പ് ചെയ്യുക. 'Student Login' ക്ലിക്ക് ചെയ്ത് <strong>അഡ്മിഷൻ നമ്പറും</strong> <strong>പാസ്‌വേഡും</strong> നൽകുക.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">If you don't have your school link, enter your School ID on the main homepage. Click 'Student Login' and enter your <strong>Admission Number</strong> and <strong>Password</strong>.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">സ്കൂൾ ലിങ്ക് അറിയില്ലെങ്കിൽ പ്രധാന വെബ്സൈറ്റിൽ School ID ടൈപ്പ് ചെയ്യുക. 'Student Login' ക്ലിക്ക് ചെയ്ത് <strong>അഡ്മിഷൻ നമ്പറും</strong> <strong>പാസ്‌വേഡും</strong> നൽകുക.</p>
             </div>
 
             <div class="step-card student-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold shrink-0">2</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Viewing Marksheets</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">മാർക്ക് ലിസ്റ്റ് കാണാൻ</h3>
+                    <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center font-bold shrink-0">2</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Viewing Marksheets</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">മാർക്ക് ലിസ്റ്റ് കാണാൻ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Tap on the <strong>'Exam Results'</strong> tab. You will see a list of published exams organized by Academic Year. Click <strong>'View Marksheet'</strong> to see your detailed grades, percentage, and attendance.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'Exam Results'</strong> ടാബിൽ ക്ലിക്ക് ചെയ്യുക. വർഷം തിരിച്ചു പബ്ലിഷ് ചെയ്ത പരീക്ഷകൾ അവിടെ കാണാം. <strong>'View Marksheet'</strong> ക്ലിക്ക് ചെയ്താൽ നിങ്ങളുടെ ഗ്രേഡ്, ശതമാനം എന്നിവ കാണാം.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">Tap on the <strong>'Exam Results'</strong> tab. You will see a list of published exams organized by Academic Year. Click <strong>'View Marksheet'</strong> to see your detailed grades, percentage, and attendance.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text"><strong>'Exam Results'</strong> ടാബിൽ ക്ലിക്ക് ചെയ്യുക. വർഷം തിരിച്ചു പബ്ലിഷ് ചെയ്ത പരീക്ഷകൾ അവിടെ കാണാം. <strong>'View Marksheet'</strong> ക്ലിക്ക് ചെയ്താൽ നിങ്ങളുടെ ഗ്രേഡ്, ശതമാനം എന്നിവ കാണാം.</p>
             </div>
 
             <div class="step-card student-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold shrink-0">3</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Downloading & Sharing</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">ഡൗൺലോഡ് & ഷെയർ ചെയ്യാൻ</h3>
+                    <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center font-bold shrink-0">3</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Downloading & Sharing</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">ഡൗൺലോഡ് & ഷെയർ ചെയ്യാൻ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">While viewing your marksheet, use the <strong>Download PDF</strong> button at the top to save a fully formatted A4 copy to your phone, or click <strong>Share</strong> to send it to your parents via WhatsApp.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">മാർക്ക് ലിസ്റ്റ് തുറക്കുമ്പോൾ മുകളിലുള്ള <strong>Download PDF</strong> ബട്ടൺ ഉപയോഗിച്ച് സേവ് ചെയ്യാം. <strong>Share</strong> ബട്ടൺ വഴി രക്ഷിതാക്കൾക്ക് വാട്സാപ്പിൽ അയച്ചുകൊടുക്കാനും സാധിക്കും.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">While viewing your marksheet, use the <strong>Download PDF</strong> button at the top to save a fully formatted A4 copy to your phone, or click <strong>Share</strong> to send it to your parents via WhatsApp.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">മാർക്ക് ലിസ്റ്റ് തുറക്കുമ്പോൾ മുകളിലുള്ള <strong>Download PDF</strong> ബട്ടൺ ഉപയോഗിച്ച് സേവ് ചെയ്യാം. <strong>Share</strong> ബട്ടൺ വഴി രക്ഷിതാക്കൾക്ക് വാട്സാപ്പിൽ അയച്ചുകൊടുക്കാനും സാധിക്കും.</p>
             </div>
 
             <div class="step-card student-card p-5 sm:p-6 rounded-2xl">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold shrink-0">4</div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white en-content">Update Your Password</h3>
-                    <h3 class="text-lg sm:text-xl font-bold text-white ml-content hidden ml-text">പാസ്‌വേഡ് മാറ്റാൻ</h3>
+                    <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center font-bold shrink-0">4</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-main en-content">Update Your Password</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-main ml-content hidden ml-text">പാസ്‌വേഡ് മാറ്റാൻ</h3>
                 </div>
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Go to the <strong>'My Profile'</strong> tab. Here you can update your mobile number and securely change your login password to ensure your academic records remain private.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text"><strong>'My Profile'</strong> ടാബിൽ പോയി ഫോൺ നമ്പറും അഡ്രസ്സും അപ്ഡേറ്റ് ചെയ്യാം. സുരക്ഷയ്ക്കായി പുതിയ <strong>പാസ്‌വേഡ്</strong> നൽകി സേവ് ചെയ്യാനും ഇവിടെ സാധിക്കും.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">Go to the <strong>'My Profile'</strong> tab. Here you can update your mobile number and securely change your login password to ensure your academic records remain private.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text"><strong>'My Profile'</strong> ടാബിൽ പോയി ഫോൺ നമ്പറും അഡ്രസ്സും അപ്ഡേറ്റ് ചെയ്യാം. സുരക്ഷയ്ക്കായി പുതിയ <strong>പാസ്‌വേഡ്</strong> നൽകി സേവ് ചെയ്യാനും ഇവിടെ സാധിക്കും.</p>
             </div>
 
         </div>
@@ -263,43 +292,43 @@
         <div id="content-faq" class="space-y-4 sm:space-y-6 hidden fade-in">
             
             <div class="faq-card p-5 sm:p-6 rounded-2xl">
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 en-content"><i class="fas fa-question-circle text-emerald-400 mr-2"></i> What if a student forgets their password?</h4>
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 ml-content hidden ml-text"><i class="fas fa-question-circle text-emerald-400 mr-2"></i> വിദ്യാർത്ഥി പാസ്‌വേഡ് മറന്നുപോയാൽ എന്ത് ചെയ്യും?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-main mb-2 en-content"><i class="fas fa-shield-alt text-emerald-400 mr-2"></i> Why is the Logo and Signature upload locked?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-main mb-2 ml-content hidden ml-text"><i class="fas fa-shield-alt text-emerald-400 mr-2"></i> ലോഗോയും ഒപ്പും മാറ്റാൻ കഴിയാത്തത് എന്തുകൊണ്ട്?</h4>
                 
-                <p class="text-slate-400 text-sm leading-relaxed en-content">The Admin can easily go to the 'Student Directory', click the 'Edit' (pencil) icon next to the student's name, and view or type a new password for them.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">അഡ്മിന് 'Student Directory'-ൽ പോയി വിദ്യാർത്ഥിയുടെ പേരിന് നേരെയുള്ള 'Edit' (പെൻസിൽ) ഐക്കണിൽ ക്ലിക്ക് ചെയ്ത് പഴയ പാസ്‌വേഡ് കാണുകയോ പുതിയത് നൽകുകയോ ചെയ്യാം.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">To maintain strict document authenticity and prevent unauthorized tampering with official marksheets, modifying the School Logo and Principal's Signature requires Owner Verification. You can use the "Chat Support" button in the Settings page to quickly request our team to apply them for you.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">രേഖകളുടെ സുരക്ഷ ഉറപ്പാക്കുന്നതിനായി ഇവ മാറ്റാനുള്ള അധികാരം സിസ്റ്റം ഓണർക്ക് മാത്രമായി നിജപ്പെടുത്തിയിരിക്കുന്നു. അഡ്മിൻ പ്രൊഫൈലിലുള്ള 'Chat Support' വഴി ലോഗോ അയച്ചു കൊടുക്കാവുന്നതാണ്.</p>
             </div>
 
             <div class="faq-card p-5 sm:p-6 rounded-2xl">
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 en-content"><i class="fas fa-link text-emerald-400 mr-2"></i> How do I share our portal with students?</h4>
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 ml-content hidden ml-text"><i class="fas fa-link text-emerald-400 mr-2"></i> സ്കൂൾ പോർട്ടൽ ലിങ്ക് കുട്ടികൾക്ക് എങ്ങനെ നൽകും?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-main mb-2 en-content"><i class="fas fa-link text-emerald-400 mr-2"></i> How do I share our portal with students?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-main mb-2 ml-content hidden ml-text"><i class="fas fa-link text-emerald-400 mr-2"></i> സ്കൂൾ പോർട്ടൽ ലിങ്ക് കുട്ടികൾക്ക് എങ്ങനെ നൽകും?</h4>
                 
-                <p class="text-slate-400 text-sm leading-relaxed en-content">On your Admin Dashboard header, click the "Homepage" button. Copy the URL from your browser and send it to parents/students. Alternatively, they can go to the main easyresults website and paste your School's Account ID.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">അഡ്മിൻ ഡാഷ്‌ബോർഡിൽ മുകളിലായി കാണുന്ന "Homepage" ബട്ടണിൽ ക്ലിക്ക് ചെയ്ത് ആ ലിങ്ക് കോപ്പി ചെയ്തു അയക്കാം. അല്ലെങ്കിൽ, പ്രധാന വെബ്സൈറ്റിൽ നിങ്ങളുടെ School ID നൽകിയും പോർട്ടൽ തുറക്കാം.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">On your Admin Dashboard header, click the "Homepage" button. Copy the URL from your browser and send it to parents/students. Alternatively, they can go to the main website and paste your School's Account ID.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">അഡ്മിൻ ഡാഷ്‌ബോർഡിൽ മുകളിലായി കാണുന്ന "Homepage" ബട്ടണിൽ ക്ലിക്ക് ചെയ്ത് ആ ലിങ്ക് കോപ്പി ചെയ്തു അയക്കാം. അല്ലെങ്കിൽ, പ്രധാന വെബ്സൈറ്റിൽ നിങ്ങളുടെ School ID നൽകിയും പോർട്ടൽ തുറക്കാം.</p>
             </div>
 
             <div class="faq-card p-5 sm:p-6 rounded-2xl">
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 en-content"><i class="fas fa-eraser text-emerald-400 mr-2"></i> Can I correct a mistake in published results?</h4>
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 ml-content hidden ml-text"><i class="fas fa-eraser text-emerald-400 mr-2"></i> പബ്ലിഷ് ചെയ്ത റിസൾട്ടിൽ തെറ്റ് പറ്റിയാൽ തിരുത്താൻ സാധിക്കുമോ?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-main mb-2 en-content"><i class="fas fa-eraser text-emerald-400 mr-2"></i> Can I correct a mistake in published results?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-main mb-2 ml-content hidden ml-text"><i class="fas fa-eraser text-emerald-400 mr-2"></i> പബ്ലിഷ് ചെയ്ത റിസൾട്ടിൽ തെറ്റ് പറ്റിയാൽ തിരുത്താൻ സാധിക്കുമോ?</h4>
                 
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Yes! Go to the 'Result Entry' tab, load the specific exam and class, correct the wrong mark, and click 'Save Results'. The student's PDF transcript will instantly update.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">തീർച്ചയായും. 'Result Entry' ടാബിൽ പോയി പരീക്ഷയും ക്ലാസും ലോഡ് ചെയ്യുക. മാർക്കുകൾ തിരുത്തിയ ശേഷം 'Save Results' ക്ലിക്ക് ചെയ്യുക. മാർക്ക് ലിസ്റ്റിൽ മാറ്റങ്ങൾ തനിയെ വരും.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">Yes! Go to the 'Result Entry' tab, load the specific exam and class, correct the wrong mark, and click 'Save Results'. The student's PDF transcript will instantly update.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">തീർച്ചയായും. 'Result Entry' ടാബിൽ പോയി പരീക്ഷയും ക്ലാസും ലോഡ് ചെയ്യുക. മാർക്കുകൾ തിരുത്തിയ ശേഷം 'Save Results' ക്ലിക്ക് ചെയ്യുക. മാർക്ക് ലിസ്റ്റിൽ മാറ്റങ്ങൾ തനിയെ വരും.</p>
             </div>
 
             <div class="faq-card p-5 sm:p-6 rounded-2xl">
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 en-content"><i class="fas fa-upload text-emerald-400 mr-2"></i> How does the Excel Import work?</h4>
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 ml-content hidden ml-text"><i class="fas fa-upload text-emerald-400 mr-2"></i> എക്സൽ വഴി കുട്ടികളെ ചേർക്കുന്നത് എങ്ങനെ?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-main mb-2 en-content"><i class="fas fa-upload text-emerald-400 mr-2"></i> How does the Excel Import work?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-main mb-2 ml-content hidden ml-text"><i class="fas fa-upload text-emerald-400 mr-2"></i> എക്സൽ വഴി കുട്ടികളെ ചേർക്കുന്നത് എങ്ങനെ?</h4>
                 
-                <p class="text-slate-400 text-sm leading-relaxed en-content">In the Student Directory, click 'Template' to download the correct Excel format. Fill in the students' details, ensure the Class Name exactly matches what you created in the system, and click 'Import Excel' to upload it.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">സ്റ്റുഡന്റ് ഡയറക്ടറിയിൽ 'Template' ഡൗൺലോഡ് ചെയ്യുക. കുട്ടികളുടെ വിവരങ്ങൾ നൽകുക (ക്ലാസിന്റെ പേര് സിസ്റ്റത്തിലുള്ളത് പോലെ തന്നെ ആയിരിക്കണം). ശേഷം 'Import Excel' ക്ലിക്ക് ചെയ്ത് അപ്‌ലോഡ് ചെയ്യാം.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">In the Student Directory, click 'Template' to download the correct Excel format. Fill in the students' details, ensure the Class Name exactly matches what you created in the system, and click 'Import Excel' to upload it.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">സ്റ്റുഡന്റ് ഡയറക്ടറിയിൽ 'Template' ഡൗൺലോഡ് ചെയ്യുക. കുട്ടികളുടെ വിവരങ്ങൾ നൽകുക (ക്ലാസിന്റെ പേര് സിസ്റ്റത്തിലുള്ളത് പോലെ തന്നെ ആയിരിക്കണം). ശേഷം 'Import Excel' ക്ലിക്ക് ചെയ്ത് അപ്‌ലോഡ് ചെയ്യാം.</p>
             </div>
 
             <div class="faq-card p-5 sm:p-6 rounded-2xl">
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 en-content"><i class="fas fa-lock text-emerald-400 mr-2"></i> Is my school's data secure?</h4>
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 ml-content hidden ml-text"><i class="fas fa-lock text-emerald-400 mr-2"></i> ഞങ്ങളുടെ ഡാറ്റ സുരക്ഷിതമാണോ?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-main mb-2 en-content"><i class="fas fa-lock text-emerald-400 mr-2"></i> Is my school's data secure?</h4>
+                <h4 class="text-base sm:text-lg font-bold text-main mb-2 ml-content hidden ml-text"><i class="fas fa-lock text-emerald-400 mr-2"></i> ഞങ്ങളുടെ ഡാറ്റ സുരക്ഷിതമാണോ?</h4>
                 
-                <p class="text-slate-400 text-sm leading-relaxed en-content">Yes. The platform uses Google's secure Firebase Cloud servers. Students can only see their own marks, and only verified Admins and Teachers can edit data.</p>
-                <p class="text-slate-400 text-sm leading-relaxed ml-content hidden ml-text">അതെ. ഗൂഗിളിന്റെ ഫയർബേസ് ക്ലൗഡ് സെർവറാണ് ഉപയോഗിക്കുന്നത്. ഓരോ വിദ്യാർത്ഥിക്കും അവരുടെ മാർക്കുകൾ മാത്രമേ കാണാൻ സാധിക്കൂ. അഡ്മിന് മാത്രമേ ഡാറ്റ മാറ്റാൻ കഴിയൂ.</p>
+                <p class="text-muted text-sm leading-relaxed en-content">Yes. The platform uses Google's secure Firebase Cloud servers. Students can only see their own marks, and only verified Admins and Teachers can edit data.</p>
+                <p class="text-muted text-sm leading-relaxed ml-content hidden ml-text">അതെ. ഗൂഗിളിന്റെ ഫയർബേസ് ക്ലൗഡ് സെർവറാണ് ഉപയോഗിക്കുന്നത്. ഓരോ വിദ്യാർത്ഥിക്കും അവരുടെ മാർക്കുകൾ മാത്രമേ കാണാൻ സാധിക്കൂ. അഡ്മിന് മാത്രമേ ഡാറ്റ മാറ്റാൻ കഴിയൂ.</p>
             </div>
 
         </div>
@@ -307,13 +336,34 @@
     </main>
 
     <script>
+        // Check for Custom Branding and Theme
+        document.addEventListener('DOMContentLoaded', () => {
+            const lastSchool = localStorage.getItem('easyresults_last_school');
+            
+            // Apply global brand name
+            db.collection('site_config').doc('main').get().then(doc => {
+                if(doc.exists) {
+                    const brandName = doc.data().brandName || 'easyresults';
+                    document.querySelectorAll('.dynamic-brand-name').forEach(el => { el.innerText = brandName; });
+                    document.title = `User Guide | ${brandName}`;
+                }
+            });
+
+            // If the user came from a specific school, color code the guide to match!
+            if (lastSchool) {
+                db.collection('institutions').doc(lastSchool).get().then(doc => {
+                    if (doc.exists && doc.data().themeColor) {
+                        applyTheme(doc.data()); // Leverages utils.js
+                    }
+                });
+            }
+        });
+
         // Language Toggle Logic
         function setLang(lang) {
-            // Update Buttons
             document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
             document.getElementById('btn-lang-ml').classList.toggle('active', lang === 'ml');
             
-            // Toggle Text Content
             document.querySelectorAll('.en-content').forEach(el => {
                 if(lang === 'en') el.classList.remove('hidden');
                 else el.classList.add('hidden');
@@ -328,50 +378,38 @@
         // Tab Toggle Logic
         function setTab(tab) {
             const tabs = ['admin', 'teacher', 'student', 'faq'];
-            
             tabs.forEach(t => {
                 const btn = document.getElementById('btn-tab-' + t);
                 const content = document.getElementById('content-' + t);
                 
                 if(t === tab) {
                     btn.classList.add('active');
-                    btn.classList.remove('text-slate-400');
+                    btn.classList.remove('text-muted');
                     content.classList.remove('hidden');
                 } else {
                     btn.classList.remove('active');
-                    btn.classList.add('text-slate-400');
+                    btn.classList.add('text-muted');
                     content.classList.add('hidden');
                 }
             });
         }
 
         // --- SMART ROUTING LOGIC ---
-        // Dynamically detects where the user came from and updates the "Back" buttons accordingly.
         document.addEventListener('DOMContentLoaded', () => {
             const referrer = document.referrer;
             const lastSchool = localStorage.getItem('easyresults_last_school');
             let targetHref = null;
 
-            // If the user came from an internal app page (Portal, Admin, Student)
             if (referrer && (referrer.includes('home.html') || referrer.includes('student.html') || referrer.includes('admin.html'))) {
                 targetHref = referrer;
-            } 
-            // Fallback: If they opened it in a new tab, but have an active school session saved
-            else if (lastSchool && !referrer.includes('index.html')) {
+            } else if (lastSchool && !referrer.includes('index.html')) {
                 targetHref = `home.html?id=${lastSchool}`;
             }
 
-            // Apply the dynamic target to the back buttons
             if (targetHref) {
-                document.querySelectorAll('.smart-back-link').forEach(link => {
-                    link.href = targetHref;
-                });
-                
-                // Update text purely for a better UX
+                document.querySelectorAll('.smart-back-link').forEach(link => { link.href = targetHref; });
                 document.querySelectorAll('.smart-back-text').forEach(text => {
-                    if (text.innerText === 'Back to Home') {
-                        text.innerText = 'Back to Portal';
-                    }
+                    if (text.innerText === 'Back to Home') text.innerText = 'Back to Portal';
                 });
             }
         });

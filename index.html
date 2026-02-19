@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>easyresults | Digital School Solutions</title>
+    
+    <title>easyresults | Cloud-Based School Result Management System</title>
+    <meta name="description" content="Digitize your institution with easyresults. A secure, automated student portal and academic result management system designed for modern schools and educators.">
+    <meta name="keywords" content="school management software, result management system, student portal, automated report cards, digital academic records, easyresults">
+    <meta name="author" content="easyresults Systems">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="security.js"></script>
@@ -12,6 +16,8 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
 
     <style>
         /* --- DESIGN SYSTEM --- */
@@ -50,6 +56,12 @@
 </head>
 <body class="overflow-x-hidden">
 
+    <div id="global-loader" class="fixed inset-0 flex flex-col items-center justify-center text-white z-[9999] hidden bg-slate-950/80 backdrop-blur-sm">
+        <div class="w-12 h-12 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+        <p class="text-sm font-bold tracking-widest animate-pulse font-mono">PROCESSING...</p>
+    </div>
+    <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
     <div class="fixed inset-0 pointer-events-none -z-10">
         <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]"></div>
         <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px]"></div>
@@ -59,18 +71,17 @@
     <nav class="fixed top-0 w-full z-50 glass-nav">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3 font-bold text-xl tracking-tight">
-                <div id="nav-logo-container" class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg overflow-hidden">
-                    <i id="nav-icon" class="fas fa-layer-group"></i>
-                    <img id="nav-img" class="w-full h-full object-cover hidden">
+                <div id="nav-logo-container" class="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-white shadow-lg overflow-hidden shrink-0">
+                    <img id="nav-img" src="logo.png" class="w-full h-full object-cover" alt="Brand Logo">
                 </div>
                 <span id="cms-brand-name" class="text-white">easyresults</span>
             </div>
             
             <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
                 <a href="#features" class="hover:text-white transition">Features</a>
-                <a href="#about" class="hover:text-white transition">About</a>
-                <a href="#register" class="hover:text-white transition">Register</a>
-                <a href="guide.html" class="flex items-center gap-2 px-4 py-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500/20 hover:text-blue-300 transition font-bold border border-blue-500/20">
+                <a href="#about" class="hover:text-white transition">Why Us</a>
+                <a href="#register" class="hover:text-white transition">Get Started</a>
+                <a href="guide.html" class="flex items-center gap-2 px-4 py-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500/20 hover:text-blue-300 transition font-bold border border-blue-500/20 shadow-lg shadow-blue-500/10">
                     <i class="fas fa-book-open"></i> User Guide
                 </a>
             </div>
@@ -79,9 +90,9 @@
 
     <header class="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 relative">
         <div class="fade-in" style="animation-delay: 0.1s">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/10 text-blue-400 text-xs font-bold uppercase tracking-widest mb-8">
-                <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-                Cloud System Live
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-8 shadow-lg shadow-emerald-500/10">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Secure & Verified Platform
             </div>
         </div>
         
@@ -91,7 +102,7 @@
         </h1>
         
         <p id="hero-sub" class="text-lg text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed fade-in" style="animation-delay: 0.3s">
-            easyresults provides a fully customized, secure, and automated result management portal for modern educational institutions.
+            Transform your school's grading process. easyresults provides a fully branded, secure, and automated student portal for modern educational institutions.
         </p>
         
         <div class="flex flex-col sm:flex-row gap-4 fade-in" style="animation-delay: 0.4s">
@@ -99,54 +110,54 @@
                 Register Institution <i class="fas fa-arrow-right"></i>
             </a>
             <a id="wa-link" href="#" target="_blank" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
-                <i class="fab fa-whatsapp text-green-400 text-lg"></i> More Info
+                <i class="fab fa-whatsapp text-green-400 text-lg"></i> Contact Sales
             </a>
         </div>
 
         <div class="mt-12 w-full max-w-md mx-auto fade-in" style="animation-delay: 0.5s">
             <div class="p-1.5 rounded-2xl bg-slate-900/80 border border-slate-700 flex items-center shadow-2xl backdrop-blur-md">
-                <div class="px-4 text-slate-500"><i class="fas fa-search"></i></div>
-                <input type="text" id="quick-portal-id" placeholder="Enter Institution Account ID" class="bg-transparent border-none text-white w-full outline-none placeholder-slate-500 text-sm" onkeypress="if(event.key === 'Enter') goToPortal()">
+                <div class="px-4 text-slate-500"><i class="fas fa-search" aria-hidden="true"></i></div>
+                <input type="text" id="quick-portal-id" placeholder="Enter Institution Account ID" class="bg-transparent border-none text-white w-full outline-none placeholder-slate-500 text-sm" onkeypress="if(event.key === 'Enter') goToPortal()" aria-label="Institution Account ID">
                 <button onclick="goToPortal()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-bold transition text-sm flex items-center gap-2 shadow-lg shrink-0">
                     Find Portal
                 </button>
             </div>
-            <p class="text-[10px] text-slate-500 mt-3 uppercase tracking-widest font-bold">Students & Staff: Enter your School ID above</p>
+            <p class="text-[10px] text-slate-500 mt-3 uppercase tracking-widest font-bold">Students & Staff: Enter your School ID to log in</p>
         </div>
 
         <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-slate-600 hidden md:block">
-            <i class="fas fa-chevron-down"></i>
+            <i class="fas fa-chevron-down" aria-hidden="true"></i>
         </div>
     </header>
 
     <section id="features" class="py-24 relative z-10">
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-white mb-4">Why Choose easyresults?</h2>
-                <p class="text-slate-400">Everything you need to digitize your institution.</p>
+                <h2 class="text-3xl font-bold text-white mb-4">Powerful Features for Modern Schools</h2>
+                <p class="text-slate-400">Everything you need to digitize academic records and streamline grading.</p>
             </div>
             
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="feature-card p-8 rounded-2xl">
                     <div class="w-14 h-14 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-2xl mb-6">
-                        <i class="fas fa-globe"></i>
+                        <i class="fas fa-globe" aria-hidden="true"></i>
                     </div>
-                    <h3 id="f1-t" class="text-xl font-bold text-white mb-3">Dedicated Portal</h3>
-                    <p id="f1-d" class="text-slate-400 text-sm leading-relaxed">Get a unique homepage fully branded with your logo and colors.</p>
+                    <h3 id="f1-t" class="text-xl font-bold text-white mb-3">Custom Student Portal</h3>
+                    <p id="f1-d" class="text-slate-400 text-sm leading-relaxed">Launch a dedicated, white-labeled web portal fully branded with your institution's colors for a premium parent-student experience.</p>
                 </div>
                 <div class="feature-card p-8 rounded-2xl">
                     <div class="w-14 h-14 bg-purple-500/10 text-purple-400 rounded-xl flex items-center justify-center text-2xl mb-6">
-                        <i class="fas fa-bolt"></i>
+                        <i class="fas fa-bolt" aria-hidden="true"></i>
                     </div>
-                    <h3 id="f2-t" class="text-xl font-bold text-white mb-3">Instant Marksheets</h3>
-                    <p id="f2-d" class="text-slate-400 text-sm leading-relaxed">Upload marks once and generate professional, downloadable PDF results instantly.</p>
+                    <h3 id="f2-t" class="text-xl font-bold text-white mb-3">Automated Marksheets</h3>
+                    <p id="f2-d" class="text-slate-400 text-sm leading-relaxed">Upload scores easily via Excel or manual entry. The system instantly generates professional, mathematically accurate, downloadable PDF report cards.</p>
                 </div>
-                <div class="feature-card p-8 rounded-2xl">
+                <div class="feature-card p-8 rounded-2xl border-l-4 border-l-emerald-500">
                     <div class="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-2xl mb-6">
-                        <i class="fas fa-shield-alt"></i>
+                        <i class="fas fa-shield-check" aria-hidden="true"></i>
                     </div>
-                    <h3 id="f3-t" class="text-xl font-bold text-white mb-3">Bank-Grade Security</h3>
-                    <p id="f3-d" class="text-slate-400 text-sm leading-relaxed">Secure admin panels and student logins ensure data privacy and integrity.</p>
+                    <h3 id="f3-t" class="text-xl font-bold text-white mb-3">Tamper-Proof Records</h3>
+                    <p id="f3-d" class="text-slate-400 text-sm leading-relaxed">Bank-grade security protects your admin panels. Strict owner-verification locks official logos and signatures to prevent unauthorized editing.</p>
                 </div>
             </div>
         </div>
@@ -155,9 +166,9 @@
     <section id="about" class="py-24 bg-slate-900/50 border-y border-slate-800">
         <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
             <div>
-                <h2 id="ab-head" class="text-3xl font-bold text-white mb-6">Built for Education</h2>
+                <h2 id="ab-head" class="text-3xl font-bold text-white mb-6">Built to Empower Education</h2>
                 <p id="ab-text" class="text-slate-400 mb-8 leading-loose">
-                    easyresults simplifies the complex task of academic administration. From managing student data to publishing exam results, we provide the tools you need to succeed in the digital age.
+                    easyresults simplifies the complex task of academic administration. From securely managing student directories to publishing real-time exam results, our cloud-based platform provides educators and administrators the tools they need to succeed in the digital age.
                 </p>
                 
                 <div class="grid grid-cols-2 gap-6">
@@ -196,8 +207,8 @@
     <section id="register" class="py-24 relative z-10 border-t border-slate-800 bg-[#020617]">
         <div class="max-w-4xl mx-auto px-6">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-white mb-4">Register Your Institution</h2>
-                <p class="text-slate-400">Create your account below. Our team will verify and activate your secure cloud portal immediately.</p>
+                <h2 class="text-3xl font-bold text-white mb-4">Register Your Institution Today</h2>
+                <p class="text-slate-400">Create your administrator account below. Our team will verify and activate your secure cloud portal immediately.</p>
             </div>
             
             <div class="glass-nav p-8 md:p-10 rounded-3xl border border-slate-700 shadow-2xl max-w-3xl mx-auto relative overflow-hidden">
@@ -221,9 +232,9 @@
                             <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Mobile Number</label>
                             <div class="flex mt-2">
                                 <select id="req-country-code" class="bg-slate-800/50 border border-slate-700 border-r-0 focus:border-blue-500 rounded-l-xl px-2 py-3 text-white outline-none transition w-[40%] sm:w-[35%] text-xs sm:text-sm cursor-pointer">
-                                    <option value="+91">+91 (IN)</option>
                                     <option value="+1">+1 (US/CA)</option>
                                     <option value="+44">+44 (UK)</option>
+                                    <option value="+91" selected>+91 (IN)</option>
                                     <option value="+971">+971 (UAE)</option>
                                     <option value="+966">+966 (SA)</option>
                                     <option value="+61">+61 (AU)</option>
@@ -240,8 +251,11 @@
                         <button type="submit" id="btn-register" class="w-full py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition shadow-lg shadow-green-900/20 flex items-center justify-center gap-3 text-lg">
                             <i class="fab fa-whatsapp text-2xl"></i> Register & Request Approval
                         </button>
-                        <p class="text-center text-xs text-slate-500 mt-4">
-                            <i class="fas fa-cloud text-blue-400 mr-1"></i> Your account will be generated instantly in our secure database.
+                        <p class="text-center text-xs text-slate-500 mt-4 leading-relaxed">
+                            <i class="fas fa-cloud text-blue-400 mr-1"></i> Your account will be generated instantly in our secure database. <br>
+                            <a href="guide.html" class="text-blue-400 hover:text-blue-300 underline decoration-blue-400/30 transition inline-flex items-center gap-1 mt-2">
+                                <i class="fas fa-question-circle"></i> Need Help? Read the User Guide
+                            </a>
                         </p>
                     </div>
                 </form>
@@ -254,21 +268,11 @@
     </footer>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBDluJn6c-9vr3jJUEIl3FJ2l4HD4W1M2k",
-            authDomain: "gradewise-app.firebaseapp.com",
-            projectId: "gradewise-app",
-            storageBucket: "gradewise-app.firebasestorage.app",
-            messagingSenderId: "938150156100",
-            appId: "1:938150156100:web:219cfacbf0452ddfe2e911"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
         let globalWhatsappNumber = "";
 
         window.onload = async function() {
             try {
+                // Ensure db is available from config.js
                 const docSnap = await db.collection('site_config').doc('main').get();
                 const c = docSnap.exists ? docSnap.data() : {};
                 
@@ -276,14 +280,14 @@
                 const stuSnap = await db.collection('students').get();
 
                 if(c.brandName) {
-                    document.title = c.brandName + " | Digital School Solutions";
+                    document.title = c.brandName + " | Cloud-Based School Result Management System";
                     document.getElementById('cms-brand-name').innerText = c.brandName;
                 }
+                
+                // If a brandLogo exists in the DB, it overrides logo.png. Otherwise, logo.png remains the default.
                 if(c.brandLogo) {
                     const img = document.getElementById('nav-img');
-                    img.src = c.brandLogo;
-                    img.classList.remove('hidden');
-                    document.getElementById('nav-icon').classList.add('hidden');
+                    img.src = formatImageUrl(c.brandLogo); 
                 }
 
                 if(c.heroTitle) document.getElementById('hero-title').innerHTML = c.heroTitle.replace(/\n/g, "<br>");
@@ -323,7 +327,7 @@
             if(id) {
                 window.location.href = `home.html?id=${id}`;
             } else {
-                alert("Please enter a valid Institution ID.");
+                showToast("Please enter a valid Institution ID.", "error");
             }
         }
 
@@ -335,7 +339,8 @@
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
             btn.disabled = true;
             
-            // Get Form Data
+            if(typeof showLoader === "function") showLoader(true);
+            
             const school = document.getElementById('req-school').value;
             const name = document.getElementById('req-name').value;
             const email = document.getElementById('req-email').value;
@@ -345,16 +350,15 @@
             const pass = document.getElementById('req-pass').value;
 
             try {
-                // 1. DUPLICATE EMAIL CHECK
                 const existingInst = await db.collection('institutions').where('email', '==', email).get();
                 if (!existingInst.empty) {
-                    alert("This email is already registered. Contact the easyresults team and ask for your institution ID to get the webpage.");
+                    if(typeof showLoader === "function") showLoader(false);
+                    showToast("This email is already registered. Contact easyresults team.", "error");
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                     return;
                 }
 
-                // 2. Create the Institution directly in the database
                 const docRef = await db.collection('institutions').add({
                     name: school,
                     email: email,
@@ -362,33 +366,35 @@
                     contactName: name,
                     contactEmail: email,
                     contactPhone: phone,
-                    isActive: false,       // Suspended / Pending Approval
-                    themeColor: '#6366f1', // Default Theme Color
-                    theme: 'deep_space',   // Default Theme Style
+                    isActive: false,       
+                    hasFullAccess: false,  // Locks the Logo/Sign by default
+                    themeColor: '#6366f1', 
+                    theme: 'deep_space',   
                     createdAt: new Date().toISOString()
                 });
 
-                // 3. Open WhatsApp link to send message directly to Owner
                 if (globalWhatsappNumber) {
                     const text = `*New Institution Registration*%0A%0A*School Name:* ${school}%0A*Admin Email:* ${email}%0A*Contact:* ${name} (${phone})%0A%0AHello, I have just registered my institution on easyresults. My designated Account ID is: *${docRef.id}*. Please approve my account to activate the portal.`;
                     const waUrl = `https://wa.me/${globalWhatsappNumber}?text=${text}`;
                     
                     window.open(waUrl, '_blank');
                 } else {
-                    alert("Registration successful! (Note: The system owner has not configured a WhatsApp number yet, so the automatic message could not be sent).");
+                    showToast("Registration successful!");
                 }
 
-                // 4. Redirect their current window to their newly created portal
-                window.location.href = `home.html?id=${docRef.id}`;
+                if(typeof showLoader === "function") showLoader(false);
+                setTimeout(() => {
+                    window.location.href = `home.html?id=${docRef.id}`;
+                }, 1500);
 
             } catch(err) {
                 console.error("Registration Error:", err);
-                alert("An error occurred during registration. Please check your connection and try again.");
+                if(typeof showLoader === "function") showLoader(false);
+                showToast("An error occurred during registration. Check your connection.", "error");
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         }
     </script>
 </body>
-
 </html>

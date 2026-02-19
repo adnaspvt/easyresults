@@ -11,8 +11,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
 
     <style>
         :root {
@@ -46,6 +49,7 @@
         
         .glass-panel { background: var(--bg-panel); backdrop-filter: blur(20px); border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.4); transition: background 0.5s ease, border-color 0.5s ease; }
         
+        /* Mobile Touch Target Optimization */
         .input-dark { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 12px 16px; border-radius: 10px; width: 100%; outline: none; transition: 0.3s; min-height: 44px; }
         .input-dark:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
         
@@ -221,23 +225,13 @@
             </div>
         </div>
         
-        <div id="marksheet-scroll-area" class="flex-1 overflow-x-hidden overflow-y-auto w-full pb-24 pt-4 sm:px-0">
+        <div id="marksheet-scroll-area" class="flex-1 overflow-x-hidden overflow-y-auto w-full pb-24 pt-4 px-2 sm:px-0">
             <div id="mk-printable" class="a4-container"></div>
         </div>
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBDluJn6c-9vr3jJUEIl3FJ2l4HD4W1M2k",
-            authDomain: "gradewise-app.firebaseapp.com",
-            projectId: "gradewise-app",
-            storageBucket: "gradewise-app.firebasestorage.app",
-            messagingSenderId: "938150156100",
-            appId: "1:938150156100:web:219cfacbf0452ddfe2e911"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
+        // --- GLOBAL BRANDING LISTENER ---
         db.collection('site_config').doc('main').onSnapshot(doc => {
             if(doc.exists) {
                 const brandName = doc.data().brandName || 'easyresults';
@@ -255,58 +249,6 @@
         
         let isInitialLoad = true;
         let activeResultId = null; 
-
-        const THEMES = {
-            'deep_space': { bg: '#020617', glass: 'rgba(15, 23, 42, 0.75)', text: '#f8fafc', muted: '#94a3b8' },
-            'minimal_light': { bg: '#f8fafc', glass: 'rgba(255, 255, 255, 0.85)', text: '#0f172a', muted: '#64748b' },
-            'midnight_blue': { bg: '#0b1121', glass: 'rgba(30, 41, 59, 0.75)', text: '#f0f9ff', muted: '#94a3b8' },
-            'emerald_city': { bg: '#022c22', glass: 'rgba(6, 78, 59, 0.75)', text: '#ecfdf5', muted: '#6ee7b7' },
-            'crimson_fury': { bg: '#450a0a', glass: 'rgba(127, 29, 29, 0.75)', text: '#fff1f2', muted: '#fda4af' },
-            'royal_purple': { bg: '#2e1065', glass: 'rgba(76, 29, 149, 0.75)', text: '#faf5ff', muted: '#c4b5fd' },
-            'classic_academia': { bg: '#27272a', glass: 'rgba(63, 63, 70, 0.75)', text: '#fafafa', muted: '#a1a1aa' },
-            'modern_teal': { bg: '#134e4a', glass: 'rgba(17, 94, 89, 0.75)', text: '#f0fdfa', muted: '#99f6e4' },
-            'solar_flare': { bg: '#431407', glass: 'rgba(124, 45, 18, 0.75)', text: '#fff7ed', muted: '#fdba74' },
-            'oceanic_depth': { bg: '#0c4a6e', glass: 'rgba(12, 74, 110, 0.75)', text: '#f0f9ff', muted: '#bae6fd' },
-            'slate_minimal': { bg: '#0f172a', glass: 'rgba(51, 65, 85, 0.75)', text: '#f8fafc', muted: '#cbd5e1' }
-        };
-
-        const DEFAULT_SCALES = {
-            standard: [{g:'A+',m:90},{g:'A',m:80},{g:'B',m:70},{g:'C',m:60},{g:'D',m:50},{g:'F',m:0}],
-            gpa: [{g:'A',m:90},{g:'B',m:80},{g:'C',m:70},{g:'D',m:60},{g:'F',m:0}],
-            o_level: [{g:'O',m:90},{g:'A+',m:80},{g:'A',m:70},{g:'B',m:60},{g:'C',m:50},{g:'F',m:0}]
-        };
-
-        const $ = id => document.getElementById(id);
-        const showLoader = (show) => $('global-loader').classList.toggle('hidden', !show);
-        
-        function showToast(msg, type='success') {
-            const el = document.createElement('div');
-            el.className = `px-5 py-4 rounded-xl shadow-2xl border backdrop-blur-md text-sm font-bold flex items-center gap-3 fade-in ${type==='success'?'bg-emerald-500/10 border-emerald-500/30 text-emerald-400':'bg-red-500/10 border-red-500/30 text-red-400'}`;
-            el.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'} text-lg"></i> ${msg}`;
-            $('toast-container').appendChild(el);
-            setTimeout(() => el.remove(), 4000);
-        }
-
-        function getGrade(pct, customScale) {
-            pct = Number(pct);
-            if(!customScale || customScale.length === 0) return '-';
-            const sorted = [...customScale].sort((a, b) => b.m - a.m);
-            for(let i=0; i<sorted.length; i++) {
-                if(pct >= sorted[i].m) return sorted[i].g;
-            }
-            return sorted[sorted.length-1].g;
-        }
-
-        function getGradeLegend(customScale) {
-            if(!customScale || customScale.length === 0) return '';
-            const sorted = [...customScale].sort((a, b) => b.m - a.m);
-            return sorted.map((row, i) => {
-                if (sorted.length === 1) return `${row.g} (All)`;
-                if(i === 0) return `${row.g} (${row.m}-100%)`;
-                if(i === sorted.length - 1) return `${row.g} (<${sorted[i-1].m}%)`;
-                return `${row.g} (${row.m}-${sorted[i-1].m - 1}%)`;
-            }).join(' | ');
-        }
 
         window.onload = () => { checkSession(); };
 
@@ -335,32 +277,6 @@
                 $('view-login').classList.remove('hidden');
             } else {
                 window.location.href = 'index.html'; 
-            }
-        }
-
-        function applyTheme(inst) {
-            const color = inst.themeColor || '#6366f1';
-            const themeKey = inst.theme || 'deep_space';
-            const t = THEMES[themeKey] || THEMES['deep_space'];
-
-            const root = document.documentElement;
-            const adjustColor = (hex, amt) => '#' + hex.replace(/^#/, '').replace(/../g, c => ('0'+Math.min(255, Math.max(0, parseInt(c, 16) + amt)).toString(16)).substr(-2));
-            
-            root.style.setProperty('--primary', color);
-            root.style.setProperty('--primary-dark', adjustColor(color, -20));
-            root.style.setProperty('--primary-glow', color + '40');
-            
-            root.style.setProperty('--bg-dark', t.bg);
-            root.style.setProperty('--bg-panel', t.glass);
-            root.style.setProperty('--text-main', t.text);
-            root.style.setProperty('--text-muted', t.muted);
-
-            if (t.bg === '#f8fafc' || t.bg === '#ffffff') {
-                root.style.setProperty('--border', 'rgba(0, 0, 0, 0.1)');
-                root.style.setProperty('--bg-input', 'rgba(0, 0, 0, 0.05)');
-            } else {
-                root.style.setProperty('--border', 'rgba(255, 255, 255, 0.08)');
-                root.style.setProperty('--bg-input', 'rgba(30, 41, 59, 0.6)');
             }
         }
 
@@ -597,22 +513,6 @@
             } catch (e) { showLoader(false); showToast("Update failed", "error"); }
         }
 
-        function numToWords(n) {
-            const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
-            const b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
-            if ((n = n.toString()).length > 9) return 'Overflow';
-            let n_ = ('000000000' + n).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-            if (!n_) return; 
-            let str = '';
-            str += (n_[1] != 0) ? (a[Number(n_[1])] || b[n_[1][0]] + ' ' + a[n_[1][1]]) + 'Crore ' : '';
-            str += (n_[2] != 0) ? (a[Number(n_[2])] || b[n_[2][0]] + ' ' + a[n_[2][1]]) + 'Lakh ' : '';
-            str += (n_[3] != 0) ? (a[Number(n_[3])] || b[n_[3][0]] + ' ' + a[n_[3][1]]) + 'Thousand ' : '';
-            str += (n_[4] != 0) ? (a[Number(n_[4])] || b[n_[4][0]] + ' ' + a[n_[4][1]]) + 'Hundred ' : '';
-            str += (n_[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n_[5])] || b[n_[5][0]] + ' ' + a[n_[5][1]]) : '';
-            return str.trim() ? str.trim() + " Only" : "Zero Only";
-        }
-
-        // FULLY REWRITTEN OPEN MARKSHEET FUNCTION TO INJECT ENTIRE HTML
         function openMarksheet(rid, isLiveUpdate = false) {
             try {
                 activeResultId = rid;
@@ -670,13 +570,13 @@
                 // Inject full HTML structure perfectly into the printable container
                 $('mk-printable').innerHTML = `
                     <div class="transcript-frame">
-                        <div class="watermark-layer">${inst.profileImage ? `<img src="${inst.profileImage}" class="watermark-logo">` : ''}</div>
+                        <div class="watermark-layer">${inst.profileImage ? `<img src="${inst.profileImage}" crossorigin="anonymous" class="watermark-logo">` : ''}</div>
                         <div class="transcript-inner">
                             <div class="content-layer">
                                 <div class="text-center mb-6">
                                     <div class="inline-block mb-2 p-1 border border-slate-200 rounded-full">
-                                        <div class="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden">
-                                            ${inst.profileImage ? `<img src="${inst.profileImage}" class="max-w-full max-h-full object-contain">` : `<i class="fas fa-university text-3xl text-slate-300"></i>`}
+                                        <div class="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden bg-slate-100">
+                                            ${inst.profileImage ? `<img src="${inst.profileImage}" crossorigin="anonymous" class="max-w-full max-h-full object-contain">` : `<i class="fas fa-university text-3xl text-slate-300"></i>`}
                                         </div>
                                     </div>
                                     <h1 class="text-3xl font-black uppercase mk-header-font text-slate-900 tracking-wide mb-1">${inst.name}</h1>
@@ -716,7 +616,7 @@
                                 <div class="doc-footer border-t-2 border-slate-900 pt-6 mt-4 flex justify-between items-end">
                                     <div class="text-[8px] text-slate-500 font-mono w-2/3 leading-tight">This document is securely processed and digitally generated by <span class="dynamic-brand-name">easyresults</span> Cloud Systems.<br>Valid academic record. No physical signature required for web verification.</div>
                                     <div class="principal-box text-center">
-                                        <div class="h-16 flex items-end justify-center mb-1">${inst.signatureImage ? `<img src="${inst.signatureImage}" class="max-h-full max-w-full object-contain filter grayscale contrast-125">` : '<div class="h-8 border-b border-black w-32 mx-auto"></div>'}</div>
+                                        <div class="h-16 flex items-end justify-center mb-1">${inst.signatureImage ? `<img src="${inst.signatureImage}" crossorigin="anonymous" class="max-h-full max-w-full object-contain filter grayscale contrast-125">` : '<div class="h-8 border-b border-black w-32 mx-auto"></div>'}</div>
                                         <div class="border-t-2 border-slate-900 w-32 mx-auto mb-1"></div>
                                         <p class="text-[9px] font-bold uppercase tracking-widest text-slate-900">Principal Signature</p>
                                     </div>
@@ -726,25 +626,22 @@
                     </div>
                 `;
 
-                if(!isLiveUpdate) {
-                    $('marksheet-modal').classList.remove('hidden');
-                }
+                if(!isLiveUpdate) { $('marksheet-modal').classList.remove('hidden'); }
                 
-                // Dynamic JS Scaling Calculation using Top Left layout fix
                 setTimeout(() => {
                     const ctr = document.getElementById('mk-printable');
                     ctr.style.display = 'block'; 
                     
                     if(window.innerWidth < 800) {
-                        const padding = 16; // Visual space on left side
-                        const availableWidth = window.innerWidth - (padding * 2); 
-                        const scale = availableWidth / 794; // 794px is exactly 210mm at standard DPI
+                        const padding = 16; 
+                        const availableWidth = window.innerWidth - (padding * 2);
+                        const scale = availableWidth / 794; 
                         
                         ctr.style.transform = `scale(${scale})`;
-                        ctr.style.transformOrigin = 'top left'; // Top left prevents flexbox push
-                        ctr.style.marginLeft = `${padding}px`; // Applies perfect center padding
+                        ctr.style.transformOrigin = 'top left'; 
+                        ctr.style.marginLeft = `${padding}px`; 
                         
-                        const heightLoss = 1122 * (1 - scale); // 1122px is 297mm height
+                        const heightLoss = 1122 * (1 - scale);
                         ctr.style.marginBottom = `-${heightLoss}px`; 
                     } else {
                         ctr.style.display = 'inline-block';
