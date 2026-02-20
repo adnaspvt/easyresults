@@ -92,8 +92,8 @@
     <header class="glass-panel sticky top-0 z-50 border-b border-theme">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition smart-back-link">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg shrink-0" style="background: linear-gradient(135deg, var(--primary), #4338ca);">
-                    <i class="fas fa-layer-group"></i>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shrink-0 border border-theme overflow-hidden bg-panel">
+                    <img id="guide-logo" src="logo.png" class="w-full h-full object-cover" alt="Logo">
                 </div>
                 <span class="font-bold text-lg sm:text-xl tracking-tight hidden sm:block text-main"><span class="dynamic-brand-name">easyresults</span> Help</span>
             </a>
@@ -347,9 +347,15 @@
             // Apply global brand name
             db.collection('site_config').doc('main').get().then(doc => {
                 if(doc.exists) {
-                    const brandName = doc.data().brandName || 'easyresults';
+                    const data = doc.data();
+                    const brandName = data.brandName || 'easyresults';
                     document.querySelectorAll('.dynamic-brand-name').forEach(el => { el.innerText = brandName; });
                     document.title = `User Guide | ${brandName}`;
+                    
+                    if(data.brandLogo) {
+                        const img = document.getElementById('guide-logo');
+                        if(img) img.src = formatImageUrl(data.brandLogo);
+                    }
                 }
             });
 
